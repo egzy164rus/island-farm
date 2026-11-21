@@ -1,0 +1,8 @@
+{
+  "appId": "com.farm.island",
+  "appName": "Островная ферма",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}
