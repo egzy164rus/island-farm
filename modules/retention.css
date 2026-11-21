@@ -1,0 +1,180 @@
+/* ============================================================
+   СТИЛИ МОДУЛЯ УДЕРЖАНИЯ + КАРТА ФЕРМЫ
+   Вставляется перед закрывающим тегом style
+   ============================================================ */
+
+/* ---------- общие ---------- */
+.muted-small{font-size:10px;color:#9fae9c;line-height:1.45;}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;gap:8px;}
+.sec-title h3{margin:0;font-size:13px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:6px;color:#e6efe2;}
+.sec-title h3 .ic{width:16px;height:16px;color:#b0cf7a;}
+.sec-title small{font-size:10px;color:#9fae9c;font-weight:600;}
+.chip-mini{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:8px;background:#27332b;border:1px solid #3a4a3d;font-size:10px;font-weight:700;color:#cfe0c5;}
+
+/* ---------- ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ---------- */
+.quest-list{display:flex;flex-direction:column;gap:7px;}
+.quest-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;background:#202a24;border:1px solid #33423a;position:relative;overflow:hidden;}
+.quest-item.done{border-color:#5f8a4d;background:#22301f;}
+.quest-item.claimed{opacity:.55;}
+.quest-ic{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:9px;background:#2b3a30;color:#b0cf7a;}
+.quest-ic .ic{width:18px;height:18px;}
+.quest-body{flex:1;min-width:0;}
+.quest-body b{display:block;font-size:11.5px;font-weight:700;color:#eef3ea;line-height:1.3;}
+.quest-bar{margin-top:5px;height:4px;border-radius:99px;background:#33423a;overflow:hidden;}
+.quest-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fbf5f,#c3e08a);transition:width .4s;}
+.quest-prog{font-size:9.5px;color:#9fae9c;font-weight:600;margin-top:3px;}
+.quest-claim{flex:none;padding:6px 10px;border-radius:9px;border:0;font:800 10px/1 var(--font-ui);background:linear-gradient(180deg,#d8b25e,#b98f3c);color:#231a06;cursor:pointer;}
+.quest-claim:active{transform:scale(.94);}
+.quest-claim:disabled{background:#2f3a31;color:#7d8b7c;cursor:default;}
+.quest-check{flex:none;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#3f6b34;color:#d5f0b8;}
+.quest-check .ic{width:14px;height:14px;}
+
+/* ---------- СТРИК ---------- */
+.streak-card{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:13px;background:linear-gradient(135deg,#2b3a2b 0%,#1e2a20 100%);border:1px solid #40543f;}
+.streak-flame{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:20px;border-radius:11px;background:#3a2f1a;border:1px solid #5c4a24;}
+.streak-info{flex:1;min-width:0;}
+.streak-info b{display:block;font-size:12px;color:#f2e7c8;font-weight:800;}
+.streak-info small{font-size:9.5px;color:#a9b8a2;}
+.streak-freeze{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle;}
+.streak-freeze i{width:11px;height:11px;border-radius:3px;background:#39463a;display:inline-block;}
+.streak-freeze i.on{background:linear-gradient(180deg,#9fd6f0,#5fa8cc);box-shadow:0 0 5px rgba(120,200,240,.5);}
+.streak-days{display:flex;gap:3px;margin-top:5px;}
+.streak-days i{width:100%;height:4px;border-radius:99px;background:#39463a;}
+.streak-days i.on{background:linear-gradient(90deg,#d8b25e,#f0d68f);}
+
+/* ---------- ЯРМАРКА ---------- */
+.fair-banner{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#2a3a2b 0%,#33452c 55%,#3d4a26 100%);border:1px solid #55663f;}
+.fair-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,230,150,.12) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 4s ease-in-out infinite;}
+@keyframes fairShine{0%,70%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.fair-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;background:#4a3f1e;color:#f5d98a;font-size:18px;}
+.fair-body{flex:1;min-width:0;}
+.fair-body b{display:block;font-size:11.5px;color:#f7f0d8;font-weight:800;}
+.fair-body small{font-size:9.5px;color:#c3cfae;}
+.fair-timer{flex:none;font:800 10px var(--font-ui);color:#e8d9a6;background:#3a3a20;padding:5px 8px;border-radius:8px;}
+
+/* ---------- ОФФЛАЙН-ЭКРАН ---------- */
+.offline-hero{text-align:center;padding:6px 0 2px;}
+.offline-hero .big{font-size:44px;line-height:1;margin-bottom:2px;}
+.offline-time{display:inline-block;margin:6px auto 12px;padding:4px 12px;border-radius:99px;background:#2b3a30;color:#b9cbb0;font:700 10px var(--font-ui);}
+.offline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0;}
+.offline-stat{padding:10px;border-radius:12px;background:#202a24;border:1px solid #33423a;text-align:left;}
+.offline-stat b{display:block;font-size:16px;font-weight:900;color:#eaf3e3;}
+.offline-stat small{font-size:9.5px;color:#9fae9c;font-weight:600;line-height:1.3;}
+.offline-stat.gold b{color:#f0d68f;}
+
+/* ---------- ВКЛАДКИ ФЕРМЫ (карта) ---------- */
+.farm-map{padding:2px 0 6px;}
+.map-scene{position:relative;border-radius:16px;overflow:hidden;border:1px solid #3b4d3c;
+  background:radial-gradient(ellipse at 50% 10%,#2f4732 0%,#22331f 55%,#1a2619 100%);
+  padding:10px;height:auto;}
+.map-island{position:relative;min-height:230px;}
+.map-slot{position:absolute;width:74px;transform:translate(-50%,-50%);cursor:pointer;text-align:center;}
+.map-slot .slot-art{width:74px;height:56px;border-radius:12px;display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(160deg,#33472f,#26361f);border:1px solid #4a6041;box-shadow:0 3px 10px rgba(0,0,0,.35);transition:transform .15s;}
+.map-slot:active .slot-art{transform:scale(.94);}
+.map-slot .slot-name{font-size:8.5px;color:#c6d5bd;font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.map-slot.locked .slot-art{opacity:.5;filter:grayscale(.7);}
+.map-slot.has-alert .slot-art{animation:slotAlert 1.6s ease-in-out infinite;border-color:#c9a44e;}
+@keyframes slotAlert{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.35)}50%{box-shadow:0 0 0 3px rgba(201,164,78,.4),0 3px 12px rgba(0,0,0,.4)}}
+.map-path{position:absolute;inset:0;pointer-events:none;}
+.map-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:99px;background:#c9503c;color:#fff;font:800 9px/17px var(--font-ui);text-align:center;padding:0 4px;}
+.map-badge.ok{background:#4d8a3e;}
+.map-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92px;text-align:center;}
+.map-center .mc-art{width:92px;height:74px;border-radius:16px;display:grid;place-items:center;font-size:34px;
+  background:linear-gradient(160deg,#3d5a3a,#2b4227);border:2px solid #6d8a54;box-shadow:0 0 18px rgba(140,190,110,.25);}
+.map-center .mc-name{font-size:9px;font-weight:800;color:#dff0cf;margin-top:3px;}
+
+/* статы карты */
+.map-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0;}
+.map-stat{padding:9px 8px;border-radius:11px;background:#202a24;border:1px solid #33423a;text-align:center;}
+.map-stat b{display:block;font-size:14px;font-weight:900;color:#eaf3e3;line-height:1.1;}
+.map-stat small{font-size:8.5px;color:#9fae9c;font-weight:700;letter-spacing:.03em;}
+.map-stat.warn b{color:#e8b46a;}
+
+/* ---------- СКЛАД-БУНКЕР (выдержка) ---------- */
+.age-card{border-radius:14px;background:#202a24;border:1px solid #3a4a3d;padding:11px;margin-bottom:8px;}
+.age-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.age-ic{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;background:#33452f;font-size:17px;}
+.age-head b{display:block;font-size:11.5px;color:#eef3ea;}
+.age-head small{font-size:9.5px;color:#9fae9c;}
+.age-slots{display:flex;gap:6px;margin-top:8px;}
+.age-slot{flex:1;border-radius:10px;background:#18211c;border:1px dashed #3d4c3e;padding:8px 6px;text-align:center;min-height:74px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
+.age-slot.active{border-style:solid;border-color:#8a7434;background:linear-gradient(160deg,#2b2a1b,#1f2118);}
+.age-slot .as-good{font-size:9.5px;font-weight:700;color:#e8e0c4;line-height:1.2;}
+.age-slot .as-mult{font-size:15px;font-weight:900;color:#f0d68f;line-height:1;}
+.age-slot .as-time{font-size:8.5px;color:#b8b193;}
+.age-slot .as-mult-max{color:#9fdf8a;}
+.age-empty{font-size:9px;color:#7d8b7c;line-height:1.3;}
+
+/* ---------- ЗАГОНЫ / ЖИВОТНЫЕ ---------- */
+.pen-card{border-radius:14px;background:#202a24;border:1px solid #3a4a3d;padding:11px;margin-bottom:8px;position:relative;overflow:hidden;}
+.pen-head{display:flex;align-items:center;gap:9px;}
+.pen-ic{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;background:#33452f;font-size:20px;}
+.pen-head b{display:block;font-size:12px;color:#eef3ea;}
+.pen-head small{font-size:9.5px;color:#9fae9c;}
+.pen-status{margin-left:auto;flex:none;font:800 9px var(--font-ui);padding:4px 7px;border-radius:7px;}
+.pen-status.good{background:#2f4a2c;color:#b8e39a;}
+.pen-status.warn{background:#4a3d20;color:#e8c078;}
+.pen-status.bad{background:#4a2622;color:#e8a090;}
+.pen-care{display:flex;gap:5px;margin-top:8px;}
+.pen-care button{flex:1;border:0;border-radius:9px;padding:7px 4px;background:#2b3a30;color:#cfe0c5;font:700 9px var(--font-ui);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pen-care button:active{transform:scale(.95);}
+.pen-care button .ic{width:14px;height:14px;color:#a9c88f;}
+.pen-care button.low .ic{color:#e8b46a;}
+.pen-bar{height:3px;border-radius:99px;background:#2d3a2e;margin-top:6px;overflow:hidden;}
+.pen-bar i{display:block;height:100%;border-radius:99px;}
+.pen-mood{margin-top:7px;font-size:9px;color:#9fae9c;}
+.pen-mood b{color:#cfe0c5;}
+
+/* ---------- ГАРАЖ-ПЛОЩАДКА ---------- */
+.garage-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none;}
+.garage-row::-webkit-scrollbar{display:none;}
+.garage-mini{flex:none;width:96px;border-radius:12px;background:#202a24;border:1px solid #3a4a3d;padding:8px;text-align:center;}
+.garage-mini .gm-ic{font-size:22px;line-height:1.1;}
+.garage-mini b{display:block;font-size:9px;color:#eef3ea;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.garage-mini small{font-size:8px;color:#9fae9c;}
+.garage-mini.broken{border-color:#7a3a30;background:#2a211e;}
+.garage-mini.low{border-color:#7a6330;}
+
+/* ---------- ПРОПУСК ---------- */
+.pass-card{border-radius:14px;background:linear-gradient(160deg,#2b3a2b,#1d2a20);border:1px solid #47593f;padding:12px;}
+.pass-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.pass-head .ic{width:20px;height:20px;color:#e8c078;}
+.pass-head b{font-size:12.5px;color:#f3edd9;}
+.pass-head small{margin-left:auto;font-size:9.5px;color:#b6c4ac;font-weight:700;}
+.pass-bar{height:7px;border-radius:99px;background:#2b382c;overflow:hidden;margin-bottom:4px;}
+.pass-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a44e,#f0d68f);}
+.pass-tiers{display:flex;gap:5px;overflow-x:auto;margin-top:9px;padding-bottom:2px;scrollbar-width:none;}
+.pass-tiers::-webkit-scrollbar{display:none;}
+.pass-tier{flex:none;width:56px;border-radius:10px;background:#1c2620;border:1px solid #37453a;padding:6px 4px;text-align:center;}
+.pass-tier.reached{border-color:#8a7434;background:#2b2a1b;}
+.pass-tier .pt-lvl{font-size:8px;color:#9fae9c;font-weight:800;}
+.pass-tier .pt-ic{font-size:14px;margin:2px 0;}
+.pass-tier .pt-rw{font-size:7.5px;color:#c9d6bd;line-height:1.2;}
+
+/* ---------- ДОСТИЖЕНИЯ ---------- */
+.ach-grid{display:flex;flex-direction:column;gap:6px;}
+.ach-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:11px;background:#202a24;border:1px solid #33423a;}
+.ach-item.done{border-color:#5f8a4d;background:#22301f;}
+.ach-item.locked{opacity:.62;}
+.ach-ic{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:9px;background:#2b3a30;font-size:15px;}
+.ach-body{flex:1;min-width:0;}
+.ach-body b{display:block;font-size:10.5px;color:#eef3ea;}
+.ach-body small{font-size:9px;color:#9fae9c;}
+.ach-rw{font-size:8.5px;color:#e8c078;font-weight:700;flex:none;text-align:right;}
+
+/* ---------- ВКЛАДКИ ЭКРАНА ФЕРМЫ ---------- */
+.farm-switch{display:flex;gap:4px;margin-bottom:9px;background:#1b241e;padding:4px;border-radius:12px;border:1px solid #2f3c32;}
+.farm-switch button{flex:1;border:0;background:transparent;border-radius:9px;padding:7px 4px;color:#9aa896;font:700 9.5px var(--font-ui);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.farm-switch button .ic{width:15px;height:15px;}
+.farm-switch button.active{background:#2e4230;color:#d6ecbe;box-shadow:inset 0 -2px 0 #9fca6d;}
+
+/* адаптив: карта на узких экранах */
+@media (max-width:360px){
+  .map-slot{width:66px;}
+  .map-slot .slot-art{width:66px;height:50px;font-size:23px;}
+  .map-center{width:80px;}
+  .map-center .mc-art{width:80px;height:64px;font-size:28px;}
+}

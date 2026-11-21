@@ -824,6 +824,8 @@ html,body,button,input,select,textarea{font-family:var(--font-ui);font-kerning:n
 #modal-root .sheet .card .row.between>.pill{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;}
 #modal-root .sheet .card .small{line-height:1.4;overflow-wrap:anywhere;}
 #modal-root .sheet .btn-block{width:100%;}
+body.ret-offline-open #modal-root .wallet-float{display:none;}
+body.ret-offline-open #modal-root .backdrop{padding-top:60px;}
 #modal-root .backdrop>.wallet-float,#overlay-root .backdrop>.wallet-float{position:fixed;top:calc(env(safe-area-inset-top) + 12px);left:50%;z-index:4;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:calc(100vw - 24px);pointer-events:none;}
 .wallet-float .chip{min-height:34px;padding:5px 10px;background:rgba(20,29,23,.97);border:1px solid #53634f;border-radius:11px;box-shadow:0 4px 16px rgba(0,0,0,.3);color:#f1f4ed;font-size:13px;}
 .wallet-float .chip .ic{width:16px;height:16px;color:#d9c28e;}
@@ -904,6 +906,187 @@ html,body,button,input,select,textarea{font-family:var(--font-ui);font-kerning:n
   background:radial-gradient(circle,rgba(255,255,255,.55) 0%,rgba(255,255,255,.18) 55%,transparent 70%);
   animation:rippleOut .5s cubic-bezier(.2,.7,.3,1) forwards;}
 @keyframes rippleOut{from{transform:scale(.15);opacity:.85}to{transform:scale(1);opacity:0}}
+/* ============================================================
+   СТИЛИ МОДУЛЯ УДЕРЖАНИЯ + КАРТА ФЕРМЫ
+   Вставляется перед закрывающим тегом style
+   ============================================================ */
+
+/* ---------- общие ---------- */
+.muted-small{font-size:10px;color:#9fae9c;line-height:1.45;}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px;gap:8px;}
+.sec-title h3{margin:0;font-size:13px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:6px;color:#e6efe2;}
+.sec-title h3 .ic{width:16px;height:16px;color:#b0cf7a;}
+.sec-title small{font-size:10px;color:#9fae9c;font-weight:600;}
+.chip-mini{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:8px;background:#27332b;border:1px solid #3a4a3d;font-size:10px;font-weight:700;color:#cfe0c5;}
+
+/* ---------- ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ---------- */
+.quest-list{display:flex;flex-direction:column;gap:7px;}
+.quest-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;background:#202a24;border:1px solid #33423a;position:relative;overflow:hidden;}
+.quest-item.done{border-color:#5f8a4d;background:#22301f;}
+.quest-item.claimed{opacity:.55;}
+.quest-ic{width:32px;height:32px;flex:none;display:grid;place-items:center;border-radius:9px;background:#2b3a30;color:#b0cf7a;}
+.quest-ic .ic{width:18px;height:18px;}
+.quest-body{flex:1;min-width:0;}
+.quest-body b{display:block;font-size:11.5px;font-weight:700;color:#eef3ea;line-height:1.3;}
+.quest-bar{margin-top:5px;height:4px;border-radius:99px;background:#33423a;overflow:hidden;}
+.quest-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fbf5f,#c3e08a);transition:width .4s;}
+.quest-prog{font-size:9.5px;color:#9fae9c;font-weight:600;margin-top:3px;}
+.quest-claim{flex:none;padding:6px 10px;border-radius:9px;border:0;font:800 10px/1 var(--font-ui);background:linear-gradient(180deg,#d8b25e,#b98f3c);color:#231a06;cursor:pointer;}
+.quest-claim:active{transform:scale(.94);}
+.quest-claim:disabled{background:#2f3a31;color:#7d8b7c;cursor:default;}
+.quest-check{flex:none;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#3f6b34;color:#d5f0b8;}
+.quest-check .ic{width:14px;height:14px;}
+
+/* ---------- СТРИК ---------- */
+.streak-card{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:13px;background:linear-gradient(135deg,#2b3a2b 0%,#1e2a20 100%);border:1px solid #40543f;}
+.streak-flame{width:38px;height:38px;flex:none;display:grid;place-items:center;font-size:20px;border-radius:11px;background:#3a2f1a;border:1px solid #5c4a24;}
+.streak-info{flex:1;min-width:0;}
+.streak-info b{display:block;font-size:12px;color:#f2e7c8;font-weight:800;}
+.streak-info small{font-size:9.5px;color:#a9b8a2;}
+.streak-freeze{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle;}
+.streak-freeze i{width:11px;height:11px;border-radius:3px;background:#39463a;display:inline-block;}
+.streak-freeze i.on{background:linear-gradient(180deg,#9fd6f0,#5fa8cc);box-shadow:0 0 5px rgba(120,200,240,.5);}
+.streak-days{display:flex;gap:3px;margin-top:5px;}
+.streak-days i{width:100%;height:4px;border-radius:99px;background:#39463a;}
+.streak-days i.on{background:linear-gradient(90deg,#d8b25e,#f0d68f);}
+
+/* ---------- ЯРМАРКА ---------- */
+.fair-banner{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#2a3a2b 0%,#33452c 55%,#3d4a26 100%);border:1px solid #55663f;}
+.fair-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,230,150,.12) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 4s ease-in-out infinite;}
+@keyframes fairShine{0%,70%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.fair-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;background:#4a3f1e;color:#f5d98a;font-size:18px;}
+.fair-body{flex:1;min-width:0;}
+.fair-body b{display:block;font-size:11.5px;color:#f7f0d8;font-weight:800;}
+.fair-body small{font-size:9.5px;color:#c3cfae;}
+.fair-timer{flex:none;font:800 10px var(--font-ui);color:#e8d9a6;background:#3a3a20;padding:5px 8px;border-radius:8px;}
+
+/* ---------- ОФФЛАЙН-ЭКРАН ---------- */
+.offline-hero{text-align:center;padding:6px 0 2px;}
+.offline-hero .big{font-size:44px;line-height:1;margin-bottom:2px;}
+.offline-time{display:inline-block;margin:6px auto 12px;padding:4px 12px;border-radius:99px;background:#2b3a30;color:#b9cbb0;font:700 10px var(--font-ui);}
+.offline-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0;}
+.offline-stat{padding:10px;border-radius:12px;background:#202a24;border:1px solid #33423a;text-align:left;}
+.offline-stat b{display:block;font-size:16px;font-weight:900;color:#eaf3e3;}
+.offline-stat small{font-size:9.5px;color:#9fae9c;font-weight:600;line-height:1.3;}
+.offline-stat.gold b{color:#f0d68f;}
+
+/* ---------- ВКЛАДКИ ФЕРМЫ (карта) ---------- */
+.farm-map{padding:2px 0 6px;}
+.map-scene{position:relative;border-radius:16px;overflow:hidden;border:1px solid #3b4d3c;
+  background:radial-gradient(ellipse at 50% 10%,#2f4732 0%,#22331f 55%,#1a2619 100%);
+  padding:10px;height:auto;}
+.map-island{position:relative;min-height:230px;}
+.map-slot{position:absolute;width:74px;transform:translate(-50%,-50%);cursor:pointer;text-align:center;}
+.map-slot .slot-art{width:74px;height:56px;border-radius:12px;display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(160deg,#33472f,#26361f);border:1px solid #4a6041;box-shadow:0 3px 10px rgba(0,0,0,.35);transition:transform .15s;}
+.map-slot:active .slot-art{transform:scale(.94);}
+.map-slot .slot-name{font-size:8.5px;color:#c6d5bd;font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.map-slot.locked .slot-art{opacity:.5;filter:grayscale(.7);}
+.map-slot.has-alert .slot-art{animation:slotAlert 1.6s ease-in-out infinite;border-color:#c9a44e;}
+@keyframes slotAlert{0%,100%{box-shadow:0 3px 10px rgba(0,0,0,.35)}50%{box-shadow:0 0 0 3px rgba(201,164,78,.4),0 3px 12px rgba(0,0,0,.4)}}
+.map-path{position:absolute;inset:0;pointer-events:none;}
+.map-badge{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:99px;background:#c9503c;color:#fff;font:800 9px/17px var(--font-ui);text-align:center;padding:0 4px;}
+.map-badge.ok{background:#4d8a3e;}
+.map-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:92px;text-align:center;}
+.map-center .mc-art{width:92px;height:74px;border-radius:16px;display:grid;place-items:center;font-size:34px;
+  background:linear-gradient(160deg,#3d5a3a,#2b4227);border:2px solid #6d8a54;box-shadow:0 0 18px rgba(140,190,110,.25);}
+.map-center .mc-name{font-size:9px;font-weight:800;color:#dff0cf;margin-top:3px;}
+
+/* статы карты */
+.map-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0;}
+.map-stat{padding:9px 8px;border-radius:11px;background:#202a24;border:1px solid #33423a;text-align:center;}
+.map-stat b{display:block;font-size:14px;font-weight:900;color:#eaf3e3;line-height:1.1;}
+.map-stat small{font-size:8.5px;color:#9fae9c;font-weight:700;letter-spacing:.03em;}
+.map-stat.warn b{color:#e8b46a;}
+
+/* ---------- СКЛАД-БУНКЕР (выдержка) ---------- */
+.age-card{border-radius:14px;background:#202a24;border:1px solid #3a4a3d;padding:11px;margin-bottom:8px;}
+.age-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.age-ic{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:10px;background:#33452f;font-size:17px;}
+.age-head b{display:block;font-size:11.5px;color:#eef3ea;}
+.age-head small{font-size:9.5px;color:#9fae9c;}
+.age-slots{display:flex;gap:6px;margin-top:8px;}
+.age-slot{flex:1;border-radius:10px;background:#18211c;border:1px dashed #3d4c3e;padding:8px 6px;text-align:center;min-height:74px;display:flex;flex-direction:column;justify-content:center;gap:3px;}
+.age-slot.active{border-style:solid;border-color:#8a7434;background:linear-gradient(160deg,#2b2a1b,#1f2118);}
+.age-slot .as-good{font-size:9.5px;font-weight:700;color:#e8e0c4;line-height:1.2;}
+.age-slot .as-mult{font-size:15px;font-weight:900;color:#f0d68f;line-height:1;}
+.age-slot .as-time{font-size:8.5px;color:#b8b193;}
+.age-slot .as-mult-max{color:#9fdf8a;}
+.age-empty{font-size:9px;color:#7d8b7c;line-height:1.3;}
+
+/* ---------- ЗАГОНЫ / ЖИВОТНЫЕ ---------- */
+.pen-card{border-radius:14px;background:#202a24;border:1px solid #3a4a3d;padding:11px;margin-bottom:8px;position:relative;overflow:hidden;}
+.pen-head{display:flex;align-items:center;gap:9px;}
+.pen-ic{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;background:#33452f;font-size:20px;}
+.pen-head b{display:block;font-size:12px;color:#eef3ea;}
+.pen-head small{font-size:9.5px;color:#9fae9c;}
+.pen-status{margin-left:auto;flex:none;font:800 9px var(--font-ui);padding:4px 7px;border-radius:7px;}
+.pen-status.good{background:#2f4a2c;color:#b8e39a;}
+.pen-status.warn{background:#4a3d20;color:#e8c078;}
+.pen-status.bad{background:#4a2622;color:#e8a090;}
+.pen-care{display:flex;gap:5px;margin-top:8px;}
+.pen-care button{flex:1;border:0;border-radius:9px;padding:7px 4px;background:#2b3a30;color:#cfe0c5;font:700 9px var(--font-ui);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pen-care button:active{transform:scale(.95);}
+.pen-care button .ic{width:14px;height:14px;color:#a9c88f;}
+.pen-care button.low .ic{color:#e8b46a;}
+.pen-bar{height:3px;border-radius:99px;background:#2d3a2e;margin-top:6px;overflow:hidden;}
+.pen-bar i{display:block;height:100%;border-radius:99px;}
+.pen-mood{margin-top:7px;font-size:9px;color:#9fae9c;}
+.pen-mood b{color:#cfe0c5;}
+
+/* ---------- ГАРАЖ-ПЛОЩАДКА ---------- */
+.garage-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none;}
+.garage-row::-webkit-scrollbar{display:none;}
+.garage-mini{flex:none;width:96px;border-radius:12px;background:#202a24;border:1px solid #3a4a3d;padding:8px;text-align:center;}
+.garage-mini .gm-ic{font-size:22px;line-height:1.1;}
+.garage-mini b{display:block;font-size:9px;color:#eef3ea;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.garage-mini small{font-size:8px;color:#9fae9c;}
+.garage-mini.broken{border-color:#7a3a30;background:#2a211e;}
+.garage-mini.low{border-color:#7a6330;}
+
+/* ---------- ПРОПУСК ---------- */
+.pass-card{border-radius:14px;background:linear-gradient(160deg,#2b3a2b,#1d2a20);border:1px solid #47593f;padding:12px;}
+.pass-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.pass-head .ic{width:20px;height:20px;color:#e8c078;}
+.pass-head b{font-size:12.5px;color:#f3edd9;}
+.pass-head small{margin-left:auto;font-size:9.5px;color:#b6c4ac;font-weight:700;}
+.pass-bar{height:7px;border-radius:99px;background:#2b382c;overflow:hidden;margin-bottom:4px;}
+.pass-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a44e,#f0d68f);}
+.pass-tiers{display:flex;gap:5px;overflow-x:auto;margin-top:9px;padding-bottom:2px;scrollbar-width:none;}
+.pass-tiers::-webkit-scrollbar{display:none;}
+.pass-tier{flex:none;width:56px;border-radius:10px;background:#1c2620;border:1px solid #37453a;padding:6px 4px;text-align:center;}
+.pass-tier.reached{border-color:#8a7434;background:#2b2a1b;}
+.pass-tier .pt-lvl{font-size:8px;color:#9fae9c;font-weight:800;}
+.pass-tier .pt-ic{font-size:14px;margin:2px 0;}
+.pass-tier .pt-rw{font-size:7.5px;color:#c9d6bd;line-height:1.2;}
+
+/* ---------- ДОСТИЖЕНИЯ ---------- */
+.ach-grid{display:flex;flex-direction:column;gap:6px;}
+.ach-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:11px;background:#202a24;border:1px solid #33423a;}
+.ach-item.done{border-color:#5f8a4d;background:#22301f;}
+.ach-item.locked{opacity:.62;}
+.ach-ic{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:9px;background:#2b3a30;font-size:15px;}
+.ach-body{flex:1;min-width:0;}
+.ach-body b{display:block;font-size:10.5px;color:#eef3ea;}
+.ach-body small{font-size:9px;color:#9fae9c;}
+.ach-rw{font-size:8.5px;color:#e8c078;font-weight:700;flex:none;text-align:right;}
+
+/* ---------- ВКЛАДКИ ЭКРАНА ФЕРМЫ ---------- */
+.farm-switch{display:flex;gap:4px;margin-bottom:9px;background:#1b241e;padding:4px;border-radius:12px;border:1px solid #2f3c32;}
+.farm-switch button{flex:1;border:0;background:transparent;border-radius:9px;padding:7px 4px;color:#9aa896;font:700 9.5px var(--font-ui);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.farm-switch button .ic{width:15px;height:15px;}
+.farm-switch button.active{background:#2e4230;color:#d6ecbe;box-shadow:inset 0 -2px 0 #9fca6d;}
+
+/* адаптив: карта на узких экранах */
+@media (max-width:360px){
+  .map-slot{width:66px;}
+  .map-slot .slot-art{width:66px;height:50px;font-size:23px;}
+  .map-center{width:80px;}
+  .map-center .mc-art{width:80px;height:64px;font-size:28px;}
+}
+
 </style>
 </head>
 <body>
@@ -928,6 +1111,8 @@ html,body,button,input,select,textarea{font-family:var(--font-ui);font-kerning:n
 <div id="coach-root"></div>
 
 <script>
+/* Ранний снапшот прошлого визита — ДО любого save() */
+try{var __rps=localStorage.getItem('islandFarmSaveV1');if(__rps){var __rpd=JSON.parse(__rps);window.__retPrevSeen=__rpd&&__rpd.lastSeen||null;}}catch(e){}
 'use strict';
 /* ============================================================
    ОСТРОВНАЯ ФЕРМА — мобильный фермерский симулятор
@@ -1886,7 +2071,7 @@ function openDialog(html){
   $('#modal-root').innerHTML = `<div class="backdrop center" onclick="if(event.target===this)App.closeModal()">${walletMarkup()}
     <div class="dialog">${html}</div></div>`;
 }
-function closeModal(){ ui.modal=null; document.body.classList.remove('wallet-overlay'); $('#modal-root').innerHTML=''; }
+function closeModal(){ ui.modal=null; document.body.classList.remove('wallet-overlay','ret-offline-open'); $('#modal-root').innerHTML=''; }
 function toast(msg, kind='', icon=''){
   const t = document.createElement('div');
   t.className = 'toast ' + kind;
@@ -2814,6 +2999,9 @@ const FX = (()=>{
   }
 
   function coinTarget(){
+    // Приоритет — кошелёк в шапке HUD, а не плавающий chip из модалки
+    const hud = document.querySelector('#hud [data-coins]');
+    if (hud){ const r = hud.getBoundingClientRect(); if (r.width>0) return hud; }
     const list = Array.from(document.querySelectorAll('[data-coins]'));
     return list.find(el=>{ const r = el.getBoundingClientRect(); return r.width>0 && r.height>0 && r.top < window.innerHeight*0.5; }) || list[0] || null;
   }
@@ -2983,6 +3171,1031 @@ function init(){
 function genBoardIfNeeded(){
   if (!S.board || !S.board.length || Date.now()-S.boardAt > durMs(900)) genBoard();
 }
+
+/* ===== RETENTION MODULE (local prototype) ===== */
+/* Снапшот времени прошлого визита снимаем НЕМЕДЛЕННО, до init() и любого save() */
+/* ============================================================
+   ОСТРОВНАЯ ФЕРМА — МОДУЛЬ УДЕРЖАНИЯ (локальный прототип)
+   ------------------------------------------------------------
+   Всё лежит одним файлом, чтобы потом просто подключить.
+   Точки подключения помечены: [HOOK: ...]
+   ============================================================ */
+
+/* ---------------- 1. КОНФИГИ ---------------- */
+
+/* Ежедневные задания: пул, из которого берём 3 штуки на день */
+const DAILY_QUESTS = [
+  { id:'harvest', icon:'wheat',  text:'Собери {n} единиц урожая',      targets:[150,300,500], reward:{coins:[120,180,260]} },
+  { id:'sell',    icon:'coin',   text:'Продай товаров на {n} монет',   targets:[600,1200,2000], reward:{coins:[100,150,220]} },
+  { id:'contract',icon:'clipboard', text:'Выполни {n} заказа соседей', targets:[1,2,3], reward:{coins:[150,220,300], gems:[0,0,1]} },
+  { id:'plant',   icon:'seed',   text:'Засеяй {n} полей',              targets:[1,2,4], reward:{coins:[90,140,200]} },
+  { id:'collect', icon:'barn',   text:'Собери продукцию {n} раз',      targets:[2,4,6], reward:{coins:[110,170,240]} },
+  { id:'produce', icon:'factory',text:'Запусти {n} цехов',             targets:[1,2,3], reward:{coins:[130,190,270]} },
+  { id:'care',    icon:'heart',  text:'Позаботься о животных {n} раз', targets:[4,8,12], reward:{coins:[80,130,190]} },
+  { id:'repair',  icon:'wrench', text:'Почини технику {n} раз',        targets:[1,1,2], reward:{coins:[120,120,200]} },
+  { id:'age',     icon:'clock',  text:'Выдержи {n} партий на выдержке', targets:[1,1,2], reward:{coins:[200,200,340], gems:[0,1,1]} },
+];
+
+/* Стрик: награда растёт, на 7/14/30 — особые */
+const STREAK_MILESTONES = {
+  7:  { text:'Неделя с фермой!',      gems:5,  coins:500 },
+  14: { text:'Две недели подряд!',    gems:8,  coins:900 },
+  30: { text:'Месяц на острове!',     gems:20, coins:2500, skin:'gold' },
+};
+const STREAK_FREEZE_MAX = 2;
+
+/* Ярмарка: событие дня, меняет экономику на 24 часа */
+const FAIR_EVENTS = [
+  { id:'price',  name:'Ярмарка выходного дня', icon:'coin',  desc:'Цены на урожай ×1.5',   color:'gold',  mult:{ prices:1.5 } },
+  { id:'growth', name:'Тёплый фронт',          icon:'sun',   desc:'Рост культур +40%',      color:'green', mult:{ growth:1.4 } },
+  { id:'order',  name:'День соседей',          icon:'heart', desc:'Оплата заказов +50%',    color:'blue',  mult:{ contracts:1.5 } },
+  { id:'mutual', name:'Дождливый день',        icon:'rain',  desc:'Уход за животными не тратится', color:'blue', mult:{ freeCare:true } },
+];
+
+/* Фермерский пропуск (пока без оплаты — только прогресс и награды) */
+const PASS_TRACKS = [
+  { level:1,  free:{coins:200},              premium:{gems:2} },
+  { level:2,  free:{coins:300},              premium:{coins:600} },
+  { level:3,  free:{gems:1},                 premium:{skin:'autumn'} },
+  { level:4,  free:{coins:400},              premium:{gems:3} },
+  { level:5,  free:{coins:500},              premium:{coins:1200} },
+  { level:6,  free:{gems:2},                 premium:{skin:'winter'} },
+  { level:7,  free:{coins:700},              premium:{gems:5} },
+  { level:8,  free:{coins:900},              premium:{skin:'gold'} },
+];
+const PASS_XP_PER_LEVEL = 100;
+
+/* Достижения */
+const ACHIEVEMENTS = [
+  { id:'first_harvest', icon:'wheat',   name:'Первый урожай',      desc:'Собери 1 урожай',              need:1,    stat:'harvests',   reward:{coins:100} },
+  { id:'harvest_50',    icon:'wheat',   name:'Хлебороб',           desc:'Собери 50 урожаев',            need:50,   stat:'harvests',   reward:{coins:800, gems:2} },
+  { id:'earn_10k',      icon:'coin',    name:'Крепкое хозяйство',  desc:'Заработай 10 000 монет',       need:10000,stat:'earned',     reward:{coins:500} },
+  { id:'earn_100k',     icon:'coin',    name:'Магнат острова',     desc:'Заработай 100 000 монет',      need:100000,stat:'earned',    reward:{coins:3000, gems:5} },
+  { id:'contracts_10',  icon:'clipboard',name:'Надёжный сосед',    desc:'Выполни 10 заказов',           need:10,   stat:'contractsDone', reward:{coins:600} },
+  { id:'contracts_50',  icon:'clipboard',name:'Душа деревни',      desc:'Выполни 50 заказов',           need:50,   stat:'contractsDone', reward:{coins:2500, gems:4} },
+  { id:'age_1',         icon:'clock',   name:'Терпение',           desc:'Выдержи первую партию',        need:1,    stat:'aged',       reward:{coins:300} },
+  { id:'age_25',        icon:'clock',   name:'Мастер выдержки',    desc:'Выдержи 25 партий',            need:25,   stat:'aged',       reward:{coins:1500, gems:3} },
+  { id:'animals_6',     icon:'cow',     name:'Полный двор',        desc:'Построй все загоны',           need:6,    stat:'buildings',  reward:{coins:1200, gems:2} },
+  { id:'streak_7',      icon:'gift',    name:'Неделя подряд',      desc:'Зайди 7 дней подряд',          need:7,    stat:'bestStreak', reward:{coins:800, gems:3} },
+];
+
+/* Последствия «просрочки» — мягкие, не карательные */
+const CARE_DECAY = { softAfterMs: 6*3600*1000, penalty: 0.6 }; // через 6 ч простоя загон даёт 60%
+const CONTRACT_EXPIRE_MS = 48*3600*1000;                        // заказ висит 48 ч, потом сгорает
+
+/* ============================================================
+   МОДУЛЬ УДЕРЖАНИЯ — ЛОГИКА
+   Вставляется в <script> после основных конфигов
+   ============================================================ */
+
+/* ---------------- РАСШИРЕНИЕ СОХРАНЕНИЯ ---------------- */
+function RET_migrate(){
+  if (!S) return;
+  if (!S.ret) S.ret = {};
+  const R = S.ret;
+  if (!R.daily) R.daily = { date:'', ids:[], prog:{}, claimed:{} };
+  if (!R.streak) R.streak = { last:'', count:0, best:0, freezes:1, usedFreeze:false };
+  if (!R.fair) R.fair = { date:'', id:null };
+  if (!R.aging) R.aging = { slots:[null,null,null], sizeCap:24 }; // {good,startedAt,durMs,units}|null
+  if (!R.pass) R.pass = { xp:0, freeClaimed:[], premiumClaimed:[], premium:false, season:1 };
+  if (!R.ach) R.ach = { unlocked:[], claimed:[] };
+  if (!S.stats.aged) S.stats.aged = 0;
+  if (!S.stats.buildings) S.stats.buildings = 0;
+  if (!S.stats.bestStreak) S.stats.bestStreak = 0;
+  if (!S.contractExpire) S.contractExpire = {};
+}
+
+/* ---------------- БАЗОВЫЕ ХЕЛПЕРЫ ---------------- */
+function RET_today(){ return todayStr(); }
+function RET_has(objId){ return !!S?.ret?.ach?.claimed?.includes(objId); }
+
+/* Универсальный счётчик прогресса: quests + pass XP + achievements */
+function RET_track(kind, amount){
+  if (!S || !S.ret || amount <= 0) return;
+  const R = S.ret;
+  // ---- ежедневные задания
+  if (R.daily.date === RET_today()){
+    for (const q of (R.daily.ids||[])){
+      const def = DAILY_QUESTS.find(d=>d.id===q);
+      if (!def) continue;
+      const tier = R.daily.tier?.[q] ?? 0;
+      if ((R.daily.prog[q]||0) >= def.targets[tier]) continue;
+      const map = { sell:'sellCoins' };
+      const wantKind = map[def.id] || def.id;
+      if (wantKind !== kind) continue;
+      R.daily.prog[q] = Math.min(def.targets[tier], (R.daily.prog[q]||0) + amount);
+      if (R.daily.prog[q] >= def.targets[tier]) {
+        toast('Задание дня готово!', 'good', 'target');
+        sfx.good(); buzz(35);
+      }
+    }
+  }
+  // ---- пропуск
+  R.pass.xp = (R.pass.xp||0) + amount;
+
+  // ---- достижения по статистике
+  RET_checkAchievements();
+}
+
+function RET_checkAchievements(){
+  const R = S.ret; if (!R) return;
+  const statVal = {
+    harvests: S.stats.harvests||0,
+    earned: S.stats.earned||0,
+    contractsDone: S.stats.contractsDone||0,
+    aged: S.stats.aged||0,
+    buildings: Object.values(S.buildings).filter(b=>b.owned).length,
+    bestStreak: R.streak?.best||0,
+  };
+  for (const a of ACHIEVEMENTS){
+    if (R.ach.unlocked.includes(a.id)) continue;
+    if ((statVal[a.stat]||0) >= a.need){
+      R.ach.unlocked.push(a.id);
+      const rw = [];
+      if (a.reward.coins){ addCoins(a.reward.coins); rw.push(`+${fmt(a.reward.coins)} монет`); }
+      if (a.reward.gems){ S.gems += a.reward.gems; rw.push(`+${a.reward.gems} ${gemWord(a.reward.gems)}`); }
+      R.ach.claimed.push(a.id);
+      setTimeout(()=>{
+        toast(`Достижение: ${a.name} · ${rw.join(', ')}`, 'good', a.icon);
+        FX.confetti(); sfx.good();
+      }, 400);
+    }
+  }
+}
+
+/* ---------------- ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ---------------- */
+function RET_rollDaily(){
+  const R = S.ret;
+  const today = RET_today();
+  if (R.daily.date === today && R.daily.ids?.length) return;
+  const pool = DAILY_QUESTS.filter(q=>q.id!=='age' || (S.level>=3));
+  const picked = [];
+  const shuffled = [...pool].sort(()=>Math.random()-0.5);
+  for (const q of shuffled){ if (picked.length<3) picked.push(q.id); }
+  R.daily = {
+    date: today, ids: picked, prog:{}, claimed:{},
+    tier: Object.fromEntries(picked.map(id=>[id, Math.min(2, Math.floor(S.level/6))])),
+  };
+}
+
+function RET_questState(qid){
+  const R = S.ret, def = DAILY_QUESTS.find(d=>d.id===qid);
+  if (!def) return null;
+  const tier = R.daily.tier?.[qid] ?? 0;
+  const target = def.targets[tier];
+  const prog = Math.min(target, R.daily.prog?.[qid] || 0);
+  return { def, tier, target, prog, done: prog>=target, claimed: !!R.daily.claimed?.[qid] };
+}
+
+function RET_claimQuest(qid){
+  if (!S?.ret?.daily) return;
+  const st = RET_questState(qid);
+  if (!st){ toast('Задание недоступно', 'bad', 'info'); return; }
+  if (!st.done){ toast('Задание ещё не выполнено', '', 'clock'); return; }
+  if (st.claimed) return;
+  const R = S.ret;
+  R.daily.claimed[qid] = true;
+  const rw = st.def.reward;
+  const coins = rw.coins[st.tier] ?? rw.coins[0];
+  const gems = (rw.gems?.[st.tier]) || 0;
+  addCoins(coins);
+  if (gems) S.gems += gems;
+  RET_track('_noop', 30); // XP за задание
+  toast(`Задание: +${fmt(coins)} монет${gems?`, +${gems} ${gemWord(gems)}`:''}`, 'good', 'gift');
+  sfx.coin(); buzz(40); FX.confetti();
+  save(); renderAll();
+}
+
+function RET_streakCount(){ return S?.ret?.streak?.count || 1; }
+function RET_claimedAll(){
+  const R = S.ret;
+  return (R.daily.ids||[]).every(id => R.daily.claimed?.[id]);
+}
+
+/* ---------------- СТРИК С ЗАМОРОЗКОЙ ---------------- */
+function RET_touchStreak(){
+  const R = S.ret;
+  const st = R.streak;
+  const today = RET_today();
+  if (st.last === today) return { counted:true, isNew:false };
+
+  // если пришли вчера — продолжаем; если пропустили и есть заморозка — восстанавливаем
+  const yesterday = yesterdayStr();
+  if (st.last === yesterday){
+    st.count = (st.count||0) + 1;
+  } else if (st.last && st.freezes > 0 && st.last !== today){
+    st.freezes--; st.usedFreeze = true;
+    st.count = (st.count||0) + 1;
+    setTimeout(()=>toast('Заморозка стрика спасла серию!', 'good', 'shield'), 1500);
+  } else {
+    st.count = 1;
+  }
+  st.last = today;
+  st.best = Math.max(st.best||0, st.count);
+  S.stats.bestStreak = Math.max(S.stats.bestStreak||0, st.count);
+
+  // заморозки накапливаются
+  if (st.count % 7 === 0) st.freezes = Math.min(STREAK_FREEZE_MAX, (st.freezes||0) + 1);
+
+  // вехи
+  const ms = STREAK_MILESTONES[st.count];
+  if (ms){
+    st.lastMilestone = st.count;
+    addCoins(ms.coins); S.gems += ms.gems;
+    if (ms.skin) S.ret.skin = ms.skin;
+    setTimeout(()=>{
+      FX.confetti();
+      openDialog(`<div style="text-align:center">
+        <div class="big-emoji">🔥</div>
+        <h2>${ms.text}</h2>
+        <p class="muted">Стрик ${st.count} дней подряд</p>
+        <p><b>+${fmt(ms.coins)} монет и +${ms.gems} ${gemWord(ms.gems)}</b></p>
+        ${ms.skin?`<p class="muted">Открыт скин фермы: «${ms.skin}»</p>`:''}
+        <button class="btn btn-primary btn-block" onclick="App.closeModal()">Продолжить</button></div>`);
+    }, 600);
+  }
+  RET_checkAchievements();
+  return { counted:true, isNew:true };
+}
+
+/* ---------------- ЯРМАРКА (событие дня) ---------------- */
+function RET_rollFair(){
+  const R = S.ret;
+  const today = RET_today();
+  if (R.fair.date === today && R.fair.id) return;
+  // 55% дней — есть событие
+  if (Math.random() < 0.55){
+    R.fair.id = pick(FAIR_EVENTS).id;
+  } else {
+    R.fair.id = null;
+  }
+  R.fair.date = today;
+}
+function RET_fair(){
+  const R = S.ret;
+  if (!R?.fair?.id) return null;
+  return FAIR_EVENTS.find(f=>f.id===R.fair.id) || null;
+}
+function RET_fairActive(){ return !!RET_fair(); }
+
+/* Множитель цены с учётом ярмарки */
+function RET_priceMult(){
+  const f = RET_fair();
+  return f?.mult?.prices || 1;
+}
+function RET_growthMult(){
+  const f = RET_fair();
+  return f?.mult?.growth || 1;
+}
+function RET_contractMult(){
+  const f = RET_fair();
+  return f?.mult?.contracts || 1;
+}
+function RET_freeCare(){
+  return !!RET_fair()?.mult?.freeCare;
+}
+
+/* ---------------- ВЫДЕРЖКА НА СКЛАДЕ ---------------- */
+const AGING_TIERS = [
+  { key:'fresh',  name:'Свежий',   mult:1.0,  hours:0,   color:'#9fae9c', icon:'🌾' },
+  { key:'aged1',  name:'Выдержка', mult:1.25, hours:2,   color:'#b5d48a', icon:'⏳' },
+  { key:'aged2',  name:'Выдержано',mult:1.55, hours:6,   color:'#e8c078', icon:'⭐' },
+  { key:'aged3',  name:'Элита',    mult:2.0,  hours:12,  color:'#f0d68f', icon:'🏆' },
+];
+
+function RET_agingTier(p){
+  if (!p) return null;
+  const elapsed = (Date.now() - p.startedAt) / 3600000; // часы реального времени
+  let t = 0;
+  for (let i=AGING_TIERS.length-1; i>=0; i--){ if (elapsed >= AGING_TIERS[i].hours){ t = i; break; } }
+  return { tier: AGING_TIERS[t], index: t, elapsed, progress: t>=AGING_TIERS.length-1 ? 1 : (elapsed - AGING_TIERS[t].hours) / (AGING_TIERS[t+1].hours - AGING_TIERS[t].hours) };
+}
+
+function RET_agedGoods(){
+  return (S.ret.aging.slots||[]).filter(Boolean);
+}
+
+function RET_putToAge(good){
+  const R = S.ret; const A = R.aging;
+  if (!S.goods[good] || S.goods[good] <= 0) return;
+  const freeSlot = A.slots.findIndex(s=>!s);
+  if (freeSlot < 0){ toast('Все ячейки выдержки заняты', 'bad', 'box'); sfx.bad(); return; }
+  const units = Math.min(S.goods[good], A.sizeCap || 24);
+  S.goods[good] -= units;
+  A.slots[freeSlot] = { good, units, startedAt: Date.now(), slot: freeSlot };
+  toast(`${GOODS[good].name} ×${units} на выдержку`, 'good', 'clock');
+  sfx.pop(); save(); renderAll();
+}
+
+function RET_takeFromAge(slotIndex){
+  const R = S.ret, A = R.aging;
+  const p = A.slots[slotIndex];
+  if (!p) return;
+  const tierInfo = RET_agingTier(p);
+  const mult = tierInfo.tier.mult;
+  const price = GOODS[p.good].price;
+  const gain = Math.round(p.units * price * mult);
+  A.slots[slotIndex] = null;
+  addCoins(gain);
+  S.stats.aged = (S.stats.aged||0) + 1;
+  RET_track('age', 1);
+  toast(`Продано выдержанного: +${fmt(gain)} монет (${mult}×)`, 'good', 'coin');
+  sfx.coin(); buzz(45);
+  FX.confetti(); FX.coin(document.querySelector('#modal-root .dialog'), document.querySelector('[data-coins]'));
+  save(); renderAll();
+}
+
+function RET_autoSellAged(){
+  let total = 0, count = 0;
+  const A = S.ret.aging;
+  A.slots.forEach((p, i)=>{
+    if (!p) return;
+    const t = RET_agingTier(p);
+    total += Math.round(p.units * GOODS[p.good].price * t.tier.mult) * 1;
+    count++;
+    A.slots[i] = null;
+  });
+  if (total > 0){
+    addCoins(total);
+    toast(`+${fmt(total)} монет за ${count} парт.`, 'good', 'coin');
+    sfx.coin(); save(); renderAll();
+  }
+}
+
+/* ---------------- УХОД ЗА ЖИВОТНЫМИ (мягкая механика) ---------------- */
+function RET_penMood(building){
+  // mood = минимум из feed/water/clean + бонус, если всё в порядке
+  const minVal = Math.min(building.feed||0, building.water||0, building.clean||0);
+  const avg = ((building.feed||0)+(building.water||0)+(building.clean||0))/3;
+  if (minVal < 20) return { level:'bad', label:'Голодные', mult:0.5 };
+  if (minVal < 40) return { level:'warn', label:'Нужен уход', mult:0.75 };
+  if (avg < 70) return { level:'warn', label:'Нормально', mult:0.95 };
+  return { level:'good', label:'Довольны', mult:1.15 };
+}
+
+/* ---------------- ПРОПУСК ---------------- */
+function RET_passLevel(){
+  return Math.min(PASS_TRACKS.length, Math.floor((S.ret.pass.xp||0) / PASS_XP_PER_LEVEL) + 1);
+}
+function RET_passProgress(){
+  const xp = S.ret.pass.xp||0;
+  const lvl = RET_passLevel();
+  if (lvl >= PASS_TRACKS.length) return 1;
+  return (xp % PASS_XP_PER_LEVEL) / PASS_XP_PER_LEVEL;
+}
+function RET_claimPass(track, level){
+  const P = S.ret.pass;
+  const tier = PASS_TRACKS.find(t=>t.level===level);
+  if (!tier) return;
+  const list = track==='premium' ? P.premiumClaimed : P.freeClaimed;
+  if (list.includes(level)) return;
+  if (level > RET_passLevel()-1 && level > RET_passLevel()) { toast('Ещё не достигнуто', 'bad', 'lock'); return; }
+  if (list.includes(level)) return;
+  const reward = tier[track];
+  if (track==='premium' && !P.premium){ toast('Премиум-пропуск не активирован', 'bad', 'star'); return; }
+  list.push(level);
+  if (reward.coins) addCoins(reward.coins);
+  if (reward.gems) S.gems += reward.gems;
+  if (reward.skin) S.ret.skin = reward.skin;
+  toast(`Пропуск: ${reward.coins?`+${fmt(reward.coins)} монет`:''}${reward.gems?` +${reward.gems} ${gemWord(reward.gems)}`:''}${reward.skin?' + скин':''}`, 'good', 'gift');
+  sfx.good(); save(); renderAll();
+}
+
+/* ---------------- МАППИНГ ЭМОДЗИ ---------------- */
+const RET_GOOD_EMOJI = { wheat:'🌾',rapeseed:'🌻',corn:'🌽',soy:'🫘',potato:'🥔',cotton:'☁️',grape:'🍇',hay:'🌿',
+  eggs:'🥚',wool:'🧶',milk:'🥛',meat:'🍖',honey:'🍯',veggies:'🥕',flour:'🌾',bread:'🍞',cheese:'🧀',fabric:'🧵',clothes:'👕',silage:'🌿',biogas:'⚡' };
+const RET_BLD_EMOJI = { coop:'🐔', sheep:'🐑', cow:'🐄', pig:'🐖', apiary:'🐝', greenhouse:'🌿' };
+const RET_MACH_EMOJI = { tractor:'🚜', cultivator:'🛞', seeder:'🌱', combine:'🚛', sprayer:'💨', mower:'✂️', baler:'🎯', truck:'🚚' };
+function RET_goodEmoji(g){ return RET_GOOD_EMOJI[g] || '📦'; }
+
+/* ============================================================
+   ЭКРАНЫ: карта фермы, задания, стрик, ярмарка, пропуск, достижения
+   ============================================================ */
+
+/* ---------- БЛОК: ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ---------- */
+function RET_renderDailyQuests(){
+  RET_rollDaily();
+  const R = S.ret;
+  let html = `<div class="sec-title"><h3>${ic('target')} Задания дня</h3><small>${R.daily.ids.filter(id=>R.daily.claimed?.[id]).length}/${R.daily.ids.length} выполнено</small></div><div class="quest-list">`;
+  for (const qid of R.daily.ids){
+    const st = RET_questState(qid);
+    if (!st) continue;
+    const pct = Math.min(100, st.prog/st.target*100);
+    const rw = st.def.reward;
+    const coins = rw.coins[st.tier] ?? rw.coins[0];
+    html += `<div class="quest-item ${st.done?'done':''} ${st.claimed?'claimed':''}">
+      <span class="quest-ic">${ic(st.def.icon)}</span>
+      <div class="quest-body">
+        <b>${st.def.text.replace('{n}', st.target)}</b>
+        <div class="quest-bar"><i style="width:${pct}%"></i></div>
+        <div class="quest-prog">${fmt(st.prog)} / ${fmt(st.target)} · +${fmt(coins)} монет</div>
+      </div>
+      ${st.claimed
+        ? `<span class="quest-check">${ic('check')}</span>`
+        : st.done
+          ? `<button class="quest-claim" onclick="App.claimQuest('${qid}')">Забрать</button>`
+          : `<button class="quest-claim" disabled>…</button>`}
+    </div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+/* ---------- БЛОК: СТРИК ---------- */
+function RET_renderStreak(){
+  const st = S.ret.streak;
+  const claimed = st.last === RET_today();
+  const shown = claimed ? st.count : (st.last === yesterdayStr() ? st.count+1 : 1);
+  const days = Math.min(7, ((shown-1) % 7) + 1);
+  const dots = Array.from({length:7}, (_,i)=>`<i class="${i<days?'on':''}"></i>`).join('');
+  const freezes = Array.from({length:STREAK_FREEZE_MAX}, (_,i)=>`<i class="${i<(st.freezes||0)?'on':''}"></i>`).join('');
+  const nextMs = STREAK_MILESTONES[shown];
+  return `<div class="streak-card">
+    <span class="streak-flame">${ic('target')}</span>
+    <div class="streak-info">
+      <b>${shown} ${shown===1?'день':shown<5?'дня':'дней'} подряд <span class="streak-freeze">${freezes}</span></b>
+      <small>${nextMs? `Награда за ${shown} дней готова!` : 'Заморозка восстановит серию, если пропустите день'}</small>
+      <div class="streak-days">${dots}</div>
+    </div>
+    ${claimed ? `<span class="chip-mini">${ic('check')} Сегодня</span>` : ''}
+  </div>`;
+}
+
+/* ---------- БЛОК: ЯРМАРКА ---------- */
+function RET_renderFair(){
+  const f = RET_fair();
+  if (!f) return '';
+  return `<div class="fair-banner" onclick="App.openFair()">
+    <span class="fair-ic">${ic(f.icon==='rain'?'rain':f.icon==='sun'?'sun':f.icon==='heart'?'heart':'gift')}</span>
+    <div class="fair-body"><b>${f.name}</b><small>${f.desc} · до конца дня</small></div>
+    <span class="fair-timer">${ic('clock')}</span>
+  </div>`;
+}
+
+/* ============================================================
+   КАРТА ФЕРМЫ — главный новый экран
+   ============================================================ */
+function RET_renderFarmMap(){
+  const R = S.ret;
+  // Данные для карты
+  const readyFields = S.fields.filter(f=>f.owned && f.state==='ready').length;
+  const growingFields = S.fields.filter(f=>f.owned && f.state==='growing').length;
+  const agedSlots = RET_agedGoods().length;
+  const agedReady = RET_agedGoods().filter(p => RET_agingTier(p).index >= 2).length;
+  const animalsReady = Object.keys(S.buildings).filter(id => S.buildings[id].owned && S.buildings[id].stored > 0).length;
+  const animalsHungry = Object.keys(S.buildings).filter(id => S.buildings[id].owned && RET_penMood(S.buildings[id]).level==='bad').length;
+  const machinesBroken = Object.keys(S.machines).filter(id => S.machines[id].owned && S.machines[id].cond < 40).length;
+  const totalAlerts = readyFields + agedReady + animalsHungry + machinesBroken;
+
+  // Геометрия карты (% от контейнера)
+  const slots = [
+    { key:'garage', icon:'tractor', name:'Гараж',    x:50, y:16, badge: machinesBroken?machinesBroken:null, alert:machinesBroken>0, click:'App.openGarage()' },
+    { key:'fields', icon:'wheat', name:'Поля',     x:18, y:36, badge: readyFields?readyFields:null, alert:readyFields>0, click:"App.tab('map')" },
+    { key:'bunker', icon:'box', name:'Склад',    x:82, y:36, badge: agedReady?agedReady:null, alert:agedReady>0, click:'App.openBunker()' },
+    { key:'pens',   icon:'cow', name:'Загоны',   x:18, y:66, badge: animalsReady?animalsReady:null, alert:animalsHungry>0, click:'App.openPens()' },
+    { key:'market', icon:'coin', name:'Рынок',    x:82, y:66, badge: null, alert:false, click:'App.openMarket()', locked:false },
+    { key:'workshop', icon:'factory', name:'Цеха',   x:50, y:88, badge: null, alert:false, click:"App.tab('business')" },
+  ];
+
+  const slotHTML = slots.map(s=>`
+    <div class="map-slot ${s.alert?'has-alert':''} ${s.locked?'locked':''}" style="left:${s.x}%;top:${s.y}%" onclick="${s.click}">
+      <div class="slot-art">${ic(s.icon)}${s.badge?`<span class="map-badge">${s.badge}</span>`:''}</div>
+      <div class="slot-name">${s.name}</div>
+    </div>`).join('');
+
+  return `
+    <div class="map-stats">
+      <div class="map-stat ${animalsHungry?'warn':''}"><b>${animalsHungry ? animalsHungry : '✓'}</b><small>ЗАГОНЫ</small></div>
+      <div class="map-stat ${agedSlots?'':''}"><b>${agedSlots}/3</b><small>ВЫДЕРЖКА</small></div>
+      <div class="map-stat ${machinesBroken?'warn':''}"><b>${machinesBroken ? machinesBroken : '✓'}</b><small>ГАРАЖ</small></div>
+    </div>
+    <div class="map-scene">
+      <div class="map-island">
+        <div class="map-center">
+          <div class="mc-art">${ic('barn','ic-xl')}</div>
+          <div class="mc-name">Твоя ферма</div>
+        </div>
+        ${slotHTML}
+      </div>
+    </div>
+    <div class="muted-small" style="text-align:center;margin-top:7px">${totalAlerts>0?`<b style="color:#e8b46a">${totalAlerts} мест требует внимания</b>`:'Всё под контролем'}</div>`;
+}
+
+/* ---------- СКЛАД-БУНКЕР (выдержка) ---------- */
+function RET_renderBunker(){
+  const goods = Object.keys(S.goods).filter(g=>S.goods[g]>0);
+  let html = `<div class="sec-title"><h3>${ic('clock')} Бункер выдержки</h3><small>Чем дольше лежит — тем дороже</small></div>`;
+  const A = S.ret.aging;
+
+  // Текущие партии
+  html += `<div class="age-card"><div class="age-head">
+    <span class="age-ic">${ic('clock')}</span>
+    <div><b>Партии на выдержке</b><small>${RET_agedGoods().length} из 3 ячеек занято</small></div>
+  </div><div class="age-slots">`;
+
+  for (let i=0; i<3; i++){
+    const p = A.slots[i];
+    if (!p){
+      html += `<div class="age-slot"><div class="age-empty">Пусто</div></div>`;
+    } else {
+      const ti = RET_agingTier(p);
+      const isMax = ti.index >= AGING_TIERS.length-1;
+      const gain = Math.round(p.units * GOODS[p.good].price * ti.tier.mult);
+      html += `<div class="age-slot active" onclick="App.takeAged(${i})">
+        <div class="as-good">${goodsIcon(p.good)} ${GOODS[p.good].name.slice(0,8)} ×${p.units}</div>
+        <div class="as-mult ${isMax?'as-mult-max':''}">${ti.tier.mult}×</div>
+        <div class="as-time">${isMax ? 'МАКСИМУМ' : ti.tier.name}</div>
+      </div>`;
+    }
+  }
+  html += `</div></div>`;
+
+  // Показать товары на складе, которые можно отложить
+  if (goods.length){
+    html += `<div class="sec-title" style="margin-top:12px"><h3>${ic('box')} На складе</h3><small>Положить на выдержку</small></div>`;
+    html += `<div class="goods-grid">`;
+    for (const g of goods.slice(0, 8)){
+      const price = GOODS[g].price;
+      const tiers = AGING_TIERS.map(t=>`${t.mult}×`).join(' → ');
+      html += `<button class="goods-item" style="cursor:pointer" onclick="App.putAged('${g}')">
+        <span class="goods-symbol">${goodsIcon(g)}</span><span>${GOODS[g].name}</span><b>×${fmt(S.goods[g])}</b>
+      </button>`;
+    }
+    html += `</div><div class="muted-small" style="margin-top:6px">Тап по товару — положить до 24 ед. на выдержку. Максимум даёт ${AGING_TIERS[3].mult}×.</div>`;
+  } else {
+    html += `<div class="empty-state">${ic('box')}<b>Склад пуст</b><small>Урожай появится после уборки</small></div>`;
+  }
+  return html;
+}
+
+/* ---------- ЗАГОНЫ / ЖИВОТНЫЕ ---------- */
+function RET_renderPens(){
+  let html = `<div class="sec-title"><h3>${ic('cow')} Загоны</h3><small>${RET_freeCare() ? '🎉 Сегодня уход бесплатный' : 'Забота влияет на доход'}</small></div>`;
+  const owned = Object.keys(S.buildings).filter(id=>S.buildings[id].owned);
+  const notOwned = Object.keys(S.buildings).filter(id=>!S.buildings[id].owned);
+
+  if (!owned.length){
+    html += `<div class="empty-state">${ic('cow')}<b>Загонов пока нет</b><small>Построй курятник в «Хозяйстве»</small></div>`;
+    html += `<button class="btn btn-primary btn-block" onclick="App.tab('business')">${ic('barn')} Открыть хозяйство</button>`;
+    return html;
+  }
+
+  for (const id of owned){
+    const b = S.buildings[id], d = BUILDINGS[id];
+    const mood = RET_penMood(b);
+    const ready = b.stored > 0;
+    html += `<div class="pen-card">
+      <div class="pen-head">
+        <span class="pen-ic">${ic(BLD_ICON[id]||'barn')}</span>
+        <div><b>${d.name}</b><small>${ready?`${b.stored} ед. ${GOODS[d.good].name} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
+        <span class="pen-status ${mood.level}">${mood.label}</span>
+      </div>
+      <div class="pen-care">
+        <button class="${b.feed<40?'low':''}" onclick="App.feedPen('${id}')">${ic('sack')}Корм ${b.feed}%</button>
+        <button class="${b.water<40?'low':''}" onclick="App.waterPen('${id}')">${ic('droplet')}Вода ${b.water}%</button>
+        <button class="${b.clean<40?'low':''}" onclick="App.cleanPen('${id}')">${ic('wrench')}Чисто ${b.clean}%</button>
+      </div>
+      <div class="pen-mood">Настроение: <b>${mood.level==='good'?'отличное':mood.level==='warn'?'нормальное':'плохое'}</b> · Доход ×${mood.mult}</div>
+      ${ready ? `<button class="btn btn-gold btn-block btn-sm" style="margin-top:8px" onclick="App.collectPen('${id}')">${ic('box')} Забрать ${b.stored} ${GOODS[d.good].name}</button>` : ''}
+    </div>`;
+  }
+  return html;
+}
+
+/* ============================================================
+   ЭКРАН «ПОКА ВАС НЕ БЫЛО» + ВСТРАИВАНИЕ ВО ВКЛАДКУ «ФЕРМА»
+   ============================================================ */
+
+/* ---------- ОФФЛАЙН-ЭКРАН ---------- */
+function RET_showOfflineScreen(info){
+  const elapsed = info.elapsedSec || 0;
+  const coins = info.coins || 0;
+  const lines = info.lines || [];
+  const readyFields = info.readyFields || 0;
+  const agedReady = info.agedReady || 0;
+
+  const rows = [];
+  if (readyFields) rows.push(`<div class="offline-stat gold"><b>${readyFields}</b><small>полей готово к уборке</small></div>`);
+  if (agedReady) rows.push(`<div class="offline-stat gold"><b>${agedReady}</b><small>партии достигли элитного класса</small></div>`);
+  if (info.animals) rows.push(`<div class="offline-stat"><b>${info.animals}</b><small>загонов накопили продукцию</small></div>`);
+  if (info.prod) rows.push(`<div class="offline-stat"><b>${info.prod}</b><small>цехов завершили работу</small></div>`);
+  if (coins) rows.push(`<div class="offline-stat gold"><b>+${fmt(coins)}</b><small>монет заработано автоматически</small></div>`);
+
+  const body = `
+    <div class="offline-hero">
+      <div class="big">${ic('sun','ic-xl')}</div>
+      <h2 style="justify-content:center">Пока вас не было</h2>
+      <div class="offline-time">${ic('clock')} ${fmtTime(elapsed)} прошло</div>
+    </div>
+    ${rows.length ? `<div class="offline-grid">${rows.join('')}</div>` : `<p class="muted" style="text-align:center">Ферма отдыхала вместе с вами.</p>`}
+    ${lines.length ? `<div style="margin-top:8px">${lines.map(l=>`<p style="font-weight:700;font-size:11px;margin:4px 0">• ${l}</p>`).join('')}</div>` : ''}
+    <button class="btn btn-primary btn-block" style="margin-top:12px" onclick="App.closeModal(); App.tab('farm');">${ic('play')} Вернуться на ферму</button>
+    ${readyFields ? `<button class="btn btn-gold btn-block btn-sm" style="margin-top:6px" onclick="App.closeModal(); App.tab('map');">${ic('wheat')} Собрать урожай · ${readyFields}</button>` : ''}
+  `;
+  openDialog(body);
+  document.body.classList.add('ret-offline-open');
+  sfx.good();
+}
+
+/* ---------- ВКЛАДКА «ФЕРМА» — НОВАЯ ВЕРСИЯ С ПЕРЕКЛЮЧАТЕЛЕМ ---------- */
+/* Заменяет старый renderFarm. Сохраняет сцену и срочные блоки, добавляет карту. */
+function RET_renderFarm(){
+  const view = ui.farmView || 'map';
+
+  // --- исходные вычисления
+  const owned = S.fields.filter(f=>f.owned);
+  const ready = owned.filter(f=>f.state==='ready' && !f.busy);
+  const growing = owned.filter(f=>f.state==='growing').length;
+  const active = activeContracts().length;
+  const login = S.loginReward || (S.loginReward={lastClaim:'',streak:0});
+  const loginClaimed = login.lastClaim === todayStr();
+  const loginStreak = loginClaimed ? (login.streak||1) : (login.lastClaim===yesterdayStr() ? (login.streak||0)+1 : 1);
+  const loginDay = (loginStreak-1) % LOGIN_REWARDS.length + 1;
+  const loginPrize = LOGIN_REWARDS[loginDay-1];
+  const loginPrizeText = [loginPrize.coins?`+${fmt(loginPrize.coins)} монет`:null, loginPrize.gems?`+${loginPrize.gems} ${gemWord(loginPrize.gems)}`:null].filter(Boolean).join(' и ');
+
+  const focus = ready[0] || owned.find(f=>f.state==='prepared') || owned.find(f=>f.state==='sterna') || owned.find(f=>f.state==='growing');
+  let focusText='Расширь хозяйство', focusSub='Открой карту и выбери новое поле', focusIcon='map';
+  if (focus){
+    if (focus.state==='ready'){ focusText='Урожай созрел'; focusSub=`${focus.name} · ${CROPS[focus.crop]?.name||'культура'} ждёт уборки`; focusIcon='wheat'; }
+    else if (focus.state==='growing'){ focusText='Поля растут'; focusSub=`${focus.name} · осталось ${fmtTime(Math.max(0,(focus.t1-Date.now())/1000))}`; focusIcon='clock'; }
+    else if (focus.state==='prepared'){ focusText='Поле готово к посеву'; focusSub=`${focus.name} · выбери культуру`; focusIcon='seed'; }
+    else { focusText='Пора в поле'; focusSub=`${focus.name} · почва ждёт обработки`; focusIcon='tractor'; }
+  }
+  const tutAttr = S.tutorial && !S.tutorial.done && (S.tutorial.step===0 && focus?.id==='f1' || S.tutorial.step===2 && focus?.id==='f1') ? `data-tut="${S.tutorial.step===0?'harvest':'field-f1'}"` : '';
+
+  // --- переключатель вида
+  const sw = (id, icon, label) => `<button class="${view===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
+  const switcher = `<div class="farm-switch">
+    ${sw('map','map','Ферма')}
+    ${sw('quests','target','Задания')}
+    ${sw('pass','medal','Пропуск')}
+    ${sw('ach','star','Достижения')}
+  </div>`;
+
+  let body = '';
+
+  if (view === 'map'){
+    body = `
+      <div class="daily-focus ${S.daily.goal?'is-done':''}" onclick="App.tab('tasks')">
+        <span class="focus-mark">${ic(S.daily.goal?'check':'target')}</span>
+        <span class="focus-copy"><b>${S.daily.goal?'Цель дня выполнена':'Заказы на сегодня'}</b><small>${S.daily.goal?'Награда получена':'3 заказа · награда 5 самоцветов'}</small>
+          <span class="focus-progress"><i style="width:${Math.min(100,S.daily.contracts/3*100)}%"></i></span></span>
+        <span class="focus-count">${S.daily.contracts}/3 <small>→</small></span>
+      </div>
+      ${RET_renderFair()}
+      ${RET_renderStreak()}
+      ${RET_renderFarmMap()}
+      <div class="overview-actions" style="margin-top:10px">
+        <button class="overview-action" onclick="App.tab('map')">${ic('seed')}<span>Мои поля</span></button>
+        <button class="overview-action" onclick="App.openBunker()">${ic('box')}<span>Склад</span></button>
+        <button class="overview-action" onclick="App.openPens()">${ic('cow')}<span>Загоны</span></button>
+        <button class="overview-action" ${S.tutorial.step===1?'data-tut="sell"':''} onclick="App.openMarket()">${ic('coin')}<span>Рынок</span></button>
+      </div>
+      ${RET_renderDailyQuests()}
+      <div class="login-reward ${loginClaimed?'claimed':''}">
+        <button class="login-stamp" type="button" ${loginClaimed?'disabled':''} onclick="App.claimDailyReward()" aria-label="${loginClaimed?'Награда уже получена':'Забрать ежедневную награду'}">${ic(loginClaimed?'check':'gift')}</button>
+        <span class="login-copy"><b>${loginClaimed?'Награда получена':`Ежедневный бонус · день ${loginDay}/7`}</b><small>${loginClaimed?`Стрик: ${RET_streakCount()} дн.`:'Вернись завтра и получи больше'}</small>
+          <span class="reward-track">${LOGIN_REWARDS.map((_,i)=>`<i class="${i<loginDay?'filled':''}"></i>`).join('')}</span>
+        </span>
+        <button class="login-claim" ${loginClaimed?'disabled':''} onclick="App.claimDailyReward()">${loginClaimed?'Получено':'Забрать'}</button>
+      </div>`;
+  } else if (view === 'quests'){
+    body = `${RET_renderStreak()}${RET_renderFair()}${RET_renderDailyQuests()}`;
+  } else if (view === 'pass'){
+    body = RET_renderPassCard();
+  } else if (view === 'ach'){
+    body = RET_renderAchievements();
+  }
+
+  // --- сцена (только для карты)
+  const scene = view === 'map' ? `
+    <div class="farm-scene compact-scene season-${seasonInfo().id} weather-${weatherInfo().id}" role="group" aria-label="Островная ферма · ${seasonInfo().name}">
+      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${seasonInfo().name.toUpperCase()}</span>
+        <button class="scene-weather" onclick="App.openForecast()">${ic(weatherInfo().icon)} ${weatherInfo().name}</button></div>
+      <div class="scene-copy"><div class="scene-title">Твоя ферма</div><div class="scene-caption">Всё важное — под рукой</div></div>
+      <div class="scene-count">${owned.length} / ${S.fields.length} полей</div>
+    </div>` : '';
+
+  $('#screen').innerHTML = `${scene}${switcher}${body}`;
+  positionCoach();
+}
+
+/* ---------- ПРОПУСК ---------- */
+function RET_renderPassCard(){
+  const P = S.ret.pass;
+  const lvl = RET_passLevel();
+  const pct = Math.round(RET_passProgress()*100);
+  const tiers = PASS_TRACKS.map(t=>{
+    const reached = lvl > t.level;
+    return `<div class="pass-tier ${reached?'reached':''}">
+      <div class="pt-lvl">${t.level}</div>
+      <div class="pt-ic">${ic(t.free.gems?'gem':'coin')}</div>
+      <div class="pt-rw">${t.free.gems?`+${t.free.gems} гем`:`+${fmt(t.free.coins)}`}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="sec-title"><h3>${ic('medal')} Фермерский пропуск</h3><small>Сезон 1</small></div>
+    <div class="pass-card">
+      <div class="pass-head">${ic('star')}<b>Уровень ${lvl}</b><small>${P.xp||0} / ${PASS_XP_PER_LEVEL} XP</small></div>
+      <div class="pass-bar"><i style="width:${pct}%"></i></div>
+      <div class="muted-small">Очки опыта дают любые действия: урожай, заказы, продажи, уход за животными.</div>
+      <div class="pass-tiers">${tiers}</div>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-ghost btn-block btn-sm" onclick="App.passInfo()">${ic('info')} Как получить премиум?</button></div>
+    ${RET_renderAchievements()}
+  `;
+}
+
+/* ---------- ДОСТИЖЕНИЯ ---------- */
+function RET_renderAchievements(){
+  const R = S.ret;
+  const statVal = {
+    harvests: S.stats.harvests||0, earned: S.stats.earned||0, contractsDone: S.stats.contractsDone||0,
+    aged: S.stats.aged||0, buildings: Object.values(S.buildings).filter(b=>b.owned).length,
+    bestStreak: R.streak?.best||0,
+  };
+  let html = `<div class="sec-title"><h3>${ic('star')} Достижения</h3><small>${R.ach.unlocked.length} / ${ACHIEVEMENTS.length}</small></div><div class="ach-grid">`;
+  for (const a of ACHIEVEMENTS){
+    const done = R.ach.unlocked.includes(a.id);
+    const cur = Math.min(a.need, statVal[a.stat]||0);
+    html += `<div class="ach-item ${done?'done':'locked'}">
+      <span class="ach-ic">${ic(done?'medal':'info')}</span>
+      <div class="ach-body"><b>${a.name}</b><small>${done?'Получено':a.desc + ' · ' + cur + '/' + a.need}</small></div>
+      <span class="ach-rw">${a.reward.coins?`<span class="ic" style="width:9px;height:9px;display:inline-block;vertical-align:-1px">${I.coin}</span> ${fmt(a.reward.coins)}`:''}${a.reward.gems?` <span class="ic" style="width:9px;height:9px;display:inline-block;vertical-align:-1px">${I.gem}</span> ${a.reward.gems}`:''}</span>
+    </div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+/* ============================================================
+   ХУКИ (PATCHES) — встраивание модуля в существующую игру
+   Вызывается один раз после загрузки основного скрипта.
+   Все патчи безопасны: если что-то не найдено — просто пропускаем.
+   ============================================================ */
+function RET_installHooks(){
+  /* [HOOK 1] renderFarm → новая версия со вкладками */
+  if (typeof renderFarm === 'function'){
+    window.__ret_origRenderFarm = renderFarm;
+    renderFarm = function(){ RET_renderFarm(); };
+  }
+
+  /* [HOOK 2] renderAll должен пересчитывать задачи/стрик */
+  const origRenderAll = window.renderAll;
+  if (typeof origRenderAll === 'function'){
+    window.renderAll = function(){
+      if (S && S.ret){ RET_rollDaily(); RET_rollFair(); }
+      return origRenderAll.apply(this, arguments);
+    };
+  }
+
+  /* [HOOK 3] completeFieldWork — учёт урожая в заданиях */
+  if (typeof completeFieldWork === 'function'){
+    const orig = completeFieldWork;
+    completeFieldWork = function(f){
+      const before = {...S.goods};
+      const hadCrop = f.crop;
+      const result = orig.apply(this, arguments);
+      if (hadCrop){
+        let delta = 0;
+        for (const g in S.goods){ delta += Math.max(0, S.goods[g] - (before[g]||0)); }
+        if (delta > 0) RET_track('harvest', delta);
+      }
+      return result;
+    };
+  }
+
+  /* [HOOK 4] sellGood — деньги в заданиях */
+  if (typeof sellGood === 'function'){
+    const orig = sellGood;
+    sellGood = function(good, qty){
+      const gain = orig.apply(this, arguments);
+      if (gain > 0) RET_track('sellCoins', gain);
+      return gain;
+    };
+  }
+
+  /* [HOOK 5] claimContract — заказы в заданиях + множитель ярмарки */
+  if (typeof claimContract === 'function'){
+    const orig = claimContract;
+    claimContract = function(id){
+      const c = S.board.find(x=>x.id===id);
+      return orig.call(this, id);
+    };
+  }
+  if (typeof contractRewardMult === 'undefined'){
+    window.contractRewardMult = function(){ return RET_contractMult(); };
+  }
+
+  /* [HOOK 6] startFieldWork — учёт посева */
+  if (typeof startFieldWork === 'function'){
+    const orig = startFieldWork;
+    startFieldWork = function(f, action, extra){
+      const ok = orig.apply(this, arguments);
+      if (ok && action === 'sow') RET_track('plant', 1);
+      return ok;
+    };
+  }
+
+  /* [HOOK 7] startProduction — цеха в заданиях */
+  if (typeof startProduction === 'function'){
+    const orig = startProduction;
+    startProduction = function(id){
+      const wasRunning = S.productions[id]?.running;
+      const result = orig.apply(this, arguments);
+      if (!wasRunning && S.productions[id]?.running) RET_track('produce', 1);
+      return result;
+    };
+  }
+
+  /* [HOOK 8] collectBuilding — сбор продукции */
+  if (typeof collectBuilding === 'function'){
+    const orig = collectBuilding;
+    collectBuilding = function(id){
+      const had = S.buildings[id]?.stored > 0;
+      const result = orig.apply(this, arguments);
+      if (had) RET_track('collect', 1);
+      return result;
+    };
+  }
+
+  /* [HOOK 9] careBuilding — уход за животными */
+  if (typeof careBuilding === 'function'){
+    const orig = careBuilding;
+    careBuilding = function(id, kind){
+      if (RET_freeCare()){ sfx.pop(); return; } // ярмарка: бесплатный уход
+      const result = orig.apply(this, arguments);
+      RET_track('care', 1);
+      return result;
+    };
+  }
+
+  /* [HOOK 10] рост культур с учётом ярмарки */
+  if (typeof growthFactor === 'function'){
+    const orig = growthFactor;
+    growthFactor = function(){
+      return orig.apply(this, arguments) * RET_growthMult();
+    };
+  }
+
+  /* [HOOK 11] цены с учётом ярмарки */
+  if (typeof bestPoint === 'function'){
+    const orig = bestPoint;
+    bestPoint = function(good){
+      const r = orig.apply(this, arguments);
+      const fm = RET_priceMult();
+      if (fm !== 1) return { ...r, mult: Math.round(r.mult * fm * 100) / 100 };
+      return r;
+    };
+  }
+
+  /* [HOOK 12] починка техники — в заданиях */
+  if (window.App && typeof App.repairMachine === 'function'){
+    const orig = App.repairMachine.bind(App);
+    App.repairMachine = function(id){
+      const wasBroken = S.machines[id]?.cond < 100;
+      const result = orig(id);
+      if (wasBroken) RET_track('repair', 1);
+      return result;
+    };
+  }
+
+  /* [HOOK 13] заказ получен — учёт */
+  const origClaim = window.App?.claimContract;
+  if (window.App && typeof origClaim === 'function'){
+    window.App.claimContract = function(id){
+      const result = origClaim.call(App, id);
+      RET_track('contract', 1);
+      return result;
+    };
+  }
+
+  /* [HOOK 14] Добавляем новые методы в App */
+  if (window.App){
+    Object.assign(App, {
+      farmView(v){ ui.farmView = v; sfx.click(); renderScreen(); },
+      claimQuest(qid){ RET_claimQuest(qid); },
+      openBunker(){ openDialog(`<h2>${ic('clock')} Бункер</h2>${RET_renderBunker()}`); },
+      openPens(){ openDialog(`<h2>${ic('cow')} Загоны</h2>${RET_renderPens()}`); },
+      openFair(){ RET_openFair(); },
+      putAged(g){ RET_putToAge(g); if (ui.modal) openDialog(`<h2>${ic('clock')} Бункер</h2>${RET_renderBunker()}`); },
+      takeAged(i){ RET_takeFromAge(i); openDialog(`<h2>${ic('clock')} Бункер</h2>${RET_renderBunker()}`); },
+      feedPen(id){ RET_penCare(id,'feed'); openDialog(`<h2>${ic('cow')} Загоны</h2>${RET_renderPens()}`); },
+      waterPen(id){ RET_penCare(id,'water'); openDialog(`<h2>${ic('cow')} Загоны</h2>${RET_renderPens()}`); },
+      cleanPen(id){ RET_penCare(id,'clean'); openDialog(`<h2>${ic('cow')} Загоны</h2>${RET_renderPens()}`); },
+      collectPen(id){ collectBuilding(id); openDialog(`<h2>${ic('cow')} Загоны</h2>${RET_renderPens()}`); },
+      passInfo(){ openDialog(`<div style="text-align:center"><div class="big-emoji">🎖️</div><h2 style="justify-content:center">Фермерский пропуск</h2><p class="muted">Пока прототип: награды выдаются автоматически за очки опыта. В финальной версии появится премиум-ветка за самоцветы.</p><button class="btn btn-primary btn-block" onclick="App.closeModal()">Понятно</button></div>`); }
+    });
+  }
+
+  /* [HOOK 15] Первый рендер экрана гарантирует инициализацию RET */
+  const origRenderScreen = window.renderScreen;
+  if (typeof origRenderScreen === 'function'){
+    window.renderScreen = function(){
+      if (S && !S.ret) RET_afterState();
+      return origRenderScreen.apply(this, arguments);
+    };
+  }
+}
+
+/* ---------- Дополнительные хелперы, используемые хуками ---------- */
+function RET_penCare(id, kind){
+  const b = S.buildings[id];
+  if (!b || !b.owned) return;
+  // Если уже максимум — не тратим деньги и не считаем действие
+  if ((b[kind]||0) >= 100){ toast('Уже в порядке', '', 'check'); return; }
+  const cost = RET_freeCare() ? 0 : 8;
+  if (cost && S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+  if (cost) addCoins(-cost);
+  b[kind] = clamp((b[kind]||0) + 30, 0, 100);
+  sfx.pop(); RET_track('care', 1); save(); renderAll();
+}
+
+function RET_openFair(){
+  const f = RET_fair();
+  if (!f){ openDialog(`<div style="text-align:center"><div class="big-emoji">🌤️</div><h2 style="justify-content:center">Сегодня без события</h2><p class="muted">Загляни завтра — на ярмарке бывают особые дни.</p><button class="btn btn-primary btn-block" onclick="App.closeModal()">Ок</button></div>`); return; }
+  openDialog(`<div style="text-align:center">
+    <div class="big-emoji">🎪</div><h2 style="justify-content:center">${f.name}</h2>
+    <p class="muted">${f.desc}</p>
+    <p class="muted-small">Событие действует до конца дня и меняет экономику фермы. Не пропусти!</p>
+    <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично</button></div>`);
+}
+
+/* ---------- Оффлайн-экран (перехват) ---------- */
+function RET_installOfflineHook(){
+  if (typeof applyOffline !== 'function') return;
+  const orig = applyOffline;
+  applyOffline = function(){
+    // восстанавливаем корректный lastSeen, чтобы расчёт оффлайна был верным
+    if (window.__retPrevSeen) S.lastSeen = window.__retPrevSeen;
+    // считаем ДО вызова оригинальной applyOffline (она внутри вызывает save и обнуляет lastSeen)
+    const prevSeenSnap = S.lastSeen;
+    const elapsedSec = Math.min((Date.now() - prevSeenSnap)/1000, OFFLINE_CAP);
+    const gameSecSnap = elapsedSec * ts();
+    const before = S.coins;
+    // сохраняем прошлую реализацию для эффектов (готовые поля и т.д.), но перехватываем диалог
+    const dialogSnap = window.openDialog;
+    let captured = [];
+    window.openDialog = function(html){ captured.push(html); };
+    try { orig.apply(this, arguments); } finally { window.openDialog = dialogSnap; }
+
+    const gameSec = gameSecSnap;
+    if (gameSec < 60){ window.__retPrevSeen = null; return; }
+
+    // собираем статистику для нового экрана
+    const readyFields = S.fields.filter(f=>f.owned && f.state==='ready').length;
+    const agedReady = RET_agedGoods().filter(p=>RET_agingTier(p).index>=2).length;
+    const animals = Object.keys(S.buildings).filter(id=>S.buildings[id].owned && S.buildings[id].stored>0).length;
+    const prod = Object.keys(S.productions).filter(id=>{
+      const p = S.productions[id];
+      return p.owned && !p.running && Object.values(p.stored||{}).some(v=>v>0);
+    }).length;
+    const coins = Math.max(0, S.coins - before);
+
+    window.__retPrevSeen = null;
+    RET_showOfflineScreen({
+      elapsedSec: gameSec, coins, readyFields, agedReady, animals, prod,
+      lines: [],
+    });
+  };
+}
+
+/* ---------- Запуск всех хуков ---------- */
+function RET_boot(){
+  // Хуки ставятся всегда — они патчат функции, S нужен только при вызовах.
+  RET_installHooks();
+  RET_installOfflineHook();
+  RET_guardSave();
+}
+
+/* Не позволяем save() обновлять lastSeen до того, как посчитан оффлайн */
+function RET_guardSave(){
+  if (typeof save !== 'function' || save.__retGuarded) return;
+  const orig = save;
+  const wrapped = function(){
+    const prev = S ? S.lastSeen : null;
+    const result = orig.apply(this, arguments);
+    if (S && prev && window.__retPrevSeen) S.lastSeen = prev;
+    return result;
+  };
+  wrapped.__retGuarded = true;
+  save = wrapped;
+  window.save = wrapped;
+}
+/* Инициализация дневных систем — вызывается, когда S уже существует */
+function RET_afterState(){
+  if (!S) return;
+  RET_migrate();
+  RET_rollDaily();
+  RET_rollFair();
+  RET_touchStreak();
+  RET_checkAchievements();
+}
+
+RET_boot();
+
 init();
 </script>
 </body>
