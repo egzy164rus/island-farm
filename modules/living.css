@@ -1,0 +1,190 @@
+/* ============================================================
+   ЖИВОЙ МИР — время суток, питомец, существа, события
+   ============================================================ */
+
+/* ---------- 1. ВРЕМЯ СУТОК ---------- */
+#ambient{transition:background 1.4s ease, filter 1.4s ease;}
+#ambient .amb-sun,#ambient .amb-cloud,#ambient .amb-hills{transition:all 1.4s ease;}
+
+body.tod-dawn #ambient{
+  background:
+    radial-gradient(ellipse 130% 62% at 50% 100%,rgba(255,150,90,.42) 0%,rgba(120,90,120,.22) 52%,transparent 74%),
+    radial-gradient(ellipse 120% 55% at 50% 0%,rgba(80,100,150,.4) 0%,transparent 66%),
+    linear-gradient(180deg,#243252 0%,#4a4f70 40%,#8a6a72 72%,#c08a70 100%);}
+body.tod-dawn #ambient .amb-hills{filter:brightness(.8) saturate(.85) hue-rotate(-6deg);}
+body.tod-dawn #ambient .amb-sun{top:auto;bottom:34%;right:16px;opacity:.9;}
+body.tod-dawn #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(10,8,20,.35) 40%,rgba(8,6,16,.72) 100%);}
+
+body.tod-day #ambient{
+  background:
+    radial-gradient(ellipse 120% 55% at 50% 0%,rgba(120,180,225,.42) 0%,rgba(24,33,28,0) 70%),
+    linear-gradient(180deg,#2c5474 0%,#3f6f7d 34%,#527a5e 68%,#5f8352 100%);}
+body.tod-day #ambient .amb-hills{filter:brightness(1.02) saturate(.95);}
+body.tod-day #ambient .amb-vignette{background:radial-gradient(ellipse 85% 65% at 50% 40%,rgba(0,0,0,0) 55%,rgba(8,22,14,.35) 100%);}
+
+body.tod-golden #ambient{
+  background:
+    radial-gradient(ellipse 120% 62% at 78% 80%,rgba(255,170,70,.5) 0%,transparent 64%),
+    radial-gradient(ellipse 110% 50% at 30% 0%,rgba(90,120,150,.3) 0%,transparent 66%),
+    linear-gradient(180deg,#2a3d55 0%,#4d5a5e 36%,#8a6f42 70%,#b98a4a 100%);}
+body.tod-golden #ambient .amb-hills{filter:brightness(.92) saturate(1.06) sepia(.12);}
+body.tod-golden #ambient .amb-sun{top:auto;bottom:26%;right:22px;box-shadow:0 0 48px 16px rgba(255,190,100,.4);}
+
+body.tod-dusk #ambient{
+  background:
+    radial-gradient(ellipse 130% 58% at 24% 82%,rgba(230,110,80,.4) 0%,transparent 64%),
+    linear-gradient(180deg,#121a2e 0%,#2c2a42 38%,#5c3e4c 72%,#8a5442 100%);}
+body.tod-dusk #ambient .amb-hills{filter:brightness(.6) saturate(.72) hue-rotate(-8deg);}
+body.tod-dusk #ambient .amb-sun{top:auto;bottom:16%;left:18%;right:auto;opacity:.85;}
+body.tod-dusk #ambient .amb-stars{opacity:.55;}
+body.tod-dusk #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(12,6,20,.42) 40%,rgba(6,4,12,.78) 100%);}
+
+body.tod-night #ambient{
+  background:
+    radial-gradient(ellipse 120% 52% at 50% 0%,rgba(50,80,130,.36) 0%,transparent 68%),
+    linear-gradient(180deg,#070b14 0%,#0d1524 40%,#121d30 72%,#16263a 100%);}
+body.tod-night #ambient .amb-hills{filter:brightness(.4) saturate(.5) hue-rotate(8deg);}
+body.tod-night #ambient .amb-sun{top:56px;right:34px;opacity:1;
+  background:radial-gradient(circle at 38% 34%,#fdfbee 0%,#dcd9c0 52%,rgba(185,183,158,0) 72%);
+  box-shadow:0 0 32px 10px rgba(230,235,210,.2);}
+body.tod-night #ambient .amb-sun::after{display:none;}
+body.tod-night #ambient .amb-cloud{background:#243348;opacity:.42;}
+body.tod-night #ambient .amb-cloud::before,body.tod-night #ambient .amb-cloud::after{background:#243348;}
+body.tod-night #ambient .amb-stars{opacity:.95;}
+body.tod-night #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(2,4,10,.4) 40%,rgba(2,3,8,.8) 100%);}
+body.tod-night .farm-scene{filter:brightness(.62) saturate(.75) hue-rotate(6deg);}
+body.tod-dusk .farm-scene{filter:brightness(.78) saturate(.86) sepia(.1);}
+body.tod-dawn .farm-scene{filter:brightness(.84) saturate(.92) sepia(.08);}
+body.tod-golden .farm-scene{filter:brightness(1.02) saturate(1.1) sepia(.14);}
+
+/* индикатор фазы в HUD */
+.liv-phase{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:750;
+  padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.08);color:#cfe0c5;}
+
+/* ---------- 2. СВЕТЛЯЧКИ / СНЕЖИНКИ ---------- */
+.liv-fireflies{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.liv-ff{position:absolute;width:4px;height:4px;border-radius:50%;background:#eaff9a;
+  box-shadow:0 0 8px 3px rgba(220,255,140,.6);opacity:0;}
+body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
+@keyframes livFly{
+  0%{opacity:0;transform:translate(0,0) scale(.7)}
+  18%{opacity:.9}
+  50%{transform:translate(34px,-44px) scale(1);opacity:.75}
+  80%{opacity:.85}
+  100%{opacity:0;transform:translate(-20px,-76px) scale(.8)}}
+
+/* ---------- 3. ПИТОМЕЦ ---------- */
+.liv-pet{position:absolute;left:10px;bottom:66px;z-index:8;width:64px;cursor:pointer;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));transition:transform .2s;}
+.liv-pet:active{transform:scale(.93);}
+.liv-pet.sleeping{opacity:.8;}
+.liv-pet svg{display:block;width:64px;height:52px;transition:transform .3s;}
+.liv-pet.wag svg{animation:petWag .5s ease-in-out 3;}
+@keyframes petWag{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(6deg)}}
+.liv-pet-bubble{position:absolute;left:52px;bottom:34px;background:#f4faf0;color:#1b2a1f;
+  font:800 9px/1.2 var(--font-ui);padding:4px 7px;border-radius:9px 9px 9px 2px;white-space:nowrap;
+  box-shadow:0 3px 8px rgba(0,0,0,.3);animation:bubbleIn .3s ease-out;}
+@keyframes bubbleIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.liv-pet-lvl{position:absolute;right:-2px;top:-2px;min-width:16px;height:16px;border-radius:99px;
+  background:#c9a44e;color:#231a06;font:800 9px/16px var(--font-ui);text-align:center;padding:0 3px;
+  box-shadow:0 2px 5px rgba(0,0,0,.35);}
+
+/* ---------- 4. ЖИВОТНЫЕ НА СЦЕНЕ ---------- */
+.liv-critters{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.liv-critter{position:absolute;font-size:0;opacity:.92;}
+.liv-bird{position:absolute;width:22px;height:10px;opacity:.75;}
+.liv-bird::before,.liv-bird::after{content:'';position:absolute;top:0;width:11px;height:8px;
+  border:1.6px solid rgba(30,45,32,.75);border-radius:50% 50% 0 0;border-bottom:0;}
+.liv-bird::before{left:0;transform:rotate(-14deg);}
+.liv-bird::after{right:0;transform:rotate(14deg);}
+
+/* ---------- 5. ШТОРМ ---------- */
+.liv-storm-banner{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(120deg,#2a2230,#3a2a30 55%,#402a28);border:1px solid #6b4a44;
+  position:relative;overflow:hidden;margin-bottom:9px;}
+.liv-storm-banner::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,180,150,.14) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 3s ease-in-out infinite;}
+.liv-storm-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#4a2a24;color:#f0a08a;}
+.liv-storm-body{flex:1;min-width:0;}
+.liv-storm-body b{display:block;font-size:11.5px;color:#f7e2da;font-weight:800;}
+.liv-storm-body small{font-size:9.5px;color:#c9a89e;}
+.liv-storm-timer{flex:none;font:800 10px var(--font-ui);color:#f0b8a0;background:#3a2420;padding:5px 8px;border-radius:8px;}
+.liv-choice{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.liv-choice button{border:1px solid #4a5a44;border-radius:12px;padding:11px 12px;background:#202a24;
+  text-align:left;cursor:pointer;color:#eaf3e3;font-family:inherit;}
+.liv-choice button:active{transform:scale(.98);}
+.liv-choice button b{display:block;font-size:12px;margin-bottom:2px;}
+.liv-choice button small{font-size:9.5px;color:#9fae9c;}
+.liv-choice button.safe{border-color:#4a7a44;background:#1f2d1e;}
+.liv-choice button.risky{border-color:#7a5a34;background:#2b251a;}
+
+/* ---------- 6. ЭКСПЕДИЦИИ ---------- */
+.liv-exp{display:flex;flex-direction:column;gap:8px;}
+.liv-exp-card{border-radius:13px;background:#202a24;border:1px solid #3a4a3d;padding:11px;
+  display:flex;align-items:center;gap:10px;}
+.liv-exp-card.locked{opacity:.55;}
+.liv-exp-ic{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#2b3a45;color:#8fc4e0;}
+.liv-exp-body{flex:1;min-width:0;}
+.liv-exp-body b{display:block;font-size:11.5px;color:#eef3ea;}
+.liv-exp-body small{font-size:9.5px;color:#9fae9c;line-height:1.35;display:block;}
+.liv-exp-go{flex:none;padding:7px 11px;border-radius:9px;border:0;
+  background:linear-gradient(180deg,#6f9bd0,#4a72a8);color:#07121c;
+  font:800 10px var(--font-ui);cursor:pointer;}
+.liv-exp-go:active{transform:scale(.94);}
+.liv-exp-go:disabled{background:#2f3a31;color:#7d8b7c;}
+.liv-exp-prog{height:5px;border-radius:99px;background:#2d3a2e;margin-top:6px;overflow:hidden;}
+.liv-exp-prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#5f9fd0,#a0d8f0);}
+
+/* ---------- 7. КОЛЛЕКЦИЯ КАРТОЧЕК ---------- */
+.liv-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px;}
+.liv-card{aspect-ratio:1;border-radius:9px;background:#1a231d;border:1px solid #33423a;
+  display:grid;place-items:center;font-size:16px;position:relative;overflow:hidden;cursor:pointer;}
+.liv-card.owned{border-color:#8a7434;background:linear-gradient(160deg,#2f2c1a,#23241a);}
+.liv-card.owned.new{animation:cardNew 1.4s ease-in-out 2;}
+@keyframes cardNew{0%,100%{box-shadow:0 0 0 0 rgba(230,190,110,0)}50%{box-shadow:0 0 0 3px rgba(230,190,110,.6)}}
+.liv-card.locked{opacity:.35;filter:grayscale(1);}
+.liv-card .lc-ic{width:20px;height:20px;color:#cfe0c5;}
+.liv-card.owned .lc-ic{color:#f0d68f;}
+.liv-card-rarity{position:absolute;bottom:1px;right:2px;font:800 6px var(--font-ui);color:#c9a44e;}
+.liv-card-meta{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:7px;}
+.liv-card-meta b{font-size:11px;color:#eef3ea;}
+.liv-card-meta small{font-size:9.5px;color:#9fae9c;}
+
+/* ---------- 8. НЕДЕЛЬНАЯ ЯРМАРКА ---------- */
+.liv-week{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(120deg,#2f2a1c,#3a3422 55%,#443c22);border:1px solid #6b5c34;
+  position:relative;overflow:hidden;margin-bottom:9px;}
+.liv-week::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,230,150,.14) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 4.5s ease-in-out infinite;}
+.liv-week-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#4a3f1e;color:#f5d98a;}
+.liv-week-body{flex:1;min-width:0;}
+.liv-week-body b{display:block;font-size:11.5px;color:#faf3dd;font-weight:800;}
+.liv-week-body small{font-size:9.5px;color:#cfc09a;}
+.liv-week-track{height:5px;border-radius:99px;background:#3a3422;margin-top:5px;overflow:hidden;}
+.liv-week-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a44e,#f0d68f);}
+
+/* переключатель фермы — 5 вкладок скроллом */
+.farm-switch{overflow-x:auto;scrollbar-width:none;}
+.farm-switch::-webkit-scrollbar{display:none;}
+.farm-switch button{min-width:56px;}
+
+/* питомец в диалоге */
+.liv-pet-hero{text-align:center;padding:4px 0 8px;}
+.liv-pet-hero svg{width:110px;height:88px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));}
+.liv-pet-xp{height:6px;border-radius:99px;background:#2d3a2e;margin:8px 0 4px;overflow:hidden;}
+.liv-pet-xp i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fbf5f,#c3e08a);}
+.liv-pet-actions{display:flex;gap:7px;margin-top:10px;}
+.liv-pet-actions button{flex:1;border:0;border-radius:11px;padding:10px 6px;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font:800 10px var(--font-ui);}
+.liv-pet-actions button:active{transform:scale(.96);}
+.liv-pet-actions .feed{background:linear-gradient(180deg,#d8b25e,#b98f3c);color:#231a06;}
+.liv-pet-actions .play{background:#2b3a30;color:#cfe0c5;border:1px solid #3d5040;}
+
+@media (prefers-reduced-motion:reduce){
+  .liv-ff,.liv-pet.wag svg,.liv-card.owned.new{animation:none!important;}
+}

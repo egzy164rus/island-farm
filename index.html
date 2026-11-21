@@ -847,11 +847,11 @@ body.ret-offline-open #modal-root .backdrop{padding-top:60px;}
     radial-gradient(ellipse 90% 40% at 12% 100%,rgba(41,66,48,.45) 0%,rgba(24,33,28,0) 70%),
     linear-gradient(180deg,#121a16 0%,#18211c 45%,#1b2620 100%);
   transition:background .8s ease;}
-#ambient .amb-stars{position:absolute;inset:0;opacity:.62;
+#ambient .amb-stars{position:absolute;inset:0;opacity:.62;translate:var(--px,0px) 0;
   background-image:radial-gradient(1.9px 1.9px at 12% 14%,#dff3c9 50%,transparent 51%),radial-gradient(1.2px 1.2px at 28% 7%,#ffffff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 46% 18%,#dff3c9 50%,transparent 51%),radial-gradient(1.1px 1.1px at 63% 9%,#ffffff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 78% 20%,#dff3c9 50%,transparent 51%),radial-gradient(1.2px 1.2px at 89% 6%,#ffffff 50%,transparent 51%),radial-gradient(1.3px 1.3px at 7% 27%,#ffffff 50%,transparent 51%),radial-gradient(1.1px 1.1px at 36% 30%,#dff3c9 50%,transparent 51%),radial-gradient(1.4px 1.4px at 70% 31%,#ffffff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 95% 28%,#dff3c9 50%,transparent 51%);
   animation:starsTwinkle 6s ease-in-out infinite;}
 @keyframes starsTwinkle{0%,100%{opacity:.45}50%{opacity:.85}}
-#ambient .amb-hills{position:absolute;left:-6%;right:-6%;bottom:-2%;height:46%;
+#ambient .amb-hills{position:absolute;left:-6%;right:-6%;bottom:-2%;height:46%;transform:translateX(var(--px,0px));
   background:
     radial-gradient(ellipse 46% 100% at 18% 100%,rgba(43,67,49,.92) 0%,rgba(38,58,43,.85) 60%,rgba(38,58,43,0) 61%),
     radial-gradient(ellipse 55% 100% at 58% 100%,rgba(33,52,39,.95) 0%,rgba(29,45,34,.9) 60%,rgba(29,45,34,0) 61%),
@@ -869,7 +869,7 @@ body.ret-offline-open #modal-root .backdrop{padding-top:60px;}
   animation:sunSpin 40s linear infinite;}
 @keyframes sunPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}
 @keyframes sunSpin{to{transform:rotate(360deg)}}
-#ambient .amb-cloud{position:absolute;background:#3a4f41;border-radius:99px;opacity:.55;animation:cloudFloat linear infinite;}
+#ambient .amb-cloud{position:absolute;background:#3a4f41;border-radius:99px;opacity:.55;animation:cloudFloat linear infinite;translate:var(--px,0px) var(--py,0px);}
 #ambient .amb-cloud::before,#ambient .amb-cloud::after{content:'';position:absolute;background:#3a4f41;border-radius:50%;}
 #ambient .amb-cloud::before{width:55%;height:170%;top:-85%;left:18%;}
 #ambient .amb-cloud::after{width:40%;height:130%;top:-60%;right:15%;}
@@ -1085,6 +1085,197 @@ body.ret-offline-open #modal-root .backdrop{padding-top:60px;}
   .map-slot .slot-art{width:66px;height:50px;font-size:23px;}
   .map-center{width:80px;}
   .map-center .mc-art{width:80px;height:64px;font-size:28px;}
+}
+
+/* ============================================================
+   ЖИВОЙ МИР — время суток, питомец, существа, события
+   ============================================================ */
+
+/* ---------- 1. ВРЕМЯ СУТОК ---------- */
+#ambient{transition:background 1.4s ease, filter 1.4s ease;}
+#ambient .amb-sun,#ambient .amb-cloud,#ambient .amb-hills{transition:all 1.4s ease;}
+
+body.tod-dawn #ambient{
+  background:
+    radial-gradient(ellipse 130% 62% at 50% 100%,rgba(255,150,90,.42) 0%,rgba(120,90,120,.22) 52%,transparent 74%),
+    radial-gradient(ellipse 120% 55% at 50% 0%,rgba(80,100,150,.4) 0%,transparent 66%),
+    linear-gradient(180deg,#243252 0%,#4a4f70 40%,#8a6a72 72%,#c08a70 100%);}
+body.tod-dawn #ambient .amb-hills{filter:brightness(.8) saturate(.85) hue-rotate(-6deg);}
+body.tod-dawn #ambient .amb-sun{top:auto;bottom:34%;right:16px;opacity:.9;}
+body.tod-dawn #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(10,8,20,.35) 40%,rgba(8,6,16,.72) 100%);}
+
+body.tod-day #ambient{
+  background:
+    radial-gradient(ellipse 120% 55% at 50% 0%,rgba(120,180,225,.42) 0%,rgba(24,33,28,0) 70%),
+    linear-gradient(180deg,#2c5474 0%,#3f6f7d 34%,#527a5e 68%,#5f8352 100%);}
+body.tod-day #ambient .amb-hills{filter:brightness(1.02) saturate(.95);}
+body.tod-day #ambient .amb-vignette{background:radial-gradient(ellipse 85% 65% at 50% 40%,rgba(0,0,0,0) 55%,rgba(8,22,14,.35) 100%);}
+
+body.tod-golden #ambient{
+  background:
+    radial-gradient(ellipse 120% 62% at 78% 80%,rgba(255,170,70,.5) 0%,transparent 64%),
+    radial-gradient(ellipse 110% 50% at 30% 0%,rgba(90,120,150,.3) 0%,transparent 66%),
+    linear-gradient(180deg,#2a3d55 0%,#4d5a5e 36%,#8a6f42 70%,#b98a4a 100%);}
+body.tod-golden #ambient .amb-hills{filter:brightness(.92) saturate(1.06) sepia(.12);}
+body.tod-golden #ambient .amb-sun{top:auto;bottom:26%;right:22px;box-shadow:0 0 48px 16px rgba(255,190,100,.4);}
+
+body.tod-dusk #ambient{
+  background:
+    radial-gradient(ellipse 130% 58% at 24% 82%,rgba(230,110,80,.4) 0%,transparent 64%),
+    linear-gradient(180deg,#121a2e 0%,#2c2a42 38%,#5c3e4c 72%,#8a5442 100%);}
+body.tod-dusk #ambient .amb-hills{filter:brightness(.6) saturate(.72) hue-rotate(-8deg);}
+body.tod-dusk #ambient .amb-sun{top:auto;bottom:16%;left:18%;right:auto;opacity:.85;}
+body.tod-dusk #ambient .amb-stars{opacity:.55;}
+body.tod-dusk #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(12,6,20,.42) 40%,rgba(6,4,12,.78) 100%);}
+
+body.tod-night #ambient{
+  background:
+    radial-gradient(ellipse 120% 52% at 50% 0%,rgba(50,80,130,.36) 0%,transparent 68%),
+    linear-gradient(180deg,#070b14 0%,#0d1524 40%,#121d30 72%,#16263a 100%);}
+body.tod-night #ambient .amb-hills{filter:brightness(.4) saturate(.5) hue-rotate(8deg);}
+body.tod-night #ambient .amb-sun{top:56px;right:34px;opacity:1;
+  background:radial-gradient(circle at 38% 34%,#fdfbee 0%,#dcd9c0 52%,rgba(185,183,158,0) 72%);
+  box-shadow:0 0 32px 10px rgba(230,235,210,.2);}
+body.tod-night #ambient .amb-sun::after{display:none;}
+body.tod-night #ambient .amb-cloud{background:#243348;opacity:.42;}
+body.tod-night #ambient .amb-cloud::before,body.tod-night #ambient .amb-cloud::after{background:#243348;}
+body.tod-night #ambient .amb-stars{opacity:.95;}
+body.tod-night #ambient .amb-vignette{background:radial-gradient(ellipse 80% 62% at 50% 38%,rgba(2,4,10,.4) 40%,rgba(2,3,8,.8) 100%);}
+body.tod-night .farm-scene{filter:brightness(.62) saturate(.75) hue-rotate(6deg);}
+body.tod-dusk .farm-scene{filter:brightness(.78) saturate(.86) sepia(.1);}
+body.tod-dawn .farm-scene{filter:brightness(.84) saturate(.92) sepia(.08);}
+body.tod-golden .farm-scene{filter:brightness(1.02) saturate(1.1) sepia(.14);}
+
+/* индикатор фазы в HUD */
+.liv-phase{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:750;
+  padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.08);color:#cfe0c5;}
+
+/* ---------- 2. СВЕТЛЯЧКИ / СНЕЖИНКИ ---------- */
+.liv-fireflies{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.liv-ff{position:absolute;width:4px;height:4px;border-radius:50%;background:#eaff9a;
+  box-shadow:0 0 8px 3px rgba(220,255,140,.6);opacity:0;}
+body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
+@keyframes livFly{
+  0%{opacity:0;transform:translate(0,0) scale(.7)}
+  18%{opacity:.9}
+  50%{transform:translate(34px,-44px) scale(1);opacity:.75}
+  80%{opacity:.85}
+  100%{opacity:0;transform:translate(-20px,-76px) scale(.8)}}
+
+/* ---------- 3. ПИТОМЕЦ ---------- */
+.liv-pet{position:absolute;left:10px;bottom:calc(env(safe-area-inset-bottom) + 62px);z-index:9;width:64px;cursor:pointer;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));transition:transform .2s;}
+.liv-pet:active{transform:scale(.93);}
+.liv-pet.sleeping{opacity:.8;}
+.liv-pet svg{display:block;width:64px;height:52px;transition:transform .3s;}
+.liv-pet.wag svg{animation:petWag .5s ease-in-out 3;}
+@keyframes petWag{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(6deg)}}
+.liv-pet-bubble{position:absolute;left:52px;bottom:34px;background:#f4faf0;color:#1b2a1f;
+  font:800 9px/1.2 var(--font-ui);padding:4px 7px;border-radius:9px 9px 9px 2px;white-space:nowrap;
+  box-shadow:0 3px 8px rgba(0,0,0,.3);animation:bubbleIn .3s ease-out;}
+@keyframes bubbleIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.liv-pet-lvl{position:absolute;right:-2px;top:-2px;min-width:16px;height:16px;border-radius:99px;
+  background:#c9a44e;color:#231a06;font:800 9px/16px var(--font-ui);text-align:center;padding:0 3px;
+  box-shadow:0 2px 5px rgba(0,0,0,.35);}
+
+/* ---------- 4. ЖИВОТНЫЕ НА СЦЕНЕ ---------- */
+.liv-critters{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.liv-critter{position:absolute;font-size:0;opacity:.92;}
+.liv-bird{position:absolute;width:22px;height:10px;opacity:.75;}
+.liv-bird::before,.liv-bird::after{content:'';position:absolute;top:0;width:11px;height:8px;
+  border:1.6px solid rgba(30,45,32,.75);border-radius:50% 50% 0 0;border-bottom:0;}
+.liv-bird::before{left:0;transform:rotate(-14deg);}
+.liv-bird::after{right:0;transform:rotate(14deg);}
+
+/* ---------- 5. ШТОРМ ---------- */
+.liv-storm-banner{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(120deg,#2a2230,#3a2a30 55%,#402a28);border:1px solid #6b4a44;
+  position:relative;overflow:hidden;margin-bottom:9px;}
+.liv-storm-banner::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,180,150,.14) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 3s ease-in-out infinite;}
+.liv-storm-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#4a2a24;color:#f0a08a;}
+.liv-storm-body{flex:1;min-width:0;}
+.liv-storm-body b{display:block;font-size:11.5px;color:#f7e2da;font-weight:800;}
+.liv-storm-body small{font-size:9.5px;color:#c9a89e;}
+.liv-storm-timer{flex:none;font:800 10px var(--font-ui);color:#f0b8a0;background:#3a2420;padding:5px 8px;border-radius:8px;}
+.liv-choice{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.liv-choice button{border:1px solid #4a5a44;border-radius:12px;padding:11px 12px;background:#202a24;
+  text-align:left;cursor:pointer;color:#eaf3e3;font-family:inherit;}
+.liv-choice button:active{transform:scale(.98);}
+.liv-choice button b{display:block;font-size:12px;margin-bottom:2px;}
+.liv-choice button small{font-size:9.5px;color:#9fae9c;}
+.liv-choice button.safe{border-color:#4a7a44;background:#1f2d1e;}
+.liv-choice button.risky{border-color:#7a5a34;background:#2b251a;}
+
+/* ---------- 6. ЭКСПЕДИЦИИ ---------- */
+.liv-exp{display:flex;flex-direction:column;gap:8px;}
+.liv-exp-card{border-radius:13px;background:#202a24;border:1px solid #3a4a3d;padding:11px;
+  display:flex;align-items:center;gap:10px;}
+.liv-exp-card.locked{opacity:.55;}
+.liv-exp-ic{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#2b3a45;color:#8fc4e0;}
+.liv-exp-body{flex:1;min-width:0;}
+.liv-exp-body b{display:block;font-size:11.5px;color:#eef3ea;}
+.liv-exp-body small{font-size:9.5px;color:#9fae9c;line-height:1.35;display:block;}
+.liv-exp-go{flex:none;padding:7px 11px;border-radius:9px;border:0;
+  background:linear-gradient(180deg,#6f9bd0,#4a72a8);color:#07121c;
+  font:800 10px var(--font-ui);cursor:pointer;}
+.liv-exp-go:active{transform:scale(.94);}
+.liv-exp-go:disabled{background:#2f3a31;color:#7d8b7c;}
+.liv-exp-prog{height:5px;border-radius:99px;background:#2d3a2e;margin-top:6px;overflow:hidden;}
+.liv-exp-prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#5f9fd0,#a0d8f0);}
+
+/* ---------- 7. КОЛЛЕКЦИЯ КАРТОЧЕК ---------- */
+.liv-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px;}
+.liv-card{aspect-ratio:1;border-radius:9px;background:#1a231d;border:1px solid #33423a;
+  display:grid;place-items:center;font-size:16px;position:relative;overflow:hidden;cursor:pointer;}
+.liv-card.owned{border-color:#8a7434;background:linear-gradient(160deg,#2f2c1a,#23241a);}
+.liv-card.owned.new{animation:cardNew 1.4s ease-in-out 2;}
+@keyframes cardNew{0%,100%{box-shadow:0 0 0 0 rgba(230,190,110,0)}50%{box-shadow:0 0 0 3px rgba(230,190,110,.6)}}
+.liv-card.locked{opacity:.35;filter:grayscale(1);}
+.liv-card .lc-ic{width:20px;height:20px;color:#cfe0c5;}
+.liv-card.owned .lc-ic{color:#f0d68f;}
+.liv-card-rarity{position:absolute;bottom:1px;right:2px;font:800 6px var(--font-ui);color:#c9a44e;}
+.liv-card-meta{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:7px;}
+.liv-card-meta b{font-size:11px;color:#eef3ea;}
+.liv-card-meta small{font-size:9.5px;color:#9fae9c;}
+
+/* ---------- 8. НЕДЕЛЬНАЯ ЯРМАРКА ---------- */
+.liv-week{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(120deg,#2f2a1c,#3a3422 55%,#443c22);border:1px solid #6b5c34;
+  position:relative;overflow:hidden;margin-bottom:9px;}
+.liv-week::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent 30%,rgba(255,230,150,.14) 50%,transparent 70%);
+  transform:translateX(-100%);animation:fairShine 4.5s ease-in-out infinite;}
+.liv-week-ic{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:11px;
+  background:#4a3f1e;color:#f5d98a;}
+.liv-week-body{flex:1;min-width:0;}
+.liv-week-body b{display:block;font-size:11.5px;color:#faf3dd;font-weight:800;}
+.liv-week-body small{font-size:9.5px;color:#cfc09a;}
+.liv-week-track{height:5px;border-radius:99px;background:#3a3422;margin-top:5px;overflow:hidden;}
+.liv-week-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a44e,#f0d68f);}
+
+/* переключатель фермы — 5 вкладок скроллом */
+.farm-switch{overflow-x:auto;scrollbar-width:none;}
+.farm-switch::-webkit-scrollbar{display:none;}
+.farm-switch button{min-width:56px;}
+
+/* питомец в диалоге */
+.liv-pet-hero{text-align:center;padding:4px 0 8px;}
+.liv-pet-hero svg{width:110px;height:88px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));}
+.liv-pet-xp{height:6px;border-radius:99px;background:#2d3a2e;margin:8px 0 4px;overflow:hidden;}
+.liv-pet-xp i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fbf5f,#c3e08a);}
+.liv-pet-actions{display:flex;gap:7px;margin-top:10px;}
+.liv-pet-actions button{flex:1;border:0;border-radius:11px;padding:10px 6px;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font:800 10px var(--font-ui);}
+.liv-pet-actions button:active{transform:scale(.96);}
+.liv-pet-actions .feed{background:linear-gradient(180deg,#d8b25e,#b98f3c);color:#231a06;}
+.liv-pet-actions .play{background:#2b3a30;color:#cfe0c5;border:1px solid #3d5040;}
+
+@media (prefers-reduced-motion:reduce){
+  .liv-ff,.liv-pet.wag svg,.liv-card.owned.new{animation:none!important;}
 }
 
 </style>
@@ -2145,7 +2336,7 @@ function renderHUD(){
       <div class="chip gem-chip ${gemFx}">${ic('gem')} <b data-gems>${S.gems}</b></div>
       <div class="hud-btn"><button class="icon-btn settings-control" onclick="App.openSettings()" title="Настройки" aria-label="Настройки">${ic('gear')}</button></div>
     </div>
-    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span><span class="weather-meta">${seas.name} <i>·</i> ${ic(wea.icon)} ${wea.name}</span></div>
+    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span><span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span><span class="weather-meta">${seas.name} <i>·</i> ${ic(wea.icon)} ${wea.name}</span></div>
     <div class="xpbar"><i style="width:${xpPct}%"></i></div>`;
 }
 
@@ -3089,6 +3280,51 @@ const FX = (()=>{
     setWeather(r){ const a=document.getElementById('ambient'); if(a) a.classList.toggle('rainy', !!r); } };
 })();
 
+/* ---------------- 2.5D ПАРАЛЛАКС (гироскоп + скролл) ---------------- */
+function installDepthParallax(){
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+  const ambient = document.getElementById('ambient');
+  if (!ambient) return;
+  const layers = {
+    hills: ambient.querySelector('.amb-hills'),
+    sun: ambient.querySelector('.amb-sun'),
+    clouds: Array.from(ambient.querySelectorAll('.amb-cloud')),
+    stars: ambient.querySelector('.amb-stars'),
+  };
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+
+  const apply = () => {
+    raf = 0;
+    cx += (tx - cx) * 0.12; cy += (ty - cy) * 0.12;
+    if (Math.abs(tx-cx) < 0.002 && Math.abs(ty-cy) < 0.002){ cx = tx; cy = ty; }
+    if (layers.hills) layers.hills.style.setProperty('--px', (cx*26).toFixed(2)+'px');
+    if (layers.sun)   layers.sun.style.transform = `translate(${(cx*-18).toFixed(2)}px, ${(cy*-14).toFixed(2)}px)`;
+    layers.clouds.forEach((c,i)=>{
+      c.style.setProperty('--px', (cx*(12 + i*8)).toFixed(2)+'px');
+      c.style.setProperty('--py', (cy*(8 + i*4)).toFixed(2)+'px');
+    });
+    if (layers.stars) layers.stars.style.setProperty('--px', (cx*-8).toFixed(2)+'px');
+    if (raf || Math.abs(tx-cx) > 0.002 || Math.abs(ty-cy) > 0.002) raf = raf || requestAnimationFrame(apply);
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(apply); };
+
+  // гироскоп (мобильные)
+  const onOrient = e => {
+    if (e.gamma == null || e.beta == null) return;
+    tx = clamp(e.gamma / 35, -1, 1);
+    ty = clamp((e.beta - 45) / 45, -1, 1);
+    kick();
+  };
+  window.addEventListener('deviceorientation', onOrient, { passive:true });
+
+  // указатель (десктоп / превью)
+  window.addEventListener('pointermove', e => {
+    tx = clamp((e.clientX / window.innerWidth - 0.5) * 2, -1, 1);
+    ty = clamp((e.clientY / window.innerHeight - 0.5) * 2, -1, 1);
+    kick();
+  }, { passive:true });
+}
+
 /* ---------------- PARALLAX ---------------- */
 function installParallax(){
   const screen = document.getElementById('screen');
@@ -3159,6 +3395,7 @@ function init(){
   installSwipeGestures();
   installRipple();
   installParallax();
+  installDepthParallax();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
       if(window.__farmSwRefresh) return;
@@ -4095,6 +4332,7 @@ function RET_installHooks(){
   if (typeof origRenderScreen === 'function'){
     window.renderScreen = function(){
       if (S && !S.ret) RET_afterState();
+      if (S && !S.liv && typeof LIV_afterState === 'function') LIV_afterState();
       return origRenderScreen.apply(this, arguments);
     };
   }
@@ -4192,9 +4430,945 @@ function RET_afterState(){
   RET_rollFair();
   RET_touchStreak();
   RET_checkAchievements();
+  try { if (typeof LIV_afterState === 'function') LIV_afterState(); } catch(e){}
 }
 
 RET_boot();
+
+
+/* ===== LIVING WORLD MODULE ===== */
+/* ============================================================
+   ЖИВОЙ МИР — ЛОГИКА
+   Время суток, питомец, существа, шторм, экспедиции, коллекция
+   ============================================================ */
+
+/* ---------------- КОНФИГ ---------------- */
+const TOD_PHASES = [
+  { id:'dawn',   name:'Рассвет',      icon:'sun',    from:5,  to:8,  bonus:'Молоко +15%',        color:'#f0a878' },
+  { id:'day',    name:'День',         icon:'sun',    from:8,  to:17, bonus:'Обычный день',        color:'#a8d0e8' },
+  { id:'golden', name:'Золотой час',  icon:'sun',    from:17, to:19, bonus:'Урожай +10%',         color:'#f0c878' },
+  { id:'dusk',   name:'Закат',        icon:'snow',   from:19, to:21, bonus:'Заказы +15%',         color:'#d89a8a' },
+  { id:'night',  name:'Ночь',         icon:'snow',   from:21, to:5,  bonus:'Выдержка ×1.4',       color:'#8a9ed8' },
+];
+
+const PET_STAGES = [
+  { lvl:1, name:'Щенок',    need:0,    bonus:'+2% к урожаю' },
+  { lvl:2, name:'Подросток',need:120,  bonus:'+4% к урожаю' },
+  { lvl:3, name:'Взрослый', need:400,  bonus:'+6% урожай, −5% поломок' },
+  { lvl:4, name:'Верный',   need:1000, bonus:'+9% урожай, −10% поломок' },
+  { lvl:5, name:'Легенда',  need:2200, bonus:'+12% урожай, −15% поломок' },
+];
+const PET_STAGE_EMOJI = ['🐶','🐕','🦮','🐕\u200d🦺','🐺'];
+
+const EXPEDITIONS = [
+  { id:'shore',  name:'Рыбацкая бухта', icon:'droplet', min:1, dur:45,  cost:300,
+    desc:'Сеть, сети и немного соли', rewards:['gems','seed'] },
+  { id:'forest', name:'Лесопилка',      icon:'leaf',    min:2, dur:90,  cost:600,
+    desc:'Древесина и редкие травы',   rewards:['coins','card'] },
+  { id:'hill',   name:'Ветряные холмы', icon:'bolt',    min:3, dur:150, cost:1200,
+    desc:'Старые механизмы и клады',   rewards:['gems','card','coins'] },
+  { id:'ruins',  name:'Древние руины',  icon:'map',     min:5, dur:240, cost:2500,
+    desc:'Тайны первого фермера',      rewards:['card','gems'] },
+];
+
+const STORM_EVENTS = [
+  { id:'storm',  name:'Приближается шторм', icon:'rain',  text:'Ураган идёт на остров', safeCost:200, lossMin:.25, lossMax:.4 },
+  { id:'drought',name:'Засуха',             icon:'drought',text:'Палящее солнце сушит землю', safeCost:250, lossMin:.2, lossMax:.35 },
+  { id:'pests',  name:'Нашествие вредителей',icon:'leaf', text:'Тля атакует посевы', safeCost:180, lossMin:.3, lossMax:.45 },
+];
+
+/* Карточки коллекции — 30 штук по 3 редкости */
+const CARD_SET = [
+  { id:'wheat',   name:'Золотая пшеница', icon:'wheat',  r:'common' },
+  { id:'corn',    name:'Сахарная кукуруза',icon:'corn',  r:'common' },
+  { id:'potato',  name:'Белый картофель', icon:'potato', r:'common' },
+  { id:'grape',   name:'Виноградная лоза',icon:'grape',  r:'common' },
+  { id:'rapeseed',name:'Рапсовый цвет',   icon:'flower', r:'common' },
+  { id:'soy',     name:'Полевая соя',     icon:'leaf',   r:'common' },
+  { id:'cotton',  name:'Пушистый хлопок', icon:'cloud',  r:'common' },
+  { id:'hay',     name:'Ароматное сено',  icon:'hay',    r:'common' },
+  { id:'eggs',    name:'Крупные яйца',    icon:'egg',    r:'common' },
+  { id:'milk',    name:'Парное молоко',   icon:'milk',   r:'common' },
+  { id:'wool',    name:'Мягкая шерсть',   icon:'wool',   r:'rare' },
+  { id:'honey',   name:'Лесной мёд',      icon:'honey',  r:'rare' },
+  { id:'cheese',  name:'Зрелый сыр',      icon:'cheese', r:'rare' },
+  { id:'bread',   name:'Ржаной хлеб',     icon:'bread',  r:'rare' },
+  { id:'fabric',  name:'Льняная ткань',   icon:'fabric', r:'rare' },
+  { id:'veggies', name:'Овощной сбор',    icon:'tomato', r:'rare' },
+  { id:'meat',    name:'Фермерское мясо', icon:'meat',   r:'rare' },
+  { id:'silage',  name:'Сочный силос',    icon:'silage', r:'rare' },
+  { id:'biogas',  name:'Чистый биогаз',   icon:'zap',    r:'rare' },
+  { id:'flour',   name:'Мельничная мука', icon:'sack',   r:'rare' },
+  { id:'clothes', name:'Тёплая одежда',   icon:'shirt',  r:'epic' },
+  { id:'gem',     name:'Островной самоцвет',icon:'gem',  r:'epic' },
+  { id:'tractor', name:'Старый трактор',  icon:'tractor',r:'epic' },
+  { id:'mill',    name:'Каменная мельница',icon:'windmill',r:'epic' },
+  { id:'cow',     name:'Породистая корова',icon:'cow',   r:'epic' },
+  { id:'bee',     name:'Матка пасеки',    icon:'bee',    r:'epic' },
+  { id:'barn',    name:'Красный амбар',   icon:'barn',   r:'epic' },
+  { id:'coin',    name:'Золотой талер',   icon:'coin',   r:'epic' },
+  { id:'star',    name:'Звезда острова',  icon:'star',   r:'epic' },
+  { id:'medal',   name:'Медаль фермера',  icon:'medal',  r:'epic' },
+];
+const CARD_RARITY_COLOR = { common:'#9fb8a0', rare:'#7fb8e0', epic:'#e0b870' };
+
+/* ---------------- МИГРАЦИЯ ---------------- */
+function LIV_migrate(){
+  if (!S) return;
+  if (!S.liv) S.liv = {};
+  const L = S.liv;
+  if (!L.pet) L.pet = { name:'Рекс', xp:0, fed:Date.now(), lastPlay:0, adopted:false };
+  if (!L.exp) L.exp = { running:null, done:[] };
+  if (!L.cards) L.cards = { owned:[], seen:[] };
+  if (!L.storm) L.storm = { date:'', id:null, resolved:false, deadline:0 };
+  if (!L.week) L.week = { start:'', points:0, claimed:[] };
+  if (!S.stats.petLevel) S.stats.petLevel = 1;
+  if (!S.stats.expeditions) S.stats.expeditions = 0;
+}
+
+/* ---------------- ВРЕМЯ СУТОК ---------------- */
+function LIV_todPhase(){
+  const h = new Date().getHours();
+  for (const p of TOD_PHASES){
+    if (p.from <= p.to){ if (h >= p.from && h < p.to) return p; }
+    else { if (h >= p.from || h < p.to) return p; }
+  }
+  return TOD_PHASES[1];
+}
+
+function LIV_applyTOD(){
+  const p = LIV_todPhase();
+  const body = document.body;
+  ['dawn','day','golden','dusk','night'].forEach(id => body.classList.toggle('tod-'+id, id === p.id));
+  return p;
+}
+
+/* Бонусы времени суток */
+function LIV_todYieldMult(){
+  const p = LIV_todPhase();
+  if (p.id === 'golden') return 1.10;
+  return 1;
+}
+function LIV_todAgingMult(){
+  return LIV_todPhase().id === 'night' ? 1.4 : 1;
+}
+function LIV_todMilkMult(){
+  return LIV_todPhase().id === 'dawn' ? 1.15 : 1;
+}
+function LIV_todContractMult(){
+  return LIV_todPhase().id === 'dusk' ? 1.15 : 1;
+}
+
+/* ---------------- СВЕТЛЯЧКИ ---------------- */
+function LIV_spawnFireflies(container){
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 0; i < 9; i++){
+    const d = document.createElement('div');
+    d.className = 'liv-ff';
+    d.style.left = (8 + Math.random()*84) + '%';
+    d.style.top = (22 + Math.random()*58) + '%';
+    d.style.animationDelay = (-Math.random()*8).toFixed(1) + 's';
+    d.style.animationDuration = (6 + Math.random()*5).toFixed(1) + 's';
+    container.appendChild(d);
+  }
+}
+
+/* ---------------- ПИТОМЕЦ ---------------- */
+function LIV_petStage(){
+  const xp = S.liv.pet.xp || 0;
+  let stage = PET_STAGES[0];
+  for (const s of PET_STAGES) if (xp >= s.need) stage = s;
+  return stage;
+}
+function LIV_petBonus(){
+  const lvl = LIV_petStage().lvl;
+  return { yield: [0, .02, .04, .06, .09, .12][lvl] || 0,
+           decay: [0, 0, 0, .05, .10, .15][lvl] || 0 };
+}
+function LIV_petMood(){
+  // настроение падает, если давно не кормили
+  const hours = (Date.now() - (S.liv.pet.fed || Date.now())) / 3600000;
+  if (hours < 4) return { key:'happy',  label:'Сыт и весел',  mult:1.0,  icon:'😊' };
+  if (hours < 10) return { key:'ok',   label:'Скучает',      mult:0.85, icon:'😐' };
+  if (hours < 24) return { key:'sad',  label:'Голодный',     mult:0.6,  icon:'😟' };
+  return { key:'bad', label:'Совсем один', mult:0.35, icon:'😢' };
+}
+function LIV_petXP(n){
+  const before = LIV_petStage().lvl;
+  S.liv.pet.xp = (S.liv.pet.xp || 0) + n;
+  const after = LIV_petStage();
+  if (after.lvl > before){
+    S.stats.petLevel = after.lvl;
+    setTimeout(()=>{
+      FX.confetti();
+      openDialog(`<div style="text-align:center">
+        <div class="big-emoji">${PET_STAGE_EMOJI[after.lvl-1]}</div>
+        <h2>${S.liv.pet.name} вырос!</h2>
+        <p class="muted">Теперь он ${after.name}. ${after.bonus}</p>
+        <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично!</button></div>`);
+      sfx.good();
+    }, 400);
+  }
+}
+function LIV_feedPet(){
+  const p = S.liv.pet;
+  const cost = 40;
+  if (S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+  if (Date.now() - p.fed < 3600000){ toast(`${p.name} ещё сыт`, '', 'check'); return; }
+  addCoins(-cost);
+  p.fed = Date.now();
+  LIV_petXP(18);
+  toast(`${p.name} накормлен · +18 опыта`, 'good', 'sack');
+  sfx.pop(); buzz(30);
+  FX.pop(document.querySelector('.liv-pet'), '🍖', 4);
+  save(); renderAll(); openPet();
+}
+function LIV_playPet(){
+  const p = S.liv.pet;
+  if (Date.now() - p.lastPlay < 1800000){ toast(`${p.name} устал играть`, '', 'clock'); return; }
+  p.lastPlay = Date.now();
+  LIV_petXP(12);
+  addCoins(5);
+  toast(`Игра с ${p.name} · +12 опыта, +5 монет`, 'good', 'check');
+  sfx.good(); buzz(20);
+  const el = document.querySelector('.liv-pet');
+  if (el){ el.classList.add('wag'); setTimeout(()=>el.classList.remove('wag'), 1600); }
+  FX.pop(el, '❤️', 3);
+  save(); renderAll(); openPet();
+}
+function LIV_petSay(text){
+  const el = document.querySelector('.liv-pet-bubble');
+  if (el) el.remove();
+  const pet = document.querySelector('.liv-pet');
+  if (!pet) return;
+  const b = document.createElement('div');
+  b.className = 'liv-pet-bubble';
+  b.textContent = text;
+  pet.appendChild(b);
+  setTimeout(()=>b.remove(), 2600);
+}
+
+/* ---------------- СУЩЕСТВА НА СЦЕНЕ ---------------- */
+function LIV_spawnCritters(container, hasAnimals){
+  if (!container) return;
+  container.innerHTML = '';
+  if (!hasAnimals) return;
+  // птицы
+  for (let i = 0; i < 2; i++){
+    const b = document.createElement('div');
+    b.className = 'liv-bird';
+    b.style.top = (18 + i*14) + '%';
+    b.style.left = '-10%';
+    b.style.animation = `birdFly${i} ${18+i*7}s linear infinite`;
+    b.style.animationDelay = (-i*9) + 's';
+    container.appendChild(b);
+  }
+}
+function LIV_injectBirdKeyframes(){
+  if (document.getElementById('liv-bird-kf')) return;
+  const st = document.createElement('style');
+  st.id = 'liv-bird-kf';
+  st.textContent = `
+    @keyframes birdFly0{from{transform:translateX(-30px) translateY(0)}50%{transform:translateX(200px) translateY(-14px)}to{transform:translateX(420px) translateY(4px)}}
+    @keyframes birdFly1{from{transform:translateX(-30px) translateY(0)}50%{transform:translateX(180px) translateY(10px)}to{transform:translateX(420px) translateY(-8px)}}
+    @keyframes critterWalk{0%,100%{transform:translateX(0) scaleX(1)}45%{transform:translateX(var(--walk,60px)) scaleX(1)}55%{transform:translateX(var(--walk,60px)) scaleX(-1)}99%{transform:translateX(0) scaleX(-1)}}
+  `;
+  document.head.appendChild(st);
+}
+
+/* ---------------- ШТОРМ ---------------- */
+function LIV_rollStorm(){
+  const L = S.liv;
+  const today = todayStr();
+  if (L.storm.date === today) return;
+  L.storm = { date: today, id: null, resolved: false, deadline: 0 };
+  // 40% шанс, что сегодня будет событие
+  if (S.level >= 2 && Math.random() < 0.40){
+    L.storm.id = pick(STORM_EVENTS).id;
+    L.storm.deadline = Date.now() + 3*3600*1000; // 3 часа
+  }
+  save();
+}
+function LIV_stormEvent(){
+  const L = S.liv;
+  if (!L?.storm?.id || L.storm.resolved) return null;
+  if (Date.now() > L.storm.deadline){ L.storm.resolved = true; return null; }
+  return STORM_EVENTS.find(e => e.id === L.storm.id) || null;
+}
+function LIV_stormSafe(){
+  const ev = LIV_stormEvent();
+  if (!ev) return;
+  if (S.coins < ev.safeCost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+  addCoins(-ev.safeCost);
+  S.liv.storm.resolved = true;
+  toast(`${ev.name} пережит без потерь!`, 'good', 'shield');
+  sfx.good(); save(); renderAll();
+  openDialog(`<div style="text-align:center">
+    <div class="big-emoji">🛡️</div><h2>Урожай спасён</h2>
+    <p class="muted">Потрачено ${fmt(ev.safeCost)} монет, но всё осталось целым.</p>
+    <button class="btn btn-primary btn-block" onclick="App.closeModal()">Хорошо</button></div>`);
+}
+function LIV_stormRisk(){
+  const ev = LIV_stormEvent();
+  if (!ev) return;
+  S.liv.storm.resolved = true;
+  const luck = Math.random();
+  if (luck < 0.45){
+    toast('Пронесло! Ничего не пострадало', 'good', 'sun');
+    sfx.good(); FX.confetti();
+    save(); renderAll();
+    openDialog(`<div style="text-align:center">
+      <div class="big-emoji">🍀</div><h2>Повезло!</h2>
+      <p class="muted">${ev.name} прошёл мимо. Вы сохранили и деньги, и урожай.</p>
+      <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично</button></div>`);
+  } else {
+    const lossPct = rand(ev.lossMin, ev.lossMax);
+    let lost = 0;
+    for (const g in S.goods){
+      const cut = Math.floor(S.goods[g] * lossPct);
+      if (cut > 0){ S.goods[g] -= cut; lost += cut; }
+    }
+    // также бьёт по растущим полям
+    let fieldHit = 0;
+    for (const f of S.fields){
+      if (f.owned && f.state === 'growing' && f.crop){
+        if (Math.random() < 0.5){ if (f.t1 && f.t0){ f.t1 = f.t0 + (f.t1 - f.t0) * 1.35; fieldHit++; } }
+      }
+    }
+    sfx.bad(); FX.shake();
+    save(); renderAll();
+    openDialog(`<div style="text-align:center">
+      <div class="big-emoji">😖</div><h2>${ev.name} ударил</h2>
+      <p class="muted">Потеряно ${fmt(lost)} ед. товара${fieldHit ? `, ${fieldHit} полей задержались` : ''}.</p>
+      <button class="btn btn-primary btn-block" onclick="App.closeModal()">Переживём</button></div>`);
+  }
+}
+
+/* ---------------- ЭКСПЕДИЦИИ ---------------- */
+function LIV_expStart(id){
+  const def = EXPEDITIONS.find(e => e.id === id);
+  const L = S.liv.exp;
+  if (!def) return;
+  if (L.running){ toast('Экспедиция уже идёт', 'bad', 'clock'); return; }
+  if (S.level < def.min){ toast(`Нужен ${def.min} уровень`, 'bad', 'star'); return; }
+  if (S.coins < def.cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+  addCoins(-def.cost);
+  L.running = { id: def.id, startedAt: Date.now(), endsAt: Date.now() + def.dur*60000 };
+  toast(`Отправлен в ${def.name} · ${def.dur} мин`, 'good', 'map');
+  sfx.pop(); save(); renderAll();
+}
+function LIV_expCollect(){
+  const L = S.liv.exp;
+  const r = L.running;
+  if (!r) return;
+  const def = EXPEDITIONS.find(e => e.id === r.id);
+  if (Date.now() < r.endsAt){ toast('Ещё в пути', '', 'clock'); return; }
+  L.running = null;
+  S.stats.expeditions = (S.stats.expeditions||0) + 1;
+
+  const gained = [];
+  const roll = Math.random();
+  if (roll < 0.35){
+    const coins = Math.round(def.cost * rand(1.8, 3.2));
+    addCoins(coins); gained.push(`+${fmt(coins)} монет`);
+  } else if (roll < 0.7){
+    const gems = randi(1, 3);
+    S.gems += gems; gained.push(`+${gems} ${gemWord(gems)}`);
+  } else {
+    const card = LIV_randomCard();
+    if (card){ gained.push(`карточка «${card.name}»`); }
+    else { const coins = Math.round(def.cost * 1.5); addCoins(coins); gained.push(`+${fmt(coins)} монет`); }
+  }
+  // бонус за уровень
+  if (Math.random() < 0.3){ addCoins(Math.round(def.cost*0.6)); gained.push(`бонус +${fmt(Math.round(def.cost*0.6))}`); }
+
+  LIV_petXP(10);
+  RET_track('_noop', 20);
+  sfx.good(); FX.confetti(); buzz(50);
+  save(); renderAll();
+  openDialog(`<div style="text-align:center">
+    <div class="big-emoji">🧭</div><h2>Экспедиция вернулась</h2>
+    <p class="muted">${def.name}</p>
+    <p style="font-weight:800;color:#f0d68f">${gained.join('<br>')}</p>
+    <button class="btn btn-primary btn-block" onclick="App.closeModal()">Забрать</button></div>`);
+}
+function LIV_randomCard(){
+  const owned = S.liv.cards.owned;
+  const pool = CARD_SET.filter(c => !owned.includes(c.id));
+  if (!pool.length) return null;
+  // редкие выпадают реже
+  const weighted = [];
+  for (const c of pool){
+    const w = c.r === 'common' ? 6 : c.r === 'rare' ? 3 : 1;
+    for (let i = 0; i < w; i++) weighted.push(c);
+  }
+  const card = pick(weighted);
+  owned.push(card.id);
+  setTimeout(()=>{
+    FX.confetti();
+    toast(`Новая карточка: ${card.name}`, 'good', card.icon);
+    sfx.good();
+  }, 500);
+  return card;
+}
+function LIV_grantCard(){
+  const c = LIV_randomCard();
+  if (c){ save(); renderAll(); }
+  return c;
+}
+
+/* ---------------- НЕДЕЛЬНАЯ ЯРМАРКА ---------------- */
+function LIV_weekStart(){
+  const d = new Date();
+  const day = d.getDay() || 7;
+  const monday = new Date(d); monday.setDate(d.getDate() - day + 1);
+  return monday.getFullYear() + '-' + (monday.getMonth()+1) + '-' + monday.getDate();
+}
+function LIV_rollWeek(){
+  const L = S.liv;
+  const cur = LIV_weekStart();
+  if (!L.week.claimed) L.week.claimed = [];
+  if (L.week.start === cur) return;
+  L.week = { start: cur, points: 0, claimed: [] };
+  save();
+}
+function LIV_weekPoints(n){
+  const L = S.liv;
+  LIV_rollWeek();
+  L.week.points = (L.week.points||0) + n;
+}
+const WEEK_MILESTONES = [
+  { at:500,  reward:{coins:800},           name:'500 очков' },
+  { at:1500, reward:{gems:3},              name:'1 500 очков' },
+  { at:3500, reward:{coins:2500, gems:2},  name:'3 500 очков' },
+  { at:7000, reward:{coins:5000, gems:8},  name:'7 000 очков' },
+];
+function LIV_weekClaim(){
+  const L = S.liv; LIV_rollWeek();
+  const pts = L.week.points || 0;
+  let claimedAny = false;
+  for (const m of WEEK_MILESTONES){
+    if (pts >= m.at && !(L.week.claimed||[]).includes(m.at)){
+      L.week.claimed.push(m.at);
+      if (m.reward.coins) addCoins(m.reward.coins);
+      if (m.reward.gems) S.gems += m.reward.gems;
+      claimedAny = true;
+    }
+  }
+  if (claimedAny){
+    toast('Награда недели получена!', 'good', 'gift');
+    sfx.good(); FX.confetti(); save(); renderAll();
+  } else {
+    toast('Пока нечего забирать', '', 'clock');
+  }
+}
+
+/* ============================================================
+   ЖИВОЙ МИР — ЭКРАНЫ
+   ============================================================ */
+
+/* ---------- SVG ПИТОМЦА ---------- */
+function LIV_petSVG(){
+  const stage = LIV_petStage().lvl;
+  const mood = LIV_petMood().key;
+  const bodyC = ['#c8955e','#b8824e','#a87440','#946336','#7d5128'][Math.min(4, stage-1)];
+  const dark = ['#8f6238','#7d5330','#6b4626','#57381e','#432a15'][Math.min(4, stage-1)];
+  const eyeY = mood === 'sad' || mood === 'bad' ? 23 : 21;
+  const earUp = stage >= 3;
+  const lightC = ['#e8c9a0','#dbb98c','#cda97a','#bb9464','#a67f52'][Math.min(4, stage-1)];
+  const earDark = ['#a2703f','#8f6236','#7c532c','#684323','#54341a'][Math.min(4, stage-1)];
+  return `<svg viewBox="0 0 64 52" aria-hidden="true">
+    <ellipse cx="32" cy="49.5" rx="18" ry="2.4" fill="rgba(0,0,0,.3)"/>
+    <!-- хвост -->
+    <path d="M45.5 32 q8.5 -2.5 7 -11" stroke="${dark}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- задние лапы -->
+    <ellipse cx="24.5" cy="44.5" rx="3.6" ry="2.4" fill="${dark}"/>
+    <ellipse cx="34.5" cy="44.5" rx="3.6" ry="2.4" fill="${dark}"/>
+    <!-- тело -->
+    <ellipse cx="29.5" cy="33" rx="15.5" ry="11.5" fill="${bodyC}"/>
+    <ellipse cx="29.5" cy="37.5" rx="9.5" ry="5.6" fill="${dark}" opacity=".26"/>
+    <!-- уши (висячие, ПОВЕРХ тела) -->
+    <path d="M17.5 23.5 q-5 4.5 -3.8 11 q.9 4.2 4.4 3 q2.2 -3 1.8 -9.2 z" fill="${earDark}"/>
+    <path d="M27.5 21.5 q-1.8 8.5 1.6 11.6 q3.2 -3.6 2.6 -11 z" fill="${earDark}"/>
+    <!-- голова -->
+    <ellipse cx="15" cy="27.5" rx="8.6" ry="7.8" fill="${bodyC}"/>
+    <!-- морда -->
+    <ellipse cx="10.6" cy="31" rx="4.6" ry="3.4" fill="${lightC}"/>
+    <ellipse cx="11.4" cy="29.2" rx="1.6" ry="1.2" fill="#241708"/>
+    <!-- глаза -->
+    <ellipse cx="14.6" cy="${eyeY}" rx="1.7" ry="1.9" fill="#241708"/>
+    <ellipse cx="22.2" cy="${eyeY}" rx="1.7" ry="1.9" fill="#241708"/>
+    <circle cx="15.1" cy="${eyeY-0.9}" r=".55" fill="#fff" opacity=".8"/>
+    <circle cx="22.7" cy="${eyeY-0.9}" r=".55" fill="#fff" opacity=".8"/>
+    <!-- рот / настроение -->
+    ${mood==='happy' ? `<path d="M29.5 29 q5 3.6 9 0" stroke="#241708" stroke-width="1.6" fill="none" stroke-linecap="round"/>` : ''}
+    ${mood==='ok' ? `<ellipse cx="34.5" cy="30" rx="1.6" ry="1.2" fill="#241708"/>` : ''}
+    ${(mood==='sad'||mood==='bad') ? `<path d="M30 31 q4.4 -2.6 8.6 0" stroke="#241708" stroke-width="1.6" fill="none" stroke-linecap="round"/>` : ''}
+    ${mood==='bad' ? `<path d="M32 35.5 q2.2 -1.6 4 0 q1.7 -1.6 3.8 0" stroke="#7fb8e0" stroke-width="1.2" fill="none" opacity=".85"/>` : ''}
+    <!-- ошейник на 4-5 уровне -->
+    ${stage >= 4 ? `<path d="M20 24.5 q8 -4 16 1" stroke="#c94a3c" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="29" cy="24" r="2.2" fill="#e0b850"/>` : ''}
+  </svg>`;
+}
+
+/* ---------- ПИТОМЕЦ В HUD (на главной) ---------- */
+function LIV_renderPetBadge(){
+  const p = S.liv?.pet;
+  if (!p) return '';
+  const stage = LIV_petStage();
+  const mood = LIV_petMood();
+  return `<div class="liv-pet ${mood.key==='bad'?'sleeping':''}" onclick="App.openPet()" role="button" aria-label="${p.name} · ${stage.name}">
+    ${LIV_petSVG()}
+    <span class="liv-pet-lvl">${stage.lvl}</span>
+  </div>`;
+}
+
+/* ---------- ДИАЛОГ ПИТОМЦА ---------- */
+function openPet(){
+  const p = S.liv.pet;
+  const stage = LIV_petStage();
+  const mood = LIV_petMood();
+  const next = PET_STAGES.find(s => s.lvl === stage.lvl + 1);
+  const pct = next ? Math.round(((p.xp - stage.need) / (next.need - stage.need)) * 100) : 100;
+  const canFeed = Date.now() - p.fed >= 3600000;
+  const canPlay = Date.now() - p.lastPlay >= 1800000;
+  openDialog(`
+    <div class="liv-pet-hero">
+      ${LIV_petSVG()}
+      <h2 style="justify-content:center;margin-top:4px">${p.name}</h2>
+      <p class="muted" style="font-size:11px">${stage.name} · ${mood.icon} ${mood.label}</p>
+    </div>
+    <div class="liv-pet-xp"><i style="width:${pct}%"></i></div>
+    <div class="muted-small" style="display:flex;justify-content:space-between">
+      <span>Опыт ${Math.floor(p.xp)}${next ? ' / ' + next.need : ' · максимум'}</span>
+      <span>${stage.bonus}</span>
+    </div>
+    <div class="liv-pet-actions">
+      <button class="feed" onclick="App.feedPet()" ${canFeed?'':'disabled'} style="${canFeed?'':'opacity:.5'}">
+        ${ic('sack')} ${canFeed ? 'Покормить · 40' : 'Сыт'}
+      </button>
+      <button class="play" onclick="App.playPet()" ${canPlay?'':'disabled'} style="${canPlay?'':'opacity:.5'}">
+        ${ic('heart')} ${canPlay ? 'Поиграть' : 'Отдыхает'}
+      </button>
+    </div>
+    <p class="muted-small" style="text-align:center;margin-top:9px">
+      Сытый питомец приносит бонус к урожаю${stage.lvl>=3?` и меньше ломает технику`:''}.
+    </p>
+  `);
+}
+
+/* ---------- ШТОРМ-БАННЕР ---------- */
+function LIV_renderStorm(){
+  const ev = LIV_stormEvent();
+  if (!ev) return '';
+  const left = Math.max(0, Math.ceil((S.liv.storm.deadline - Date.now())/1000));
+  return `<div class="liv-storm-banner" onclick="App.openStorm()">
+    <span class="liv-storm-ic">${ic(ev.icon)}</span>
+    <div class="liv-storm-body"><b>${ev.name}</b><small>Успей решить, пока не поздно</small></div>
+    <span class="liv-storm-timer">${fmtTime(left)}</span>
+  </div>`;
+}
+function openStorm(){
+  const ev = LIV_stormEvent();
+  if (!ev){ toast('Событие уже прошло', '', 'check'); closeModal(); return; }
+  const left = Math.max(0, Math.ceil((S.liv.storm.deadline - Date.now())/1000));
+  openDialog(`
+    <div style="text-align:center">
+      <div class="big-emoji">${ic(ev.icon,'ic-xl')}</div>
+      <h2 style="justify-content:center">${ev.name}</h2>
+      <p class="muted">${ev.text}. Осталось ${fmtTime(left)} — потом последствия необратимы.</p>
+    </div>
+    <div class="liv-choice">
+      <button class="safe" onclick="App.stormSafe()">
+        <b>${ic('shield')} Укрыть всё · ${fmt(ev.safeCost)} монет</b>
+        <small>Гарантированно без потерь</small>
+      </button>
+      <button class="risky" onclick="App.stormRisk()">
+        <b>${ic('bolt')} Рискнуть</b>
+        <small>45% — ничего не случится · 55% — потеря ${Math.round(ev.lossMin*100)}–${Math.round(ev.lossMax*100)}% товара</small>
+      </button>
+    </div>
+  `);
+}
+
+/* ---------- НЕДЕЛЬНАЯ ЯРМАРКА ---------- */
+function LIV_renderWeek(){
+  LIV_rollWeek();
+  const L = S.liv.week;
+  const pts = L.points || 0;
+  const next = WEEK_MILESTONES.find(m => pts < m.at);
+  const pct = next ? Math.min(100, (pts / next.at) * 100) : 100;
+  const canClaim = WEEK_MILESTONES.some(m => pts >= m.at && !(L.week.claimed||[]).includes(m.at));
+  return `<div class="liv-week" onclick="App.openWeek()">
+    <span class="liv-week-ic">${ic('medal')}</span>
+    <div class="liv-week-body">
+      <b>Праздник урожая</b>
+      <small>${next ? `${fmt(pts)} / ${next.at} очков до награды` : 'Все награды недели доступны!'}</small>
+      <div class="liv-week-track"><i style="width:${pct}%"></i></div>
+    </div>
+    <span class="liv-storm-timer">${canClaim ? ic('gift') : fmt(pts)}</span>
+  </div>`;
+}
+function openWeek(){
+  LIV_rollWeek();
+  const L = S.liv.week;
+  const pts = L.points || 0;
+  const rows = WEEK_MILESTONES.map(m => {
+    const done = pts >= m.at, cl = (L.claimed||[]).includes(m.at);
+    return `<div class="liv-exp-card" style="border-color:${cl?'#5f8a4d':done?'#8a7434':'#3a4a3d'}">
+      <span class="liv-exp-ic">${ic(cl?'check':done?'gift':'clock')}</span>
+      <div class="liv-exp-body"><b>${m.name}</b>
+        <small>${m.reward.coins?`+${fmt(m.reward.coins)} монет`:''}${m.reward.gems?` +${m.reward.gems} ${gemWord(m.reward.gems)}`:''}</small></div>
+      <span class="liv-storm-timer">${cl?'Получено':done?'Готово':`${fmt(pts)}/${m.at}`}</span>
+    </div>`;
+  }).join('');
+  openDialog(`
+    <h2>${ic('medal')} Праздник урожая</h2>
+    <p class="muted" style="font-size:11px">Недельное событие. Очки капают за любые действия на ферме — урожай, заказы, продажи, животных.</p>
+    <div class="liv-exp" style="margin-top:10px">${rows}</div>
+    <button class="btn btn-gold btn-block" style="margin-top:12px" onclick="App.weekClaim()">${ic('gift')} Забрать награды</button>
+  `);
+}
+
+/* ---------- ЭКСПЕДИЦИИ ---------- */
+function LIV_renderExpeditions(){
+  const L = S.liv.exp;
+  const r = L.running;
+  const def = r ? EXPEDITIONS.find(e => e.id === r.id) : null;
+  const left = r ? Math.max(0, Math.ceil((r.endsAt - Date.now())/1000)) : 0;
+  const ready = r && left === 0;
+  const pct = r ? Math.min(100, ((Date.now()-r.startedAt)/(r.endsAt-r.startedAt))*100) : 0;
+
+  let html = `<div class="sec-title"><h3>${ic('map')} Экспедиции</h3><small>${S.stats.expeditions||0} завершено</small></div>`;
+  if (r){
+    html += `<div class="liv-exp-card" style="border-color:${ready?'#8a7434':'#3a4a3d'}">
+      <span class="liv-exp-ic">${ic(def.icon)}</span>
+      <div class="liv-exp-body"><b>${def.name}</b><small>${ready?'Вернулся с находками!':'В пути · '+fmtTime(left)}</small>
+        <div class="liv-exp-prog"><i style="width:${pct}%"></i></div></div>
+      ${ready?`<button class="liv-exp-go" onclick="App.expCollect()">Забрать</button>`:''}
+    </div>`;
+  }
+  html += `<div class="liv-exp">`;
+  for (const e of EXPEDITIONS){
+    const locked = S.level < e.min;
+    html += `<div class="liv-exp-card ${locked?'locked':''}">
+      <span class="liv-exp-ic">${ic(locked?'info':e.icon)}</span>
+      <div class="liv-exp-body"><b>${e.name}</b>
+        <small>${locked ? `Откроется на ${e.min} уровне` : `${e.desc} · ${e.dur} мин`}</small></div>
+      <button class="liv-exp-go" ${locked||r?'disabled':''} onclick="App.expStart('${e.id}')">${locked?'🔒':fmt(e.cost)}</button>
+    </div>`;
+  }
+  html += `</div>`;
+  if (!r) html += `<div class="muted-small" style="margin-top:8px;text-align:center">Экспедиция приносит монеты, самоцветы и редкие карточки</div>`;
+  return html;
+}
+
+/* ---------- КОЛЛЕКЦИЯ ---------- */
+function LIV_renderCollection(){
+  const owned = S.liv.cards.owned;
+  const total = CARD_SET.length;
+  const byRarity = {
+    common: CARD_SET.filter(c=>c.r==='common').length,
+    rare: CARD_SET.filter(c=>c.r==='rare').length,
+    epic: CARD_SET.filter(c=>c.r==='epic').length,
+  };
+  let html = `<div class="sec-title"><h3>${ic('star')} Коллекция</h3><small>${owned.length} / ${total}</small></div>`;
+  html += `<div class="liv-cards">`;
+  for (const c of CARD_SET){
+    const has = owned.includes(c.id);
+    html += `<div class="liv-card ${has?'owned':'locked'}" ${has?`onclick="App.cardInfo('${c.id}')"`:''}>
+      <span class="lc-ic">${I[c.icon]||I.box}</span>
+      ${has?`<span class="liv-card-rarity" style="color:${CARD_RARITY_COLOR[c.r]}">${c.r==='epic'?'★':'•'}</span>`:''}
+    </div>`;
+  }
+  html += `</div>`;
+  html += `<div class="liv-card-meta">
+    <b>Собрано ${Math.round(owned.length/total*100)}%</b>
+    <small>${ICON_LEGEND(byRarity)}</small>
+  </div>`;
+  return html;
+}
+function ICON_LEGEND(r){
+  return `<span style="color:${CARD_RARITY_COLOR.common}">•</span> обычные ${r.common} · <span style="color:${CARD_RARITY_COLOR.rare}">•</span> редкие ${r.rare} · <span style="color:${CARD_RARITY_COLOR.epic}">★</span> эпик ${r.epic}`;
+}
+function openCardInfo(id){
+  const c = CARD_SET.find(x=>x.id===id);
+  if (!c) return;
+  openDialog(`<div style="text-align:center">
+    <div class="big-emoji">${ic(c.icon,'ic-xl')}</div>
+    <h2 style="justify-content:center">${c.name}</h2>
+    <p class="muted">${c.r==='epic'?'Эпическая находка':c.r==='rare'?'Редкая находка':'Обычная находка'}</p>
+    <button class="btn btn-primary btn-block" onclick="App.closeModal()">Закрыть</button></div>`);
+}
+
+/* ---------- HUD: фаза дня ---------- */
+function LIV_phaseChip(){
+  const p = LIV_todPhase();
+  return `<span class="liv-phase">${ic(p.icon)} ${p.name}</span>`;
+}
+
+/* ============================================================
+   ЖИВОЙ МИР — ХУКИ
+   ============================================================ */
+
+function LIV_installHooks(){
+  LIV_injectBirdKeyframes();
+
+  /* [1] Множитель урожая: золотой час + питомец */
+  if (typeof fieldYield === 'function'){
+    const orig = fieldYield;
+    fieldYield = function(f){
+      let v = orig.apply(this, arguments);
+      try {
+        const pet = LIV_petBonus().yield * LIV_petMood().mult;
+        v *= (1 + pet) * LIV_todYieldMult();
+      } catch(e){}
+      return v;
+    };
+  }
+
+  /* [2] Ночная выдержка ×1.4 */
+  if (typeof RET_agingTier === 'function'){
+    const orig = RET_agingTier;
+    RET_agingTier = function(p){
+      const r = orig.apply(this, arguments);
+      if (!r || !p) return r;
+      const boost = LIV_todAgingMult();
+      if (boost === 1) return r;
+      // ночью «время» идёт быстрее — пересчитываем индекс
+      const elapsed = ((Date.now() - p.startedAt) / 3600000) * boost;
+      let t = 0;
+      for (let i = AGING_TIERS.length-1; i >= 0; i--){ if (elapsed >= AGING_TIERS[i].hours){ t = i; break; } }
+      return { tier: AGING_TIERS[t], index: t, elapsed, progress: t>=AGING_TIERS.length-1?1:(elapsed-AGING_TIERS[t].hours)/(AGING_TIERS[t+1].hours-AGING_TIERS[t].hours) };
+    };
+  }
+
+  /* [3] Молоко на рассвете + очки недели при сборе продукции */
+  if (typeof collectBuilding === 'function'){
+    const orig = collectBuilding;
+    collectBuilding = function(id){
+      const before = S.goods[BUILDINGS[id]?.good] || 0;
+      const res = orig.apply(this, arguments);
+      const after = S.goods[BUILDINGS[id]?.good] || 0;
+      const got = after - before;
+      if (got > 0){
+        // рассветный бонус к молоку
+        if (BUILDINGS[id]?.good === 'milk'){
+          const extra = Math.round(got * (LIV_todMilkMult() - 1));
+          if (extra > 0){ addGoods('milk', extra); toast(`Рассвет: молоко +${extra}`, 'good', 'milk'); }
+        }
+        LIV_weekPoints(got);
+        LIV_petXP(2);
+      }
+      return res;
+    };
+  }
+
+  /* [4] Заказы: закатный бонус + очки недели */
+  if (window.App && typeof App.claimContract === 'function'){
+    const orig = App.claimContract.bind(App);
+    App.claimContract = function(id){
+      const res = orig(id);
+      try {
+        const mult = LIV_todContractMult();
+        if (mult > 1){
+          const bonus = 150;
+          addCoins(bonus);
+          toast(`Закат: бонус заказа +${fmt(bonus)}`, 'good', 'coin');
+        }
+        LIV_weekPoints(120);
+      } catch(e){}
+      return res;
+    };
+  }
+
+  /* [5] Урожай: очки недели + опыт питомцу */
+  if (typeof completeFieldWork === 'function'){
+    const orig = completeFieldWork;
+    completeFieldWork = function(f){
+      const beforeCoins = 0;
+      const hadCrop = f && f.crop;
+      const res = orig.apply(this, arguments);
+      if (hadCrop){
+        LIV_weekPoints(45);
+        LIV_petXP(3);
+        // случайная карточка при уборке — 6% шанс
+        if (Math.random() < 0.06) LIV_grantCard();
+      }
+      return res;
+    };
+  }
+
+  /* [6] Продажа: очки недели */
+  if (typeof sellGood === 'function'){
+    const orig = sellGood;
+    sellGood = function(good, qty){
+      const gain = orig.apply(this, arguments);
+      if (gain > 0){ LIV_weekPoints(Math.round(gain/10)); }
+      return gain;
+    };
+  }
+
+  /* [7] renderFarm: добавляем питомца, шторм, недельную ярмарку */
+  if (typeof RET_renderFarm === 'function'){
+    window.__liv_origRenderFarm = RET_renderFarm;
+    RET_renderFarm = function(){
+      const res = window.__liv_origRenderFarm.apply(this, arguments);
+      try { LIV_afterRender(); } catch(e){}
+      return res;
+    };
+  }
+
+  /* [8] Новые методы App */
+  if (window.App){
+    Object.assign(App, {
+      openPet(){ sfx.click(); openPet(); },
+      feedPet(){ LIV_feedPet(); },
+      playPet(){ LIV_playPet(); },
+      openStorm(){ sfx.click(); openStorm(); },
+      stormSafe(){ LIV_stormSafe(); },
+      stormRisk(){ LIV_stormRisk(); },
+      openWeek(){ sfx.click(); openWeek(); },
+      weekClaim(){ LIV_weekClaim(); },
+      expStart(id){ LIV_expStart(id); openExpeditions(); },
+      expCollect(){ LIV_expCollect(); },
+      openExpeditions(){ sfx.click(); openExpeditions(); },
+      cardInfo(id){ openCardInfo(id); },
+    });
+  }
+}
+
+/* ---------- Действия после рендера главной ---------- */
+function LIV_afterRender(){
+  // время суток
+  LIV_applyTOD();
+
+  // Светлячки — в фон, чтобы жили над всей фермой
+  const ambient = document.getElementById('ambient');
+  if (ambient && !ambient.querySelector('.liv-fireflies')){
+    const ff = document.createElement('div');
+    ff.className = 'liv-fireflies';
+    ambient.appendChild(ff);
+    LIV_spawnFireflies(ff);
+  }
+
+  // Питомец — постоянный компаньон на экране, вне прокручиваемой области
+  const app = document.getElementById('app');
+  if (app && !app.querySelector('.liv-pet')){
+    const wrap = document.createElement('div');
+    wrap.innerHTML = LIV_renderPetBadge();
+    const petEl = wrap.firstElementChild;
+    if (petEl){
+      // прячем на экранах, где перекрыл бы контент
+      petEl.style.display = (ui.tab === 'farm') ? '' : 'none';
+      app.appendChild(petEl);
+    }
+  } else if (app){
+    const pet = app.querySelector('.liv-pet');
+    if (pet) pet.style.display = (ui.tab === 'farm') ? '' : 'none';
+  }
+}
+
+/* ---------- Экраны ---------- */
+function openExpeditions(){
+  openDialog(`<h2>${ic('map')} Экспедиции</h2>${LIV_renderExpeditions()}`);
+}
+function openCollection(){
+  openDialog(`<h2>${ic('star')} Коллекция</h2>${LIV_renderCollection()}`);
+}
+
+/* ---------- Расширение вкладок фермы ---------- */
+function LIV_extendFarmTabs(){
+  if (typeof RET_renderFarm !== 'function') return;
+  // Добавляем 2 новые вкладки через переопределение
+  const orig = RET_renderFarm;
+  RET_renderFarm = function(){
+    const view = ui.farmView || 'map';
+    if (view === 'exped'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('exped')}</div>
+        ${LIV_renderWeek()}${LIV_renderStorm()}${LIV_renderExpeditions()}
+        ${LIV_renderCollection()}`;
+      positionCoach();
+      return;
+    }
+    if (view === 'cards'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('cards')}</div>
+        ${LIV_renderCollection()}
+        <div style="margin-top:14px">${LIV_renderExpeditions()}</div>`;
+      positionCoach();
+      return;
+    }
+    // добавляем шторм и ярмарку в существующие представления
+    const r = orig.apply(this, arguments);
+    try {
+      const stormHTML = LIV_renderStorm();
+      const weekHTML = LIV_renderWeek();
+      if (view === 'map' && (stormHTML || weekHTML)){
+        const host = document.querySelector('.daily-focus');
+        if (host && !document.querySelector('.liv-storm-banner') && !document.querySelector('.liv-week')){
+          host.insertAdjacentHTML('afterend', stormHTML + weekHTML);
+        }
+      }
+    } catch(e){}
+    return r;
+  };
+}
+
+function LIV_switchHTML(active){
+  const sw = (id, icon, label) => `<button class="${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
+  return sw('map','map','Ферма') + sw('quests','target','Задания') + sw('exped','map','Походы') + sw('cards','star','Карточки') + sw('pass','medal','Пропуск') + sw('ach','medal','Награды');
+}
+
+/* ---------- Периодическое обновление (раз в минуту) ---------- */
+function LIV_tickMinute(){
+  if (!S || !S.liv) return;
+  // смена времени суток
+  const p = LIV_todPhase();
+  if (window.__liv_lastPhase !== p.id){
+    window.__liv_lastPhase = p.id;
+    LIV_applyTOD();
+    const names = { dawn:'Рассвет', day:'День', golden:'Золотой час', dusk:'Закат', night:'Ночь' };
+    if (window.__liv_booted) toast(`${names[p.id]} · ${p.bonus}`, '', p.icon);
+  }
+  // питомец говорит
+  if (Math.random() < 0.12){
+    const mood = LIV_petMood();
+    const lines = mood.key === 'happy' ? ['Гав!','Всё под контролем','Я слежу за полем','Хороший день!']
+      : mood.key === 'ok' ? ['Покорми меня...','Скучно...']
+      : ['Я голодный...','Покорми, пожалуйста'];
+    LIV_petSay(pick(lines));
+  }
+  LIV_rollStorm();
+}
+
+/* ---------- Запуск ---------- */
+function LIV_boot(){
+  LIV_installHooks();
+  LIV_extendFarmTabs();
+  if (S){
+    LIV_migrate();
+    LIV_rollStorm();
+    LIV_rollWeek();
+    LIV_applyTOD();
+  }
+  setInterval(LIV_tickMinute, 60000);
+  setTimeout(()=>{ window.__liv_booted = true; }, 3000);
+}
+
+/* ---------- Обёртка инициализации ---------- */
+function LIV_afterState(){
+  if (!S) return;
+  LIV_migrate();
+  LIV_rollStorm();
+  LIV_rollWeek();
+  LIV_applyTOD();
+  // карточка-подарок при первом запуске
+  if (!S.liv.cards.owned.length){
+    S.liv.cards.owned.push('wheat','eggs','coin');
+  }
+}
+
+LIV_boot();
 
 init();
 </script>
