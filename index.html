@@ -1959,6 +1959,102 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .adv-grand.done{background:linear-gradient(160deg,#33422a,#26331f);border-color:rgba(150,220,140,.4);}
 .adv-grand.done b{color:#b8e89a;}
 
+/* ---------- ДНЕВНИК ФЕРМЕРА ---------- */
+.stats-screen{padding-bottom:4px;}
+.st-hero{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;margin:4px 0 12px;
+  background:linear-gradient(150deg,#22302a,#1a241f);border:1px solid rgba(160,210,150,.14);
+  box-shadow:0 6px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05);}
+.st-lvl{position:relative;width:64px;height:64px;flex:none;display:grid;place-items:center;}
+.st-ring{position:absolute;inset:0;width:100%;height:100%;}
+.st-lvl b{position:relative;font:900 22px var(--font-display);color:#eaf5dc;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);}
+.st-hero-copy{flex:1;min-width:0;}
+.st-hero-copy>b{display:block;font-size:15px;font-weight:850;color:#edf6e4;}
+.st-hero-copy>small{display:block;font-size:10.5px;color:#93a89a;margin-top:1px;}
+.st-hero-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+.st-hero-badges span{display:flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;
+  color:#b9d0bf;background:rgba(140,200,150,.1);border-radius:7px;padding:3px 7px;}
+.st-hero-badges .ic,.st-hero-badges svg{width:11px;height:11px;color:#9cc98a;}
+
+.st-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.st-card{display:flex;flex-direction:column;gap:2px;padding:11px 12px;border-radius:14px;
+  background:linear-gradient(160deg,#1e2a32,#18222a);border:1px solid rgba(140,190,255,.1);}
+.st-ic{width:24px;height:24px;display:grid;place-items:center;border-radius:8px;
+  background:rgba(140,200,150,.14);color:#a4d68c;margin-bottom:3px;}
+.st-ic .ic,.st-ic svg{width:14px;height:14px;}
+.st-card b{font:850 17px var(--font-display);color:#edf5ea;letter-spacing:-.02em;}
+.st-card small{font-size:9.5px;color:#8b9fa8;}
+
+.st-crops{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.st-crop{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:11px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.05);}
+.st-crop-ic{width:20px;height:20px;display:grid;place-items:center;color:#b9cf8c;flex:none;}
+.st-crop-ic .ic,.st-crop-ic svg{width:14px;height:14px;}
+.st-crop-name{font-size:11px;font-weight:700;color:#dbe8d4;width:86px;flex:none;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.st-crop-bar{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;}
+.st-crop-bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#7fbf5e,#c3e58a);transition:width .5s cubic-bezier(.2,.8,.3,1);}
+.st-crop b{font-size:11px;font-weight:800;color:#e2efd9;flex:none;min-width:46px;text-align:right;}
+.st-empty{font-size:10.5px;color:#7f938a;text-align:center;padding:14px;line-height:1.5;}
+
+.st-records{display:flex;flex-direction:column;gap:1px;border-radius:14px;overflow:hidden;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);margin-bottom:12px;}
+.st-rec{display:flex;align-items:center;gap:9px;padding:10px 12px;
+  background:rgba(20,30,26,.5);}
+.st-rec + .st-rec{border-top:1px solid rgba(255,255,255,.045);}
+.st-rec-ic{width:22px;height:22px;display:grid;place-items:center;border-radius:7px;
+  background:rgba(226,193,92,.13);color:#e2c15c;flex:none;}
+.st-rec-ic .ic,.st-rec-ic svg{width:13px;height:13px;}
+.st-rec-k{flex:1;font-size:11px;color:#a8bdb2;}
+.st-rec b{font-size:11.5px;font-weight:850;color:#f0e6c8;}
+.st-note{display:flex;gap:6px;align-items:flex-start;font-size:9.5px;color:#6f8378;
+  margin:10px 0 0;line-height:1.45;}
+.st-note .ic,.st-note svg{width:12px;height:12px;flex:none;margin-top:1px;}
+
+/* ---------- ИСПЫТАНИЯ ДНЯ ---------- */
+.dch-card{margin-bottom:12px;border-radius:16px;overflow:hidden;
+  background:linear-gradient(165deg,#243026,#1b241f);border:1px solid rgba(160,210,150,.16);
+  box-shadow:0 5px 16px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.05);}
+.dch-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:11px 12px 9px;}
+.dch-head h3{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;font-weight:850;color:#eef6e7;}
+.dch-head h3 .ic,.dch-head h3 svg{width:15px;height:15px;color:#e2c15c;}
+.dch-head small{display:block;font-size:9.5px;color:#93a89a;margin-top:2px;}
+.dch-badge{font:800 8.5px var(--font-ui);letter-spacing:.1em;padding:4px 8px;border-radius:7px;
+  background:rgba(226,193,92,.14);color:#e2c15c;border:1px solid rgba(226,193,92,.28);}
+.dch-badge.ok{background:rgba(150,220,140,.16);color:#a8dc8e;border-color:rgba(150,220,140,.32);}
+.dch-row{display:flex;align-items:center;gap:9px;padding:8px 12px;
+  border-top:1px solid rgba(255,255,255,.045);}
+.dch-ic{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;flex:none;
+  background:rgba(140,200,150,.11);color:#a4d68c;border:1px solid rgba(160,210,150,.14);}
+.dch-ic .ic,.dch-ic svg{width:14px;height:14px;}
+.dch-row.done .dch-ic{background:rgba(226,193,92,.16);color:#e2c15c;border-color:rgba(226,193,92,.3);}
+.dch-row.claimed{opacity:.55;}
+.dch-body{flex:1;min-width:0;}
+.dch-body b{display:block;font-size:11.5px;font-weight:780;color:#e9f2e3;}
+.dch-body small{display:block;font-size:9.5px;color:#8fa396;margin-top:1px;}
+.dch-bar{display:block;height:4px;border-radius:99px;background:rgba(255,255,255,.08);
+  margin-top:5px;overflow:hidden;}
+.dch-bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#79b95e,#bfe08a);transition:width .45s cubic-bezier(.2,.8,.3,1);}
+.dch-row.done .dch-bar i{background:linear-gradient(90deg,#e2c15c,#f5dd93);}
+.dch-prog{flex:none;font:800 10px var(--font-ui);color:#8fa396;
+  background:rgba(255,255,255,.05);border-radius:7px;padding:4px 7px;}
+.dch-claim{flex:none;border:0;border-radius:9px;padding:7px 11px;font:800 11px var(--font-ui);
+  background:linear-gradient(180deg,#f2c95e,#d9a83c);color:#3a2a08;cursor:pointer;
+  box-shadow:0 3px 9px rgba(220,170,60,.32),inset 0 1px 0 rgba(255,255,255,.4);}
+.dch-claim:active{transform:scale(.95);}
+.dch-tick{flex:none;width:22px;height:22px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(150,220,140,.16);color:#a8dc8e;}
+.dch-tick .ic,.dch-tick svg{width:12px;height:12px;}
+.dch-all{width:100%;border:0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;
+  font-family:var(--font-ui);background:rgba(226,193,92,.1);color:#e8d49a;}
+.dch-all .ic,.dch-all svg{width:15px;height:15px;color:#e2c15c;}
+.dch-all b{font-size:11px;font-weight:800;}
+.dch-all:disabled,.dch-all.claimed{background:rgba(150,220,140,.08);color:#9dc08c;cursor:default;}
+
 /* бейдж-снежинка в HUD */
 .hud-xmas{color:#bfe0ff !important;}
 @media (max-width:360px){
@@ -2452,6 +2548,8 @@ const style = () => STYLES[S.style];
 function xpNeed(lvl){ return 50*lvl*lvl; }
 function addXP(n){
   S.xp += n;
+  try{ if (typeof STAT_migrate==='function'){ const d=STAT_migrate(); if(d) d.xpGained=(d.xpGained||0)+n; } }catch(e){}
+  try{ if (typeof DCH_track==='function' && n>0) DCH_track('xp', n); }catch(e){}
   while (S.xp >= xpNeed(S.level)){
     S.xp -= xpNeed(S.level); S.level++;
     S.gems += 3; sfx.levelup(); buzz([30, 60, 30]);
@@ -2559,6 +2657,8 @@ function sellGood(good, qty){
   const gain = Math.round(qty * GOODS[good].price * mult);
   S.goods[good] -= qty;
   addCoins(gain); S.stats.sold += qty;
+  if (typeof DCH_track === 'function'){ DCH_track('sell_coins', Math.round(gain)); }
+  if (typeof STAT_migrate === 'function'){ const d=STAT_migrate(); if(d) d.best.earn=Math.max(d.best.earn||0, Math.round(gain)); }
   if (typeof XMAS_track==='function') XMAS_track('seller', Math.round(gain));
   if (typeof TUT2_onAction==='function') TUT2_onAction('sell');
   return gain;
@@ -2628,6 +2728,8 @@ function completeFieldWork(f){
     f.manualBonus = b.manualBonus||0;
     f.state='sterna'; f.crop=null; f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false;
     S.stats.harvests++; addXP(10);
+    if (typeof STAT_harvest === 'function') STAT_harvest(f.crop, got, f.id);
+    if (typeof DCH_track === 'function') DCH_track('harvest_n', 1);
     if (typeof XMAS_track==='function') XMAS_track('gifts', 1);
     ui.fieldFx={id:f.id,action:'harvest',at:Date.now()};
     setTimeout(()=>{document.querySelector(`[data-swipe-field="${f.id}"]`)?.classList.remove('field-harvest-pop');if(ui.fieldFx?.id===f.id)ui.fieldFx=null;},1200);
@@ -2730,6 +2832,8 @@ function claimContract(id){
       const gain = Math.round(c.reward * bonus);
       addCoins(gain); S.rep = clamp(S.rep+2, 0, 100);
       S.stats.contractsDone++; addXP(15);
+      if (typeof DCH_track === 'function') DCH_track('contracts', 1);
+      if (typeof DCH_track === 'function') DCH_track('xp', 15);
       if (typeof TUT2_onAction==='function') TUT2_onAction('claim');
       if (typeof XMAS_track==='function') XMAS_track('orders', 1);
       S.daily.contracts++;
@@ -2905,6 +3009,7 @@ function hint(key){
    SVG LIBRARY — иконки, растения, техника
    ============================================================ */
 const I = {
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20V11M9.3 20V6M14.7 20v-6.4M20 20V9"/></svg>',
   calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17" stroke-linecap="round"/><path d="M8 14h2M8 17.2h2M14 14h2M14 17.2h2" stroke-linecap="round"/></svg>',
   coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffb300"/><circle cx="12" cy="12" r="7.4" fill="#ffca28"/><path d="M12 7.4l1.35 2.8 3.05.4-2.2 2.1.5 3-2.7-1.45-2.7 1.45.5-3-2.2-2.1 3.05-.4z" fill="#fff8e1"/></svg>',
   gem:'<svg viewBox="0 0 24 24"><path d="M12 2.5 20 8.5 12 21.5 4 8.5Z" fill="#7e57c2"/><path d="M12 2.5 20 8.5 12 10.5 4 8.5Z" fill="#b39ddb"/><path d="M12 10.5 20 8.5 12 21.5Z" fill="#673ab7"/><path d="M12 10.5 4 8.5 12 21.5Z" fill="#5e35b1"/></svg>',
@@ -3393,6 +3498,299 @@ function XMAS_decorLevel(){
   return XMAS_QUESTS.filter(q => (S.xmas.done[q.id]||0) >= q.need).length;
 }
 
+
+/* ============================================================
+   ЕЖЕДНЕВНЫЕ ИСПЫТАНИЯ — 3 случайных задания в сутки
+   ============================================================ */
+const DCH_POOL = [
+  { id:'harvest_n',  name:'Страда',          icon:'wheat',     text:'Собери {n} урожаев',            base:4,   step:2, reward:{coins:700,  gems:1} },
+  { id:'sell_coins', name:'Торговый день',   icon:'coin',      text:'Продай товаров на {n} монет',    base:1500,step:900,reward:{coins:900, gems:1} },
+  { id:'contracts',  name:'Надёжный сосед',  icon:'clipboard', text:'Выполни {n} заказов',            base:2,   step:1, reward:{coins:850,  gems:1} },
+  { id:'fields',     name:'Сеятель',          icon:'seed',      text:'Посей культуру {n} раза',        base:3,   step:2, reward:{coins:750,  gems:1} },
+  { id:'buildings',  name:'Хозяин',          icon:'barn',      text:'Собери продукцию с построек {n} раз', base:3, step:2, reward:{coins:800, gems:1} },
+  { id:'xp',         name:'Опытный',         icon:'star',      text:'Заработай {n} опыта',            base:120, step:80, reward:{coins:650,  gems:1} },
+  { id:'levelup',    name:'Рост',            icon:'medal',     text:'Повысь уровень {n} раз',          base:1,   step:1, reward:{coins:1200, gems:2} },
+];
+const DCH_XP_PER_LEVEL = 180;
+
+function DCH_migrate(){
+  if (!S) return;
+  if (!S.dch) S.dch = { date:'', ids:[], prog:{}, claimed:{}, streak:0, lastDone:'' };
+  const d = S.dch;
+  if (!d.prog) d.prog = {};
+  if (!d.claimed) d.claimed = {};
+  if (typeof d.streak !== 'number') d.streak = 0;
+  return d;
+}
+/* Детерминированный выбор на день: у всех игроков дня одинаковый набор */
+function DCH_pick(dateKey){
+  let h = 0;
+  for (let i=0;i<dateKey.length;i++) h = (h*31 + dateKey.charCodeAt(i)) | 0;
+  const pool = DCH_POOL.slice();
+  const picked = [];
+  for (let k=0;k<3 && pool.length;k++){
+    h = (h*1103515245 + 12345) | 0;
+    const idx = Math.abs(h) % pool.length;
+    picked.push(pool.splice(idx,1)[0]);
+  }
+  return picked;
+}
+function DCH_need(def, lvl){
+  return def.base + Math.floor(Math.max(0,(lvl||1)-1)/4) * def.step;
+}
+function DCH_roll(){
+  const d = DCH_migrate(); if (!d) return;
+  const today = todayStr();
+  if (d.date !== today){
+    // награда за предыдущий день, если всё закрыто и не забрано
+    d.date = today;
+    d.ids = DCH_pick(today).map(x=>x.id);
+    d.prog = {};
+    d.claimed = {};
+    // серия: если вчера закрыли все три
+    const yest = d.lastDone === yesterdayStr();
+    d.streak = yest ? (d.streak||0)+1 : 1;
+    d.lastDone = '';
+  }
+  return d;
+}
+function DCH_list(){
+  const d = DCH_roll(); if (!d) return [];
+  const lvl = S.level||1;
+  return d.ids.map(id => {
+    const def = DCH_POOL.find(x=>x.id===id);
+    if (!def) return null;
+    const need = DCH_need(def, lvl);
+    const prog = Math.min(need, d.prog[id]||0);
+    return { def, need, prog, done: prog >= need, claimed: !!d.claimed[id] };
+  }).filter(Boolean);
+}
+/* Учёт действий */
+function DCH_track(kind, amount){
+  const d = DCH_roll(); if (!d || !S) return;
+  const lvl = S.level||1;
+  let changed = false;
+  d.ids.forEach(id => {
+    const def = DCH_POOL.find(x=>x.id===id);
+    if (!def || d.claimed[id]) return;
+    if (def.id !== kind) return;
+    const need = DCH_need(def, lvl);
+    const before = d.prog[id]||0;
+    if (before >= need) return;
+    d.prog[id] = Math.min(need, before + (amount||1));
+    changed = true;
+    if (before < need && d.prog[id] >= need){
+      toast(`Испытание дня: «${def.name}» готово!`, 'good', 'target');
+      sfx.reward();
+    }
+  });
+  if (changed){
+    const all = DCH_list().every(x=>x.done);
+    if (all && !d.lastDone){ d.lastDone = todayStr(); }
+    // обновляем карточку на главной, чтобы сразу появились кнопки «Забрать»
+    try{
+      if (ui && ui.tab === 'farm' && (ui.farmView==='map' || !ui.farmView)){
+        const card = document.querySelector('.dch-card');
+        if (card) card.outerHTML = DCH_renderCard();
+      }
+    }catch(e){}
+    save();
+  }
+}
+function DCH_claim(id){
+  const d = DCH_roll(); if (!d) return;
+  const row = DCH_list().find(x=>x.def.id===id);
+  if (!row || !row.done || row.claimed){ sfx.nope(); return; }
+  d.claimed[id] = true;
+  if (row.def.reward.coins) addCoins(row.def.reward.coins);
+  if (row.def.reward.gems) S.gems += row.def.reward.gems;
+  toast(`Награда: +${fmt(row.def.reward.coins)} монет${row.def.reward.gems?` и ${row.def.reward.gems} ${gemWord(row.def.reward.gems)}`:''}`, 'good','gift');
+  sfx.reward(); buzz([18,40,18]);
+  // XP для пасса — испытания кормят прогресс
+  try{ if (typeof RET_addPassXP === 'function') RET_addPassXP(DCH_XP_PER_LEVEL); }catch(e){}
+  save(); renderAll();
+}
+function DCH_bonusClaim(){
+  const d = DCH_roll(); if (!d) return;
+  const rows = DCH_list();
+  if (!rows.every(x=>x.done)){ toast('Сначала закрой все три испытания', 'bad', 'clock'); sfx.nope(); return; }
+  if (d.claimed.__all){ sfx.nope(); return; }
+  d.claimed.__all = true;
+  const bonusCoins = 1500, bonusGems = 3;
+  addCoins(bonusCoins); S.gems += bonusGems;
+  toast(`Все испытания дня! +${fmt(bonusCoins)} монет и ${bonusGems} ${gemWord(bonusGems)}`, 'good','star');
+  sfx.reward(); buzz([30,60,30,60,30]);
+  try{ FX.confetti(); }catch(e){}
+  save(); renderAll();
+}
+
+/* ---------- БЛОК НА ГЛАВНОЙ ---------- */
+function DCH_renderCard(){
+  const d = DCH_roll(); if (!d) return '';
+  const rows = DCH_list();
+  const doneN = rows.filter(r=>r.done).length;
+  const allDone = doneN === rows.length;
+  const allClaimed = !!d.claimed.__all;
+
+  const items = rows.map(r => {
+    const pct = Math.round(r.prog/r.need*100);
+    const claimed = r.claimed;
+    return `<div class="dch-row ${r.done?'done':''} ${claimed?'claimed':''}">
+      <span class="dch-ic">${ic(claimed?'check':r.def.icon)}</span>
+      <span class="dch-body">
+        <b>${r.def.name}</b>
+        <small>${claimed ? 'Награда получена' : r.def.text.replace('{n}', fmt(r.need))}</small>
+        ${claimed ? '' : `<span class="dch-bar"><i style="width:${pct}%"></i></span>`}
+      </span>
+      ${claimed ? `<span class="dch-tick">${ic('check')}</span>`
+        : r.done ? `<button class="dch-claim" onclick="App.dchClaim('${r.def.id}')">${fmt(r.def.reward.coins)}</button>`
+        : `<span class="dch-prog">${fmt(r.prog)}/${fmt(r.need)}</span>`}
+    </div>`;
+  }).join('');
+
+  return `<div class="dch-card">
+    <div class="dch-head">
+      <div><h3>${ic('target')} Испытания дня</h3>
+        <small>${doneN}/3 закрыто${d.streak>1?` · серия ${d.streak} дн.`:''}</small></div>
+      <span class="dch-badge ${allDone?'ok':''}">${allDone?'ГОТОВО':'В ДЕЛЕ'}</span>
+    </div>
+    ${items}
+    <button class="dch-all ${allClaimed?'claimed':''}" ${allClaimed?'disabled':''} onclick="App.dchBonus()">
+      ${ic(allClaimed?'check':'gift')}
+      <b>${allClaimed?'Бонус дня получен':(allDone?'Забрать бонус дня':'Все три — бонус +1 500')}</b>
+    </button>
+  </div>`;
+}
+
+/* ============================================================
+   ДНЕВНИК ФЕРМЕРА — расширенная статистика и рекорды
+   ============================================================ */
+function STAT_migrate(){
+  if (!S) return;
+  if (!S.stats) S.stats = {};
+  const d = S.stats;
+  const nums = ['earned','contractsDone','harvests','sold','aged','buildings','bestStreak','expeditions','petLevel'];
+  nums.forEach(k => { if (typeof d[k] !== 'number') d[k] = 0; });
+  if (!d.byCrop) d.byCrop = {};        // культура → собрано единиц
+  if (!d.byField) d.byField = {};      // поле → сколько урожаев
+  if (!d.coinsSpent) d.coinsSpent = 0;
+  if (!d.xpGained) d.xpGained = 0;
+  if (!d.days) d.days = 0;             // сколько дней заходил
+  if (!d.firstDay) d.firstDay = todayStr();
+  if (!d.best) d.best = { harvest:0, earn:0, level:1 };
+  if (!d.playMs) d.playMs = 0;         // время в игре
+  d.best.level = Math.max(d.best.level||1, S.level||1);
+  return d;
+}
+/* Запись урожая: культура и поле */
+function STAT_harvest(cropId, units, fieldId){
+  const d = STAT_migrate(); if (!d) return;
+  if (cropId){ d.byCrop[cropId] = (d.byCrop[cropId]||0) + (units||0); }
+  if (fieldId){ d.byField[fieldId] = (d.byField[fieldId]||0) + 1; }
+  d.best.harvest = Math.max(d.best.harvest||0, units||0);
+}
+/* Учёт времени в игре */
+let STAT_lastTick = Date.now();
+setInterval(()=>{
+  const now = Date.now();
+  const dt = Math.min(5000, now - STAT_lastTick);   // не считаем долгие паузы
+  STAT_lastTick = now;
+  if (!S || document.hidden) return;
+  const d = STAT_migrate(); if (d) d.playMs = (d.playMs||0) + dt;
+}, 1000);
+/* Отметка нового дня */
+function STAT_markDay(){
+  const d = STAT_migrate(); if (!d) return;
+  const key = 'day_' + todayStr();
+  if (!d[key]){ d[key] = true; d.days = (d.days||0) + 1; }
+}
+
+/* ---------- ЭКРАН «ДНЕВНИК ФЕРМЕРА» ---------- */
+function STAT_render(){
+  const d = STAT_migrate();
+  const lvl = S.level||1;
+  const xp = S.xp||0, need = xpNeed(lvl);
+  const owned = S.fields.filter(f=>f.owned).length;
+  const blds = Object.values(S.buildings||{}).filter(b=>b.owned).length;
+  const ach = (S.ret?.ach?.claimed||[]).length;
+
+  // культуры
+  const crops = CROPS || {};
+  const cropRows = Object.entries(d.byCrop||{})
+    .filter(([id,units]) => units > 0 && crops[id])
+    .sort((a,b)=>b[1]-a[1]);
+  const maxCrop = Math.max(1, ...cropRows.map(r=>r[1]));
+  const cropHTML = cropRows.length
+    ? cropRows.map(([id,units]) => {
+        const c = crops[id];
+        return `<div class="st-crop">
+          <span class="st-crop-ic">${ic('wheat')}</span>
+          <span class="st-crop-name">${esc(c.name||id)}</span>
+          <span class="st-crop-bar"><i style="width:${Math.round(units/maxCrop*100)}%"></i></span>
+          <b>${fmt(units)}</b>
+        </div>`;
+      }).join('')
+    : `<p class="st-empty">Ещё ни одной культуры не собрано. Начни с поля «Солнечное».</p>`;
+
+  // время в игре
+  const secs = Math.floor((d.playMs||0)/1000);
+  const h = Math.floor(secs/3600), m = Math.floor(secs%3600/60);
+  const playTime = h > 0 ? `${h} ч ${m} мин` : `${m} мин`;
+
+  const records = [
+    { k:'Лучший урожай за раз', v:`${fmt(d.best?.harvest||0)} ед.`, ic:'wheat' },
+    { k:'Рекорд уровня',        v:`${d.best?.level||lvl}`, ic:'star' },
+    { k:'Лучшая серия входов',  v:`${d.bestStreak||0} дн.`, ic:'calendar' },
+    { k:'Дней на ферме',        v:`${d.days||1}`, ic:'clock' },
+  ];
+
+  return `<div class="stats-screen">
+    <div class="page-heading"><div><small>ПРОФИЛЬ</small><h2>Дневник фермера</h2></div>
+      <div class="row"><span class="district-count">ур. ${lvl}</span></div></div>
+
+    <div class="st-hero">
+      <div class="st-lvl">
+        <svg viewBox="0 0 64 64" class="st-ring">
+          <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="27" fill="none" stroke="url(#stGrad)" stroke-width="6"
+            stroke-linecap="round" stroke-dasharray="${(2*Math.PI*27).toFixed(1)}"
+            stroke-dashoffset="${(2*Math.PI*27*(1-xp/need)).toFixed(1)}"
+            transform="rotate(-90 32 32)"/>
+          <defs><linearGradient id="stGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8fc45e"/><stop offset="100%" stop-color="#e2c15c"/>
+          </linearGradient></defs>
+        </svg>
+        <b>${lvl}</b>
+      </div>
+      <div class="st-hero-copy">
+        <b>Уровень ${lvl}</b>
+        <small>${fmt(xp)} / ${fmt(need)} опыта</small>
+        <div class="st-hero-badges">
+          <span>${ic('map')} ${owned} полей</span>
+          <span>${ic('barn')} ${blds} построек</span>
+          <span>${ic('star')} ${ach} достижений</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="st-grid">
+      <div class="st-card"><span class="st-ic">${ic('wheat')}</span><b>${fmt(d.harvests||0)}</b><small>урожаев собрано</small></div>
+      <div class="st-card"><span class="st-ic">${ic('coin')}</span><b>${fmt(d.earned||0)}</b><small>монет заработано</small></div>
+      <div class="st-card"><span class="st-ic">${ic('clipboard')}</span><b>${fmt(d.contractsDone||0)}</b><small>заказов выполнено</small></div>
+      <div class="st-card"><span class="st-ic">${ic('clock')}</span><b>${playTime}</b><small>на ферме</small></div>
+    </div>
+
+    <div class="sec-title"><h3>${ic('seed')} Что выращивал</h3><small>всего единиц</small></div>
+    <div class="st-crops">${cropHTML}</div>
+
+    <div class="sec-title"><h3>${ic('medal')} Рекорды</h3><small>личные</small></div>
+    <div class="st-records">
+      ${records.map(r=>`<div class="st-rec"><span class="st-rec-ic">${ic(r.ic)}</span>
+        <span class="st-rec-k">${r.k}</span><b>${r.v}</b></div>`).join('')}
+    </div>
+    <p class="st-note">${ic('info')} Дневник ведётся автоматически и не сбрасывается. Данные — только твои.</p>
+  </div>`;
+}
 
 /* ---------- АДВЕНТ-КАЛЕНДАРЬ ---------- */
 /* Каждый день сезона — один подарок. Открывается раз в сутки, пропущенные дни
@@ -5440,6 +5838,8 @@ function RET_migrate(){
   if (!S.stats.aged) S.stats.aged = 0;
   if (!S.stats.buildings) S.stats.buildings = 0;
   if (!S.stats.bestStreak) S.stats.bestStreak = 0;
+  if (typeof STAT_migrate === 'function') STAT_migrate();
+  if (typeof STAT_markDay === 'function') STAT_markDay();
   if (!S.contractExpire) S.contractExpire = {};
 }
 
@@ -6015,6 +6415,7 @@ function RET_renderFarm(){
     ${sw('map','map','Ферма')}
     ${sw('quests','target','Задания')}
     ${xmasBase}
+    ${sw('stats','chart','Дневник')}
     ${sw('pass','medal','Пропуск')}
     ${sw('ach','star','Достижения')}
   </div>`;
@@ -6029,6 +6430,7 @@ function RET_renderFarm(){
           <span class="focus-progress"><i style="width:${Math.min(100,S.daily.contracts/3*100)}%"></i></span></span>
         <span class="focus-count">${S.daily.contracts}/3 <small>→</small></span>
       </div>
+      ${typeof DCH_renderCard==='function'?DCH_renderCard():''}
       ${RET_renderFair()}
       ${RET_renderStreak()}
       ${RET_renderFarmMap()}
@@ -6270,6 +6672,9 @@ function RET_installHooks(){
         if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
       xmasClaim(id){ XMAS_claim(id); },
   xmasAdvent(){ XMAS_adventClaim(); },
+  dchClaim(id){ DCH_claim(id); },
+  dchBonus(){ DCH_bonusClaim(); },
+  openStats(){ sfx.click(); ui.tab='farm'; ui.farmView='stats'; renderScreen(); },
       tut2Finish(){ TUT2_finish(); },
       welcomeStart(){ const h=$('#overlay-root'); if(h) h.innerHTML=''; S.welcomed = true; save(); TUT2_start(); renderAll(); },
       openXmas(){ ui.tab='farm'; ui.farmView='xmas'; renderScreen(); },
@@ -7258,6 +7663,12 @@ function LIV_extendFarmTabs(){
       positionCoach();
       return;
     }
+    if (view === 'stats'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('stats')}</div>
+        ${typeof STAT_render==='function'?STAT_render():''}`;
+      positionCoach();
+      return;
+    }
     if (view === 'xmas'){
       $('#screen').innerHTML = XMAS_renderScreen();
       XMAS_snowfall();
@@ -7284,7 +7695,10 @@ function LIV_extendFarmTabs(){
 function LIV_switchHTML(active){
   const sw = (id, icon, label) => `<button class="${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
   const xmasTab = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
-  return sw('map','map','Ферма') + sw('quests','target','Задания') + sw('exped','map','Походы') + sw('cards','star','Карточки') + xmasTab + sw('pass','medal','Пропуск') + sw('ach','medal','Награды');
+  const statsTab = sw('stats','chart','Дневник');
+  return sw('map','map','Ферма') + sw('quests','target','Задания') + xmasTab + statsTab
+       + sw('pass','medal','Пропуск') + sw('ach','star','Достижения')
+       + sw('exped','map','Походы') + sw('cards','star','Коллекция');
 }
 
 /* ---------- Периодическое обновление (раз в минуту) ---------- */
