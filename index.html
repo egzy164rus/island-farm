@@ -366,8 +366,8 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;ba
 .forecast-note b{color:#e2eadb;}
 
 .scene-copy{position:absolute;left:15px;bottom:15px;}
-.scene-title{font-family:Georgia,"Times New Roman",serif;font-size:26px;line-height:1.02;letter-spacing:-.04em;text-shadow:0 2px 14px rgba(0,0,0,.3);}
-.scene-caption{font-size:10px;color:rgba(255,255,255,.85);margin-top:5px;letter-spacing:.015em;}
+.scene-title{font-family:Georgia,"Times New Roman",serif;font-size:21px;line-height:1.02;letter-spacing:-.04em;text-shadow:0 2px 14px rgba(0,0,0,.3);}
+.scene-caption{display:none;}   /* на компактной сцене подпись лишняя */
 .scene-count{position:absolute;right:13px;bottom:15px;background:rgba(248,247,239,.91);color:#304538;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:750;}
 .start-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(19,36,27,.03) 5%,rgba(16,31,23,.08) 38%,rgba(15,29,22,.8) 100%);}
 .start-content{margin-top:36dvh;padding:0 18px 26px;}
@@ -379,7 +379,7 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;ba
 .pick-card .t{font-size:14px;font-weight:750;}
 .pick-card .pic{width:39px;height:39px;}
 .start-content>.btn{max-width:420px!important;min-height:52px!important;font-size:15px!important;letter-spacing:.01em;}
-@media(max-width:390px){.farm-scene{height:150px;}.scene-title{font-size:23px;}#screen{padding-left:11px;padding-right:11px;}.grid2{gap:8px;}}
+@media(max-width:390px){.scene-title{font-size:20px;}#screen{padding-left:11px;padding-right:11px;}.grid2{gap:8px;}}
 @media(min-width:700px){#app{margin:12px auto;height:calc(100dvh - 24px);border-radius:22px;overflow:hidden;}}
 
 
@@ -851,6 +851,7 @@ body.fx-front #fx-canvas{z-index:220;}
     linear-gradient(180deg,#121a16 0%,#18211c 45%,#1b2620 100%);
   transition:background .8s ease;}
 #ambient .amb-stars{position:absolute;inset:0;opacity:.62;translate:var(--px,0px) 0;
+  will-change:opacity;contain:strict;backface-visibility:hidden;
   background-image:radial-gradient(1.9px 1.9px at 12% 14%,#dff3c9 50%,transparent 51%),radial-gradient(1.2px 1.2px at 28% 7%,#ffffff 50%,transparent 51%),radial-gradient(1.6px 1.6px at 46% 18%,#dff3c9 50%,transparent 51%),radial-gradient(1.1px 1.1px at 63% 9%,#ffffff 50%,transparent 51%),radial-gradient(1.5px 1.5px at 78% 20%,#dff3c9 50%,transparent 51%),radial-gradient(1.2px 1.2px at 89% 6%,#ffffff 50%,transparent 51%),radial-gradient(1.3px 1.3px at 7% 27%,#ffffff 50%,transparent 51%),radial-gradient(1.1px 1.1px at 36% 30%,#dff3c9 50%,transparent 51%),radial-gradient(1.4px 1.4px at 70% 31%,#ffffff 50%,transparent 51%),radial-gradient(1.2px 1.2px at 95% 28%,#dff3c9 50%,transparent 51%);
   animation:starsTwinkle 6s ease-in-out infinite;}
 @keyframes starsTwinkle{0%,100%{opacity:.45}50%{opacity:.85}}
@@ -859,7 +860,8 @@ body.fx-front #fx-canvas{z-index:220;}
     radial-gradient(ellipse 46% 100% at 18% 100%,rgba(43,67,49,.92) 0%,rgba(38,58,43,.85) 60%,rgba(38,58,43,0) 61%),
     radial-gradient(ellipse 55% 100% at 58% 100%,rgba(33,52,39,.95) 0%,rgba(29,45,34,.9) 60%,rgba(29,45,34,0) 61%),
     radial-gradient(ellipse 40% 100% at 96% 100%,rgba(38,60,44,.9) 0%,rgba(33,52,39,.85) 60%,rgba(33,52,39,0) 61%);
-  animation:hillsBreathe 14s ease-in-out infinite;}
+  animation:hillsBreathe2 14s ease-in-out infinite;}
+@keyframes hillsBreathe2{0%,100%{opacity:.94}50%{opacity:1}}
 @keyframes hillsBreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 #ambient .amb-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,0,0,0) 40%,rgba(4,10,7,.55) 100%);}
 #ambient.rainy .amb-hills{filter:brightness(.8) saturate(.7);}
@@ -868,8 +870,8 @@ body.fx-front #fx-canvas{z-index:220;}
   box-shadow:0 0 26px 6px rgba(160,210,120,.18);
   animation:sunPulse 5.5s ease-in-out infinite;}
 #ambient .amb-sun::after{content:'';position:absolute;inset:-22px;border-radius:50%;
-  background:conic-gradient(from 0deg,transparent 0deg,rgba(190,230,150,.22) 10deg,transparent 22deg,rgba(190,230,150,.22) 58deg,transparent 70deg,rgba(190,230,150,.22) 118deg,transparent 130deg,rgba(190,230,150,.22) 178deg,transparent 190deg,rgba(190,230,150,.22) 238deg,transparent 250deg,rgba(190,230,150,.22) 298deg,transparent 310deg);
-  animation:sunSpin 40s linear infinite;}
+  background:radial-gradient(circle,rgba(190,230,150,.16) 0%,rgba(190,230,150,.06) 42%,rgba(190,230,150,0) 70%);}
+/* было: conic-gradient из 18 стопов + sunSpin — перерисовка каждый кадр (FPS 60 -> 45) */
 @keyframes sunPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}
 @keyframes sunSpin{to{transform:rotate(360deg)}}
 #ambient .amb-cloud{position:absolute;background:#3a4f41;border-radius:99px;opacity:.55;animation:cloudFloat linear infinite;translate:var(--px,0px) var(--py,0px);}
@@ -1374,10 +1376,10 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
     var(--scene-art) !important;
   background-size:cover !important;
   background-position:center 42% !important;
-  height:186px;
+  height:132px;   /* компактно: карта фермы должна быть видна сразу */
   box-shadow:0 10px 28px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.1);
 }
-.compact-scene{height:186px;}
+.compact-scene{height:132px;}
 .farm-scene::before{opacity:.14;}
 /* заголовок сцены — крупнее и с лучшей тенью */
 .scene-title{font-size:26px !important;letter-spacing:-.025em;
@@ -1429,7 +1431,7 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   background-image:linear-gradient(90deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,0) 45%) !important;
   background-blend-mode:overlay;}
 
-@media (max-width:360px){ .farm-scene{height:158px;} }
+
 
 
 /* ============================================================
@@ -2227,6 +2229,35 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   body{background:radial-gradient(ellipse at 50% 0%,#1a2b22,#0b1210 70%);}
   #app{border-left:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05);}
 }
+
+/* ---------- «ЧТО ДАЛЬШЕ» ---------- */
+.next-card{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;margin:0 0 10px;
+  border-radius:14px;cursor:pointer;font-family:var(--font-ui);text-align:left;
+  border:1px solid rgba(255,255,255,.09);background:linear-gradient(160deg,#212d26,#1a231e);
+  transition:transform .15s cubic-bezier(.2,.75,.25,1);}
+.next-card:active{transform:scale(.985);}
+.next-ic{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;
+  background:rgba(255,255,255,.06);color:#a8c99a;}
+.next-ic .ic,.next-ic svg{width:17px;height:17px;}
+.next-body{flex:1;min-width:0;}
+.next-body b{display:block;font-size:12px;font-weight:800;color:#eef4ea;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.next-body small{display:block;font-size:9.5px;color:#8fa396;margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.next-go{flex:none;color:#7f9287;display:flex;}
+.next-go .ic,.next-go svg{width:15px;height:15px;}
+.next-good{border-color:rgba(150,210,130,.28);background:linear-gradient(160deg,#1e2d22,#19241c);}
+.next-good .next-ic{background:rgba(140,200,120,.16);color:#a8dc8e;}
+.next-good .next-go{color:#8fbf72;}
+.next-bad{border-color:rgba(230,140,110,.3);background:linear-gradient(160deg,#2d2320,#241b19);}
+.next-bad .next-ic{background:rgba(230,140,110,.16);color:#e8a08a;}
+.next-bad .next-go{color:#d08a70;}
+.next-gold{border-color:rgba(226,193,92,.34);background:linear-gradient(160deg,#2e2718,#241f14);
+  box-shadow:0 4px 16px rgba(190,150,50,.18);}
+.next-gold .next-ic{background:rgba(226,193,92,.18);color:#e2c15c;}
+.next-gold .next-go{color:#e2c15c;}
+.next-muted{opacity:.82;}
+.next-muted .next-ic{color:#8a9d92;}
 
 /* ---------- БЫСТРЫЙ СТАРТ ---------- */
 .start-cta{position:relative;z-index:1;width:100%;max-width:420px;margin:18px auto 0;
@@ -4497,9 +4528,70 @@ function SHARE_do(kind){
 }
 
 /* ============================================================
+   «ЧТО ДАЛЬШЕ» — одна умная подсказка вместо десяти иконок
+   ============================================================ */
+function NEXT_plural(n, one, few, many){
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
+function NEXT_best(){
+  if (!S) return null;
+  const F = S.fields.filter(f=>f.owned);
+  const ready = F.filter(f=>f.state==='ready' && !f.busy);
+  const empty = F.filter(f=>f.state==='sterna' && !f.busy);
+  const grown = F.filter(f=>f.state==='growing' && !f.busy);
+  const claimed = (S.board||[]).filter(c=>c.state==='done');
+  const activeC = (S.board||[]).filter(c=>c.state==='active');
+  const goodsTotal = Object.values(S.goods||{}).reduce((a,b)=>a+b,0);
+  const dchReady = (typeof DCH_list==='function') ? DCH_list().filter(r=>r.done && !r.claimed) : [];
+  const dchNear = (typeof DCH_list==='function') ? DCH_list().filter(r=>!r.done && r.prog/r.need > 0.5) : [];
+  const animals = Object.keys(S.buildings||{}).filter(id=>{ const b=S.buildings[id]; return b.owned && b.stored>0; });
+  const hungry = Object.keys(S.buildings||{}).filter(id=>{ const b=S.buildings[id]; return b.owned && (b.feed<30||b.water<30); });
+  const broken = Object.keys(S.machines||{}).filter(id=>{ const m=S.machines[id]; return m.owned && m.cond<40; });
+  const lvl = S.level||1;
+
+  if (dchReady.length) return { key:'dch_claim', icon:'gift', tone:'good',
+    title:`Забери награду: ${dchReady[0].def.name}`, sub:`+${fmt(dchReady[0].def.reward.coins)} монет готово`, act:'App.dchBonus()' };
+  if (claimed.length) return { key:'contract_claim', icon:'clipboard', tone:'good',
+    title:'Заказ выполнен — забери оплату', sub:`${claimed.length} ${NEXT_plural(claimed.length,'готовый заказ ждёт','готовых заказа ждут','готовых заказов ждут')}`, act:"App.tab('tasks')" };
+  if (broken.length) return { key:'repair', icon:'wrench', tone:'bad',
+    title:'Техника требует ремонта', sub:`${broken.length} ${NEXT_plural(broken.length,'машина изношена','машины изношены','машин изношено')} — простой`, act:'App.openGarage()' };
+  if (hungry.length) return { key:'feed', icon:'cow', tone:'bad',
+    title:'Животные голодны', sub:'Без ухода загон даёт меньше продукции', act:'App.openPens()' };
+  if (ready.length) return { key:'harvest', icon:'wheat', tone:'good',
+    title:`Убери урожай: ${ready.length} ${NEXT_plural(ready.length,'поле','поля','полей')}`, sub:'Готово к уборке прямо сейчас', act:"App.tab('map')" };
+  if (animals.length) return { key:'collect', icon:'barn', tone:'good',
+    title:'Собери продукцию с построек', sub:`${animals.length} ${NEXT_plural(animals.length,'загон','загона','загонов')} с товаром`, act:'App.openPens()' };
+  if (goodsTotal > 0) return { key:'sell', icon:'coin', tone:'neutral',
+    title:`Продай товар — ${fmt(goodsTotal)} на складе`, sub:'Цены меняются, лови момент', act:'App.openMarket()' };
+  if (empty.length) return { key:'sow', icon:'seed', tone:'neutral',
+    title:`Посей культуру: ${empty.length} ${NEXT_plural(empty.length,'поле пустует','поля пустуют','полей пустуют')}`, sub:'Пустое поле — потерянное время', act:"App.tab('map')" };
+  if (activeC.length < 3 && (S.board||[]).some(c=>c.state==='board')) return { key:'contract', icon:'clipboard', tone:'neutral',
+    title:'Возьми новый заказ', sub:'Соседи всегда платят вовремя', act:"App.tab('tasks')" };
+  if (dchNear.length) return { key:'dch_near', icon:'target', tone:'neutral',
+    title:`Почти готово: ${dchNear[0].def.name}`, sub:`${dchNear[0].prog}/${dchNear[0].need} — ещё чуть-чуть`, act:'App.tab(\'farm\')' };
+  if (lvl >= 15 && typeof PRE_canRebirth==='function' && PRE_canRebirth()) return { key:'prestige', icon:'star', tone:'gold',
+    title:'Можно отплыть на новый остров', sub:`+${PRE_starsFor()} ★ и множитель дохода`, act:'App.openPrestige()' };
+  if (grown.length) return { key:'wait', icon:'clock', tone:'muted',
+    title:'Всё под контролем', sub:'Культуры растут — загляни через пару минут', act:"App.tab('map')" };
+  return { key:'idle', icon:'bulb', tone:'neutral',
+    title:'Развивай ферму', sub:'Купи поле, построй загон или найми технику', act:"App.tab('business')" };
+}
+function NEXT_html(){
+  const n = NEXT_best(); if (!n) return '';
+  return `<button class="next-card next-${n.tone}" onclick="${n.act}">
+    <span class="next-ic">${ic(n.icon)}</span>
+    <span class="next-body"><b>${esc(n.title)}</b><small>${esc(n.sub)}</small></span>
+    <span class="next-go">${ic('arrow')}</span>
+  </button>`;
+}
+
+/* ============================================================
    СОХРАНЕНИЯ — код переноса, авто-бэкап, защита от потери
    ============================================================ */
-const SAVE_KEY_MAIN = 'islandfarm_save_v1';
+const SAVE_KEY_MAIN = SAVE_KEY;   // 'islandFarmSaveV1' — реальный ключ игры
 const SAVE_KEY_BAK  = 'islandfarm_backup_v1';
 
 /* Код сохранения: base64(JSON) с префиксом версии и контрольной суммой.
@@ -5012,14 +5104,15 @@ function XMAS_snowfall(){
   if (!host) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (host.childElementCount) return;
-  const n = 34;
+  // 34 отдельных анимации роняли FPS: 14 хлопьев + translate3d
+  const n = 14;
   let html = '';
   for (let i=0;i<n;i++){
-    const size = 1.6 + Math.random()*2.6;
-    html += `<i style="left:${(Math.random()*100).toFixed(1)}%;
+    const size = 1.8 + Math.random()*2.4;
+    html += `<i style="left:${(i*(100/n) + Math.random()*5).toFixed(1)}%;
       width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;
-      opacity:${(0.35+Math.random()*0.5).toFixed(2)};
-      animation-duration:${(5+Math.random()*6).toFixed(1)}s;
+      opacity:${(0.35+Math.random()*0.45).toFixed(2)};
+      animation-duration:${(6+Math.random()*5).toFixed(1)}s;
       animation-delay:${(-Math.random()*8).toFixed(1)}s;"></i>`;
   }
   host.innerHTML = html;
@@ -7490,11 +7583,12 @@ function RET_renderFarm(){
           <span class="focus-progress"><i style="width:${Math.min(100,S.daily.contracts/3*100)}%"></i></span></span>
         <span class="focus-count">${S.daily.contracts}/3 <small>→</small></span>
       </div>
+      ${typeof NEXT_html==='function'?NEXT_html():''}
+      ${RET_renderFarmMap()}
       ${typeof WR_bannerHTML==='function'?WR_bannerHTML():''}
       ${typeof DCH_renderCard==='function'?DCH_renderCard():''}
       ${RET_renderFair()}
       ${RET_renderStreak()}
-      ${RET_renderFarmMap()}
       <div class="overview-actions" style="margin-top:10px">
         <button class="overview-action" onclick="App.tab('map')">${ic('seed')}<span>Мои поля</span></button>
         <button class="overview-action" onclick="App.openBunker()">${ic('box')}<span>Склад</span></button>
