@@ -2230,6 +2230,53 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   #app{border-left:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05);}
 }
 
+
+
+/* ---------- ПЛАВНАЯ СМЕНА ЭКРАНОВ ---------- */
+/* Контент мягко проявляется, а не появляется рывком */
+@keyframes screenIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+#screen > *{animation:screenIn .26s cubic-bezier(.22,.68,.32,1) both;}
+#screen > *:nth-child(1){animation-delay:0s}
+#screen > *:nth-child(2){animation-delay:.03s}
+#screen > *:nth-child(3){animation-delay:.05s}
+#screen > *:nth-child(4){animation-delay:.07s}
+/* карточку «что дальше» сдвигаем чуть заметнее — она ведёт внимание */
+.next-card{animation:screenIn .32s cubic-bezier(.22,.68,.32,1) both;}
+/* модалки и тосты */
+@keyframes dialogIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.dialog,.sheet{animation:dialogIn .24s cubic-bezier(.22,.68,.32,1) both;}
+@media(prefers-reduced-motion:reduce){
+  #screen > *, .next-card, .dialog, .sheet{animation:none !important;}
+}
+/* ---------- ДОСТУПНОСТЬ: тап-зоны минимум 44px ---------- */
+/* .icon-btn и подобные визуально мелкие, но область нажатия расширена */
+.icon-btn{position:relative;}
+.icon-btn::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(100%,44px);height:max(100%,44px);border-radius:12px;}
+.scene-weather{position:relative;}
+.scene-weather::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:100%;height:44px;}
+.xmas-cta{position:relative;}
+.xmas-cta::after{content:'';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:44px;}
+.share-btn{position:relative;}
+.share-btn::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:44px;height:44px;}
+.farm-switch button{position:relative;min-height:44px;}
+/* фокус для клавиатуры — заметный и в стиле игры */
+:focus-visible{outline:2px solid #9fd08a;outline-offset:2px;border-radius:8px;}
+button:focus:not(:focus-visible){outline:none;}
+
+/* Физические размеры важных кнопок доводим до 44px */
+.icon-btn{min-width:44px;min-height:44px;}
+.login-stamp{min-width:44px;min-height:44px;}
+.login-claim{min-height:40px;padding-block:10px;}
+.scene-weather{min-height:34px;padding-block:5px;}
+.xmas-cta{min-height:36px;padding-block:6px;}
+.mnode .mnode-disc{min-width:44px;min-height:44px;}
+.dch-all{min-height:44px;}
 /* ---------- «ЧТО ДАЛЬШЕ» ---------- */
 .next-card{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;margin:0 0 10px;
   border-radius:14px;cursor:pointer;font-family:var(--font-ui);text-align:left;
@@ -4256,6 +4303,9 @@ function PRE_rebirth(){
   const pretMeta = keep;
   const totalPlay = S.stats?.playMs||0;
   const byCrop = S.stats?.byCrop||{};
+  // МОДУЛЬ УДЕРЖАНИЯ тоже переживает перерождение:
+  // пасс, достижения, серия входов и выдержка — мета-прогресс, не ферма
+  const ret = S.ret ? JSON.parse(JSON.stringify(S.ret)) : null;
 
   // пересоздаём состояние
   const fresh = freshState(presetId, styleId);
@@ -4273,6 +4323,13 @@ function PRE_rebirth(){
   fresh.stats.playMs = totalPlay;
   fresh.stats.byCrop = byCrop;
   fresh.stats.tutorialDone = true;
+  if (ret){
+    // выдержку и ярмарку обнуляем — это про конкретную ферму
+    ret.aging = { slots:[null,null,null], sizeCap:24 };
+    ret.fair = { date:'', id:null };
+    ret.daily = { date:'', ids:[], prog:{}, claimed:{} };
+    fresh.ret = ret;
+  }
   fresh.tutorial = { step:5, done:true };
   fresh.tut2 = { step:8, done:true, rewarded:{} };
   S = fresh;
@@ -5501,9 +5558,13 @@ function renderTabs(){
   const readyFields = S.fields.filter(f=>f.owned && f.state==='ready').length;
   const claimable = S.board.filter(c=>c.state==='done').length;
   const tab = (id, icon, label, badge) => `
-    <button class="tab-btn ${ui.tab===id?'active':''}" data-tut="tab-${id}" onclick="App.tab('${id}')">
-      ${ic(icon)}<span>${label}</span>${badge?`<span class="tab-badge">${badge}</span>`:''}
+    <button class="tab-btn ${ui.tab===id?'active':''}" data-tut="tab-${id}"
+      role="tab" aria-selected="${ui.tab===id?'true':'false'}"
+      aria-label="${label}${badge?`, ${badge} новых`:''}"
+      onclick="App.tab('${id}')">
+      ${ic(icon)}<span>${label}</span>${badge?`<span class="tab-badge" aria-hidden="true">${badge}</span>`:''}
     </button>`;
+  $('#tabs').setAttribute('role','tablist');
   $('#tabs').innerHTML = tab('farm','home','Ферма','') + tab('map','seed','Поля',readyFields||'') + tab('business','barn','Хоз-во','') + tab('tasks','clipboard','Заказы',claimable||'') + `<button class="tab-btn garage-tab" onclick="App.openGarage()" aria-label="Открыть гараж">${ic('tractor')}<span>Гараж</span></button>`;
 }
 
