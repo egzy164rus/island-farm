@@ -277,13 +277,17 @@ body{
 .mach-cond-bar.warn i{background:linear-gradient(90deg,#d9a94e,#f0cf7a);}
 .mach-cond-bar.bad i{background:linear-gradient(90deg,#c9563f,#e88a72);}
 .mach-cond small{display:block;font-size:10px;color:#93a896;margin-top:4px;font-weight:600;}
-.mach-upgrade{background:rgba(90,150,220,.09);border:1px solid rgba(110,170,235,.22);
-  border-radius:11px;padding:8px 10px;margin-bottom:8px;}
+.mach-upgrade{background:linear-gradient(180deg,rgba(243,217,164,.10),rgba(201,160,90,.05));
+  border:1px solid rgba(243,217,164,.26);
+  border-radius:12px;padding:9px 11px;margin-bottom:8px;position:relative;overflow:hidden;}
+.mach-upgrade::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% -30%,rgba(243,217,164,.16),transparent 60%);}
 .mach-up-row{display:flex;align-items:center;justify-content:space-between;
-  font-size:11.5px;font-weight:800;color:#bcd8f5;margin-bottom:6px;}
+  font-size:11.5px;font-weight:800;color:#f0dcb4;margin-bottom:6px;position:relative;z-index:1;
+  letter-spacing:.2px;}
 .mach-up-row span{display:inline-flex;align-items:center;gap:5px;}
-.mach-up-row .ic,.mach-up-row svg{width:15px;height:15px;flex:0 0 auto;}
-.mach-up-row b{color:#e2f0ff;}
+.mach-up-row .ic,.mach-up-row svg{width:15px;height:15px;flex:0 0 auto;color:var(--pr-gold-2);}
+.mach-up-row b{color:#fff6e2;}
 .mach-max{font-size:11px;font-weight:800;color:#e2c15c;background:rgba(226,193,92,.1);
   border:1px solid rgba(226,193,92,.25);border-radius:10px;padding:7px 10px;
   margin-bottom:8px;display:flex;align-items:center;gap:6px;}
@@ -5959,6 +5963,7 @@ function renderTasks(){
         ${done?`<button class="btn btn-primary btn-block" data-tut="claim" onclick="App.claimContract('${c.id}')">${ic('gift')} Забрать награду</button>`:`<div class="contract-progress"><div class="bar"><i data-pb="contract-${c.id}" style="width:0%"></i></div><span data-timer="contract-${c.id}">…</span><button class="cancel-link" onclick="App.cancelContract('${c.id}')">Отменить</button></div>`}</div></article>`;
     }
     html+=`</div><button class="btn btn-primary btn-block board-link" onclick="App.taskSection('board')">${ic('clipboard')} Найти заказ</button>`;
+    if(act.length<3) html+=`<div class="task-tips"><div class="task-tip"><span>${ic('clipboard')}</span><div><b>${3-act.length} слота свободно</b><small>Одновременно можно вести до 3 заказов</small></div></div><div class="task-tip"><span>${ic('target')}</span><div><b>Цель дня: 3 заказа</b><small>Держи темп — 5 самоцветов каждый день</small></div></div></div>`;
   }else{
     const show=board.slice(ui.boardPage*3,ui.boardPage*3+3);
     html+=`<div class="board-toolbar"><span>${board.length} доступных заказов</span><span class="board-pages"><button onclick="App.boardPage(-1)" ${ui.boardPage===0?'disabled':''}>‹</button><b>${ui.boardPage+1}/${maxPage+1}</b><button onclick="App.boardPage(1)" ${ui.boardPage>=maxPage?'disabled':''}>›</button></span></div><div class="task-list">`;
@@ -5993,7 +5998,7 @@ function openField(id){
     html += `<div class="card" style="margin-top:10px"><b>${WORK[f.busy.action].name}…</b>
       <div class="bar" style="margin-top:8px"><i data-pb="${f.id}" style="width:0%"></i></div>
       <div class="small muted" data-timer="${f.id}" style="margin-top:4px">…</div>
-      ${S.daily.speedups<5?`<button class="btn btn-blue btn-block" style="margin-top:8px" onclick="App.speedField('${f.id}')">${ic('bolt')} Ускорить за 1 самоцвет (${S.daily.speedups}/5 в день)</button>`:''}
+      <button class="btn btn-gold btn-block" style="margin-top:8px" onclick="App.speedField('${f.id}')">${ic('bolt')} Ускорить за самоцветы</button>
       </div>`;
   } else if (f.state==='sterna'){
     html += `<p class="muted">Стерня после уборки. Обработай почву перед посевом.</p><div class="action-list">`;
@@ -6019,6 +6024,7 @@ function openField(id){
     if (f.fert<2) html += actBtn('fertilize',`Удобрение ${f.fert+1}/2 (+25%)`);
     if (!f.sprayed) html += actBtn('spray','Опрыскивание (+5%)');
     if (style().lime && !f.limed) html += actBtn('lime','Известь (+10%)');
+    html += `<button class="btn btn-gold btn-block speedup-cta" onclick="App.speedField('${f.id}')">${ic('bolt')} Ускорить за самоцветы</button>`;
     html += `<button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button></div>`;
   } else if (f.state==='ready'){
     const y = fieldYield(f);
@@ -6111,7 +6117,7 @@ function openGarage(){
       html += `<div class="mach-upgrade">
         <div class="mach-up-row"><span>${ic('arrow')} ${nextTier.name}</span>
           <b>×${nextTier.speed.toFixed(2)}</b></div>
-        <button class="btn btn-blue btn-block btn-sm" onclick="App.buyMachine('${id}',${(m.tier||0)+1})">
+        <button class="btn btn-gold btn-block btn-sm" onclick="App.buyMachine('${id}',${(m.tier||0)+1})">
           Купить за ${fmt(nextTier.price)}
         </button>
       </div>`;
@@ -9808,6 +9814,30 @@ body.decor-aurora #app::before{
   display:inline-flex;align-items:center;gap:4px;
 }
 .mini-cta.speed .ic{width:12px;height:12px;color:var(--pr-gold-2);}
+
+/* Пустое состояние «Заказов» · v69 */
+.empty-state{
+  background:linear-gradient(180deg,rgba(243,217,164,.055),rgba(255,255,255,.015)) !important;
+  border:1px solid rgba(243,217,164,.16) !important;
+  border-radius:18px;
+}
+.empty-state h3,.empty-state .empty-title{color:#fff5e3 !important;}
+.empty-state .ic,.empty-state svg{color:var(--pr-gold-2);}
+
+/* Подсказки на экране «Заказы» · v69 */
+.task-tips{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.task-tip{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg,rgba(243,217,164,.055),rgba(255,255,255,.012));
+  border:1px solid rgba(243,217,164,.14);border-radius:14px;padding:11px 13px;
+}
+.task-tip>span{
+  width:34px;height:34px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
+  background:rgba(243,217,164,.10);border:1px solid rgba(243,217,164,.20);color:var(--pr-gold-2);
+}
+.task-tip>span .ic,.task-tip>span svg{width:17px;height:17px;}
+.task-tip b{display:block;font-size:12.5px;color:#f4ecdc;letter-spacing:.1px;}
+.task-tip small{display:block;font-size:11px;color:#9fae9c;margin-top:2px;line-height:1.35;}
 
 /* --- Инфо-подписи внизу экранов --- */
 .screen-hint,.map-hint,.biz-hint{
