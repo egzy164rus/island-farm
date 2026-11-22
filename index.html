@@ -3319,8 +3319,17 @@ const XMAS_QUESTS = [
 ];
 
 function XMAS_applyBodyClass(){
-  try{ document.body.classList.toggle('xmas-mode', XMAS_inWindow()); }catch(e){}
+  try{
+    const fixedSummer = !!(S && S.settings && S.settings.fixedSummer);
+    /* зимний фон фермы — только при настоящих сезонах; эвент при этом живёт всегда */
+    const seasonsOn = !fixedSummer;
+    document.body.classList.toggle('xmas-mode', XMAS_inWindow() && seasonsOn);
+  }catch(e){}
 }
+/* Активен ли новогодний эвент. Это отдельный календарь (15 ноя — 15 янв)
+   и он не зависит от того, зафиксировано ли лето в настройках сложности:
+   игрок должен получать эвент при любом режиме. */
+function XMAS_active(){ return XMAS_inWindow(); }
 function XMAS_inWindow(){
   const d = new Date(), m = d.getMonth()+1, day = d.getDate();
   // Сезон «Ёлка острова»: середина ноября — 15 января
@@ -3347,7 +3356,7 @@ function XMAS_progress(id){
 }
 /* Учёт прогресса — вызываем из игровых событий */
 function XMAS_track(id, amount){
-  if (!S || !XMAS_inWindow()) return;
+  if (!S || !(typeof XMAS_active==='function' ? XMAS_active() : XMAS_inWindow())) return;
   XMAS_migrate();
   const q = XMAS_QUESTS.find(q => q.id === id);
   if (!q) return;
@@ -3403,7 +3412,7 @@ function XMAS_adventEnsure(){
   XMAS_migrate();
   if (!S.xmas.advent) S.xmas.advent = { opened:0, lastDay:'', started:'', grand:false };
   if (S.xmas.advent.grand === undefined) S.xmas.advent.grand = false;
-  if (!S.xmas.advent.started && XMAS_inWindow()) S.xmas.advent.started = XMAS_todayKey();
+  if (!S.xmas.advent.started && (typeof XMAS_active==='function' ? XMAS_active() : XMAS_inWindow())) S.xmas.advent.started = XMAS_todayKey();
   return S.xmas.advent;
 }
 function XMAS_daysBetween(a, b){
@@ -3633,7 +3642,7 @@ function XMAS_snowfall(){
 
 /* ---------- ГИРЛЯНДА НА ГЛАВНОЙ СЦЕНЕ (зимой) ---------- */
 function XMAS_garlandHTML(){
-  if (!XMAS_inWindow()) return '';
+  if (typeof XMAS_active==='function' ? !XMAS_active() : !XMAS_inWindow()) return '';
   const bulbs = [];
   for (let i=0;i<14;i++){
     const col = ['#ffd166','#ff8a5b','#7ee0c4','#8ab6ff','#ffe9a8'][i%5];
@@ -3908,7 +3917,7 @@ function MUS_start(){
   if (!MUS_init()) return;
   const a = ac(); if (!a) return;
   MUS.on = true;
-  try{ if (typeof XMAS_inWindow === 'function') MUS_setWinter(XMAS_inWindow()); }catch(e){}
+  try{ if (typeof XMAS_active === 'function') MUS_setWinter(XMAS_active()); }catch(e){}
   try{ if (S && S.settings) MUS.xmasSong = S.settings.xmasSong !== false; }catch(e){}
   MUS.step = 0;
   MUS.nextTime = a.currentTime + 0.12;
@@ -3988,7 +3997,9 @@ function startMinigame({title, sub, zone=0.22, onDone}){
    RENDER
    ============================================================ */
 let hudLastCoins=null,hudLastGems=null;
-function renderAll(){ renderHUD(); renderTabs(); renderScreen(); if (typeof MUS_tryAutoStart==='function') MUS_tryAutoStart(); }
+function renderAll(){ renderHUD(); renderTabs(); renderScreen();
+  if (typeof XMAS_applyBodyClass==='function') XMAS_applyBodyClass();
+  if (typeof MUS_tryAutoStart==='function') MUS_tryAutoStart(); }
 function renderHUD(){
   if(!S) return;
   const seas=seasonInfo(), wea=weatherInfo();
@@ -4020,6 +4031,7 @@ function renderTabs(){
 
 function renderScreen(){
   if (!S) return;
+  if (!window.__keepScroll){ try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} }
   if (ui.tab==='farm') renderFarm();
   else if (ui.tab==='map') renderMap();
   else if (ui.tab==='business') renderBusiness();
@@ -4071,7 +4083,7 @@ function renderFarm(){
   const tutAttr = S.tutorial && !S.tutorial.done && (S.tutorial.step===0 && focus?.id==='f1' || S.tutorial.step===2 && focus?.id==='f1') ? `data-tut="${S.tutorial.step===0?'harvest':'field-f1'}"` : '';
   $('#screen').innerHTML = `
     <div class="farm-scene compact-scene season-${seasonInfo().id} weather-${weatherInfo().id}" role="group" aria-label="Островная ферма · ${seasonInfo().name}, ${weatherInfo().name}">
-      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_inWindow==='function'&&XMAS_inWindow())?'ЗИМА · ПРАЗДНИК':seasonInfo().name.toUpperCase()}</span><button class="scene-weather" onclick="App.openForecast()" aria-label="Прогноз погоды: ${weatherInfo().name}">${ic(weatherInfo().icon)} ${weatherInfo().name}<span class="forecast-chevron">›</span></button></div>
+      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())?'ЗИМА · ПРАЗДНИК':seasonInfo().name.toUpperCase()}</span><button class="scene-weather" onclick="App.openForecast()" aria-label="Прогноз погоды: ${weatherInfo().name}">${ic(weatherInfo().icon)} ${weatherInfo().name}<span class="forecast-chevron">›</span></button></div>
       <div class="scene-copy"><div class="scene-title">Твоя ферма</div><div class="scene-caption">Всё важное — под рукой</div></div>
       <div class="scene-count">${owned.length} / ${S.fields.length} полей</div>
     </div>
@@ -4331,7 +4343,7 @@ function openSettings(){
   openDialog(`<h2>${ic('gear')} Настройки</h2>
     ${tog('sound','Звук')}
     ${tog('music','Музыка')}
-    ${(typeof XMAS_inWindow==='function' && XMAS_inWindow())
+    ${(typeof XMAS_active==='function' && XMAS_active())
       ? tog('xmasSong','Новогодняя мелодия') : ''}
     ${tog('vibrate','Вибрация')}
     ${tog('colorblind','Режим для дальтоников')}
@@ -4660,7 +4672,7 @@ function tutFinish(){
    APP ACTIONS
    ============================================================ */
 const App = {
-  tab(id){ sfx.click(); ui.tab = id; closeModal(); renderAll(); if (typeof TUT2_onNav==='function') TUT2_onNav(id); },
+  tab(id){ sfx.click(); if (ui.tab !== id){ ui.tab = id; try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} } closeModal(); renderAll(); if (typeof TUT2_onNav==='function') TUT2_onNav(id); },
   businessSection(id){ ui.biz=id; sfx.click(); renderBusiness(); },
   taskSection(id){ ui.taskView=id; ui.boardPage=0; sfx.click(); renderTasks(); },
   boardPage(delta){ ui.boardPage=Math.max(0,(ui.boardPage||0)+delta); renderTasks(); },
@@ -4673,6 +4685,7 @@ const App = {
     genBoard(); refreshMarket(true);
     if (!S.tut2) S.tut2 = { step:0, done:false, rewarded:{} };
     save(); renderAll();
+    try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){}
     if (typeof WELCOME_show === 'function') WELCOME_show(); else tutShow();
   },
   openField(id){ sfx.click(); openField(id); },
@@ -4800,6 +4813,12 @@ const App = {
     S.settings[k] = v; sfx.click();
     if (k === 'music' && typeof MUS_setEnabled === 'function') MUS_setEnabled(v);
     if (k === 'xmasSong' && typeof MUS_setXmasSong === 'function') MUS_setXmasSong(v);
+    if (k === 'fixedSummer'){
+      if (typeof XMAS_applyBodyClass === 'function') XMAS_applyBodyClass();
+      if (typeof MUS_setWinter === 'function'){
+        try{ MUS_setWinter(typeof XMAS_active === 'function' ? XMAS_active() : XMAS_inWindow()); }catch(e){}
+      }
+    }
     save(); openSettings(); applySettings();
   },
   openHelp(){ openHelp(); },
@@ -5978,7 +5997,7 @@ function RET_renderFarm(){
 
   // --- переключатель вида
   const sw = (id, icon, label) => `<button class="${view===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
-  const xmasBase = (typeof XMAS_inWindow==='function' && XMAS_inWindow()) ? sw('xmas','gift','Ёлка') : '';
+  const xmasBase = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
   const switcher = `<div class="farm-switch">
     ${sw('map','map','Ферма')}
     ${sw('quests','target','Задания')}
@@ -6025,12 +6044,12 @@ function RET_renderFarm(){
   // --- сцена (только для карты)
   const scene = view === 'map' ? `
     <div class="farm-scene compact-scene season-${seasonInfo().id} weather-${weatherInfo().id}" role="group" aria-label="Островная ферма · ${seasonInfo().name}">
-      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${seasonInfo().name.toUpperCase()}</span>
+      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())?'ЗИМА · ПРАЗДНИК':seasonInfo().name.toUpperCase()}</span>
         <button class="scene-weather" onclick="App.openForecast()">${ic(weatherInfo().icon)} ${weatherInfo().name}</button></div>
       <div class="scene-copy"><div class="scene-title">Твоя ферма</div><div class="scene-caption">Всё важное — под рукой</div></div>
       <div class="scene-count">${owned.length} / ${S.fields.length} полей</div>
       ${typeof XMAS_garlandHTML==='function'?XMAS_garlandHTML():''}
-      ${typeof XMAS_inWindow==='function'&&XMAS_inWindow()?`<button class="xmas-cta" onclick="App.farmView('xmas')">${ic('gift')} Ёлка острова</button>`:''}
+      ${typeof XMAS_active==='function'&&XMAS_active()?`<button class="xmas-cta" onclick="App.farmView('xmas')">${ic('gift')} Ёлка острова</button>`:''}
     </div>` : '';
 
   $('#screen').innerHTML = `${scene}${switcher}${body}`;
@@ -6231,7 +6250,9 @@ function RET_installHooks(){
   /* [HOOK 14] Добавляем новые методы в App */
   if (window.App){
     Object.assign(App, {
-      farmView(v){ ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen(); if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
+      farmView(v){ const changed = ui.farmView !== v; ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen();
+        if (changed){ try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} }
+        if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
       xmasClaim(id){ XMAS_claim(id); },
   xmasAdvent(){ XMAS_adventClaim(); },
       tut2Finish(){ TUT2_finish(); },
@@ -7247,7 +7268,7 @@ function LIV_extendFarmTabs(){
 
 function LIV_switchHTML(active){
   const sw = (id, icon, label) => `<button class="${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
-  const xmasTab = (typeof XMAS_inWindow==='function' && XMAS_inWindow()) ? sw('xmas','gift','Ёлка') : '';
+  const xmasTab = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
   return sw('map','map','Ферма') + sw('quests','target','Задания') + sw('exped','map','Походы') + sw('cards','star','Карточки') + xmasTab + sw('pass','medal','Пропуск') + sw('ach','medal','Награды');
 }
 
