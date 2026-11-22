@@ -736,6 +736,8 @@ body{background:#0f1512;color:var(--sim-text);}
 #hud .hud-top .icon-btn .ic{display:flex;align-items:center;justify-content:center;width:17px!important;height:17px!important;flex:none;color:inherit;filter:none;}
 #hud .hud-top .icon-btn svg{display:block;width:100%;height:100%;}
 #hud .hud-top .icon-btn:focus-visible{outline:2px solid #a9ca79;outline-offset:2px;}
+/* overflow:hidden обрезал ::after-тапзону 44x44 до 34x34 — палец промахивался мимо шестерёнки */
+#hud .hud-top .icon-btn,#hud .settings-control{overflow:visible!important;}
 #hud .hud-btn .icon-btn[aria-label="Гараж"]{display:none!important;}
 #tabs{display:flex;gap:2px;padding-left:4px;padding-right:4px;}
 #tabs .tab-btn{flex:1 1 0;min-width:0;padding-left:1px;padding-right:1px;}
@@ -2343,6 +2345,10 @@ button:focus:not(:focus-visible){outline:none;}
 .icon-btn{min-width:44px;min-height:44px;}
 .login-stamp{min-width:44px;min-height:44px;}
 .login-claim{min-height:40px;padding-block:10px;}
+/* «Забрать» была 64x40 — добираем до 44 по высоте невидимой зоной */
+.login-claim{position:relative;}
+.login-claim::after{content:'';position:absolute;left:0;right:0;top:50%;
+  transform:translateY(-50%);height:44px;}
 .scene-weather{min-height:34px;padding-block:5px;}
 .xmas-cta{min-height:36px;padding-block:6px;}
 .mnode .mnode-disc{min-width:44px;min-height:44px;}
