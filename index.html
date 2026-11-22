@@ -933,9 +933,10 @@ body.fx-front #fx-canvas{z-index:220;}
 .quest-ic .ic{width:18px;height:18px;}
 .quest-body{flex:1;min-width:0;}
 .quest-body b{display:block;font-size:11.5px;font-weight:700;color:#eef3ea;line-height:1.3;}
-.quest-bar{margin-top:5px;height:4px;border-radius:99px;background:#33423a;overflow:hidden;}
+.quest-bar{margin-top:5px;height:5px;border-radius:99px;background:#3a4b41;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4);overflow:hidden;}
 .quest-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8fbf5f,#c3e08a);transition:width .4s;}
-.quest-prog{font-size:9.5px;color:#9fae9c;font-weight:600;margin-top:3px;}
+.quest-prog{font-size:10px;color:#a8b8a4;font-weight:600;margin-top:4px;}
 .quest-claim{flex:none;padding:6px 10px;border-radius:9px;border:0;font:800 10px/1 var(--font-ui);background:linear-gradient(180deg,#d8b25e,#b98f3c);color:#231a06;cursor:pointer;}
 .quest-claim:active{transform:scale(.94);}
 .quest-claim:disabled{background:#2f3a31;color:#7d8b7c;cursor:default;}
@@ -1079,10 +1080,18 @@ body.fx-front #fx-canvas{z-index:220;}
 .ach-rw{font-size:8.5px;color:#e8c078;font-weight:700;flex:none;text-align:right;}
 
 /* ---------- ВКЛАДКИ ЭКРАНА ФЕРМЫ ---------- */
-.farm-switch{display:flex;gap:4px;margin-bottom:9px;background:#1b241e;padding:4px;border-radius:12px;border:1px solid #2f3c32;}
-.farm-switch button{flex:1;border:0;background:transparent;border-radius:9px;padding:7px 4px;color:#9aa896;font:700 9.5px var(--font-ui);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
-.farm-switch button .ic{width:15px;height:15px;}
-.farm-switch button.active{background:#2e4230;color:#d6ecbe;box-shadow:inset 0 -2px 0 #9fca6d;}
+.farm-switch{display:flex;gap:3px;margin-bottom:9px;background:#1a231d;padding:4px;border-radius:13px;
+  border:1px solid #2f3c32;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  scroll-snap-type:x proximity;}
+.farm-switch::-webkit-scrollbar{display:none;}
+.farm-switch button{flex:1 0 auto;min-width:60px;border:0;background:transparent;border-radius:10px;
+  padding:7px 9px 6px;color:#9aa896;font:700 10.5px/1 var(--font-ui);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:4px;scroll-snap-align:center;
+  transition:background .16s,color .16s;}
+.farm-switch button .ic{width:15px;height:15px;flex:none;}
+.farm-switch button:active{transform:scale(.97);}
+.farm-switch button.active{background:#2f4532;color:#dcf0c6;
+  box-shadow:inset 0 -2px 0 #9fca6d,0 1px 6px rgba(0,0,0,.3);}
 
 /* адаптив: карта на узких экранах */
 @media (max-width:360px){
@@ -1262,30 +1271,30 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .liv-week-track{height:5px;border-radius:99px;background:#3a3422;margin-top:5px;overflow:hidden;}
 .liv-week-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a44e,#f0d68f);}
 
-/* переключатель фермы — 5 вкладок скроллом */
-.farm-switch{overflow-x:auto;scrollbar-width:none;}
+/* переключатель фермы — горизонтальная прокрутка вместо сжатия подписей.
+   Подписи не мельче 10px ни на одной ширине: лучше скролл, чем нечитаемый текст. */
+.farm-switch{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-padding:0 8px;mask-image:linear-gradient(90deg,transparent 0,#000 10px,#000 calc(100% - 10px),transparent 100%);}
 .farm-switch::-webkit-scrollbar{display:none;}
-.farm-switch button{min-width:56px;}
+.farm-switch button{min-width:62px;}
 @media(max-width:420px){
   .farm-switch{gap:2px;padding:3px;}
-  .farm-switch button{min-width:0;flex:1 1 0;padding:6px 1px;font-size:7.6px;gap:1px;letter-spacing:-.02em;}
-  .farm-switch button .ic,.farm-switch button svg{width:13px;height:13px;}
+  .farm-switch button{min-width:58px;padding:6px 8px 5px;font-size:10px;}
+  .farm-switch button .ic,.farm-switch button svg{width:14px;height:14px;}
 }
-/* совсем узкие экраны: подписи меньше, иконки компактнее — все 8 вкладок в строку */
 @media(max-width:380px){
-  .farm-switch{gap:1px;padding:2px;}
-  .farm-switch button{font-size:6.9px;padding:5px 0;gap:0;border-radius:8px;}
-  .farm-switch button .ic,.farm-switch button svg{width:12px;height:12px;}
+  .farm-switch{gap:2px;padding:3px;}
+  .farm-switch button{min-width:56px;padding:6px 7px 5px;font-size:10px;gap:3px;}
+  .farm-switch button .ic,.farm-switch button svg{width:13px;height:13px;}
   .page-heading h2{font-size:19px;}
   .contract-visual.npc{height:56px !important;padding:0 8px !important;}
   .contract-visual.npc .npc-face{width:38px !important;height:38px !important;}
   .npc-name-tag b{font-size:9.5px;}
 }
-/* 320px: иконки над подписью, текст мелкий, всё в строку */
 @media(max-width:340px){
-  .farm-switch{gap:0;padding:2px 1px;}
-  .farm-switch button{font-size:6.2px;padding:4px 0;letter-spacing:-.03em;line-height:1.05;}
-  .farm-switch button .ic,.farm-switch button svg{width:11px;height:11px;}
+  .farm-switch{gap:2px;padding:3px;}
+  .farm-switch button{min-width:52px;padding:5px 6px;font-size:10px;line-height:1;}
+  .farm-switch button .ic,.farm-switch button svg{width:12px;height:12px;}
 }
 
 /* питомец в диалоге */
@@ -1329,8 +1338,12 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .mnode-disc .ic{width:22px;height:22px;color:#e2f2d4;}
-.mnode-label{font:800 9.5px/1 var(--font-ui);color:#f0f7e8;letter-spacing:.02em;
-  text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.7);white-space:nowrap;}
+/* подпись узла: тёмная плашка под текстом — читается и на траве, и на воде */
+.mnode-label{font:800 10px/1 var(--font-ui);color:#f4fbf0;letter-spacing:.02em;white-space:nowrap;
+  padding:3px 7px;border-radius:7px;background:rgba(12,20,15,.68);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  box-shadow:0 2px 6px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.09);
+  text-shadow:0 1px 2px rgba(0,0,0,.75);}
 .mnode.alert .mnode-disc{border-color:#f0c060;background:rgba(60,42,10,.86);
   animation:mnodePulse 1.7s ease-in-out infinite;}
 .mnode.alert .mnode-disc .ic{color:#ffdd88;}
@@ -2085,8 +2098,8 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .dch-body{flex:1;min-width:0;}
 .dch-body b{display:block;font-size:11.5px;font-weight:780;color:#e9f2e3;}
 .dch-body small{display:block;font-size:9.5px;color:#8fa396;margin-top:1px;}
-.dch-bar{display:block;height:4px;border-radius:99px;background:rgba(255,255,255,.08);
-  margin-top:5px;overflow:hidden;}
+.dch-bar{display:block;height:5px;border-radius:99px;background:rgba(255,255,255,.13);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.35);margin-top:6px;overflow:hidden;}
 .dch-bar i{display:block;height:100%;border-radius:99px;
   background:linear-gradient(90deg,#79b95e,#bfe08a);transition:width .45s cubic-bezier(.2,.8,.3,1);}
 .dch-row.done .dch-bar i{background:linear-gradient(90deg,#e2c15c,#f5dd93);}
@@ -2099,12 +2112,15 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .dch-tick{flex:none;width:22px;height:22px;border-radius:8px;display:grid;place-items:center;
   background:rgba(150,220,140,.16);color:#a8dc8e;}
 .dch-tick .ic,.dch-tick svg{width:12px;height:12px;}
-.dch-all{width:100%;border:0;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;
-  font-family:var(--font-ui);background:rgba(226,193,92,.1);color:#e8d49a;}
-.dch-all .ic,.dch-all svg{width:15px;height:15px;color:#e2c15c;}
-.dch-all b{font-size:11px;font-weight:800;}
-.dch-all:disabled,.dch-all.claimed{background:rgba(150,220,140,.08);color:#9dc08c;cursor:default;}
+/* полоса бонуса: раньше текст был #e8d49a на полупрозрачном фоне — контраст 1.19.
+   Теперь плотный фон и светлый текст: читается при любом состоянии. */
+.dch-all{width:100%;border:0;border-top:1px solid rgba(255,255,255,.1);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;
+  font-family:var(--font-ui);background:#3a3320;color:#ffe9ad;}
+.dch-all .ic,.dch-all svg{width:16px;height:16px;color:#f2d478;}
+.dch-all b{font-size:12px;font-weight:800;letter-spacing:.01em;}
+.dch-all:not(:disabled):hover{background:#453c25;}
+.dch-all:disabled,.dch-all.claimed{background:#22301f;color:#a8cf96;cursor:default;}
 
 /* ---------- ПРЕСТИЖ ---------- */
 .pre-hero{position:relative;border-radius:18px;overflow:hidden;padding:16px;margin:4px 0 10px;
@@ -2239,6 +2255,9 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   to{opacity:1;transform:none}
 }
 #screen > *{animation:screenIn .26s cubic-bezier(.22,.68,.32,1) both;}
+#screen > *:nth-child(n+5){animation-delay:.07s}
+/* после проигрывания анимация снимается — не держим лишние слои */
+#screen.settled > *{animation:none;}
 #screen > *:nth-child(1){animation-delay:0s}
 #screen > *:nth-child(2){animation-delay:.03s}
 #screen > *:nth-child(3){animation-delay:.05s}
@@ -2278,21 +2297,29 @@ button:focus:not(:focus-visible){outline:none;}
 .mnode .mnode-disc{min-width:44px;min-height:44px;}
 .dch-all{min-height:44px;}
 /* ---------- «ЧТО ДАЛЬШЕ» ---------- */
-.next-card{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;margin:0 0 10px;
-  border-radius:14px;cursor:pointer;font-family:var(--font-ui);text-align:left;
-  border:1px solid rgba(255,255,255,.09);background:linear-gradient(160deg,#212d26,#1a231e);
-  transition:transform .15s cubic-bezier(.2,.75,.25,1);}
+.next-card{position:relative;width:100%;display:flex;align-items:center;gap:11px;padding:13px 14px 13px 16px;
+  margin:0 0 10px;border-radius:15px;cursor:pointer;font-family:var(--font-ui);text-align:left;
+  border:1px solid rgba(255,255,255,.1);background:linear-gradient(160deg,#233026,#19221d);
+  box-shadow:0 3px 14px rgba(0,0,0,.28);
+  transition:transform .15s cubic-bezier(.2,.75,.25,1),box-shadow .15s;}
+/* акцентная полоса слева — карточка читается как главный шаг */
+.next-card::before{content:'';position:absolute;left:0;top:11px;bottom:11px;width:3px;
+  border-radius:0 3px 3px 0;background:#8fbf6a;opacity:.85;}
+.next-good::before{background:#9fd97a;}
+.next-bad::before{background:#e8967a;}
+.next-gold::before{background:#e2c15c;}
+.next-muted::before{background:#6f8478;opacity:.5;}
 .next-card:active{transform:scale(.985);}
-.next-ic{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;
-  background:rgba(255,255,255,.06);color:#a8c99a;}
-.next-ic .ic,.next-ic svg{width:17px;height:17px;}
+.next-ic{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;
+  background:rgba(255,255,255,.07);color:#a8c99a;}
+.next-ic .ic,.next-ic svg{width:19px;height:19px;}
 .next-body{flex:1;min-width:0;}
-.next-body b{display:block;font-size:12px;font-weight:800;color:#eef4ea;letter-spacing:-.01em;
+.next-body b{display:block;font-size:13px;font-weight:800;color:#f2f8ee;letter-spacing:-.01em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.next-body small{display:block;font-size:9.5px;color:#8fa396;margin-top:2px;
+.next-body small{display:block;font-size:10.5px;color:#98ad9f;margin-top:2px;line-height:1.25;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .next-go{flex:none;color:#7f9287;display:flex;}
-.next-go .ic,.next-go svg{width:15px;height:15px;}
+.next-go .ic,.next-go svg{width:17px;height:17px;}
 .next-good{border-color:rgba(150,210,130,.28);background:linear-gradient(160deg,#1e2d22,#19241c);}
 .next-good .next-ic{background:rgba(140,200,120,.16);color:#a8dc8e;}
 .next-good .next-go{color:#8fbf72;}
@@ -2468,8 +2495,11 @@ button:focus:not(:focus-visible){outline:none;}
   border-bottom:2px solid rgba(90,110,90,.55);
   border-radius:0 0 50% 50%/0 0 100% 100%;}
 .xmas-garland i{position:relative;margin-top:9px;width:5px;height:7px;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;
-  background:var(--c);box-shadow:0 0 8px var(--c),0 0 16px color-mix(in srgb,var(--c) 55%,transparent);
-  animation:xgTwinkle 2.4s ease-in-out infinite;}
+  background:var(--c);box-shadow:0 0 8px var(--c);}
+/* мигание — только у чётных лампочек: визуально то же, анимируемых элементов вдвое меньше */
+.xmas-garland i:nth-child(odd){animation:xgTwinkle 2.4s ease-in-out infinite;}
+.xmas-garland i:nth-child(3n){animation-delay:-.8s;}
+.xmas-garland i:nth-child(3n+2){animation-delay:-1.6s;}
 @keyframes xgTwinkle{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
 /* снежинка-бейдж */
 .hud-xmas{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;
@@ -5568,9 +5598,20 @@ function renderTabs(){
   $('#tabs').innerHTML = tab('farm','home','Ферма','') + tab('map','seed','Поля',readyFields||'') + tab('business','barn','Хоз-во','') + tab('tasks','clipboard','Заказы',claimable||'') + `<button class="tab-btn garage-tab" onclick="App.openGarage()" aria-label="Открыть гараж">${ic('tractor')}<span>Гараж</span></button>`;
 }
 
+let __settleTimer = 0;
+function __settleScreen(){
+  // гасим каскадную анимацию через её длительность: иначе каждый элемент
+  // навсегда остаётся промотированным в отдельный слой и тормозит рендер
+  clearTimeout(__settleTimer);
+  const sc = $('#screen');
+  if (!sc) return;
+  sc.classList.remove('settled');
+  __settleTimer = setTimeout(()=>{ if (sc.isConnected) sc.classList.add('settled'); }, 420);
+}
 function renderScreen(){
   if (!S) return;
   if (!window.__keepScroll){ try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} }
+  __settleScreen();
   if (ui.tab==='farm') renderFarm();
   else if (ui.tab==='map') renderMap();
   else if (ui.tab==='business') renderBusiness();
@@ -8540,7 +8581,7 @@ function LIV_weekClaim(){
 
 /* ---------- SVG ПИТОМЦА ---------- */
 const PET_CSS = `
-  .pt-tail{transform-box:view-box;transform-origin:97px 62px;animation:ptWag 1.6s ease-in-out infinite}
+  .pt-tailIn{transform-box:view-box;transform-origin:97px 62px;animation:ptWag 1.6s ease-in-out infinite}
   .pt-body{transform-box:view-box;transform-origin:70px 92px;animation:ptBreathe 3.6s ease-in-out infinite}
   .pt-head{animation:ptBob 3.6s ease-in-out infinite}
   .pt-ear .pt-earIn{transform-box:view-box;transform-origin:62px 26px;animation:ptEar 2.8s ease-in-out infinite}
@@ -8561,7 +8602,7 @@ const PET_CSS = `
   /* спящий питомец */
   .liv-pet.sleeping .liv-pet-svg .pt-eye{animation:none;transform:scaleY(.05)}
   .liv-pet.sleeping .liv-pet-svg .pt-head{animation-duration:4.8s}
-  .liv-pet.sleeping .liv-pet-svg .pt-tail{animation-duration:3.4s;transform:rotate(-6deg)}
+  .liv-pet.sleeping .liv-pet-svg .pt-tailIn{animation-duration:3.4s;transform:rotate(-6deg)}
   .liv-pet.sleeping .liv-pet-svg .pt-tongue{display:none}
   @media (prefers-reduced-motion:reduce){
     .liv-pet-svg *{animation:none!important}
@@ -8620,10 +8661,12 @@ const LIV_PET_SVG_BODY = `<defs>
 
 <!-- ===== ХВОСТ: единая форма с белым кончиком ===== -->
 <g class="pt-tail">
-  <path d="M95 57.6 C104 54.4 112.2 50.6 117 44.4 C119.4 41.4 122.4 43.2 121.4 47.4 C118.4 58 109 65.4 97 68.4 C93.8 69.2 92.4 65.4 95 57.6 Z" fill="url(#{U}Body)"/>
+ <g class="pt-tailIn">
+  <path d="M95 57.6 C104 54.4 112.2 50.6 117 44.4 C119.4 41.4 122.4 43.2 121.4 47.4 C118.4 58 109 65.4 97 68.4 C93.8 69.2 92.4 65.4 95 57.6 Z" fill="#dca76c"/>
   <path d="M116.8 44 C119 41.2 122.2 43.2 121.2 47.4 C120.2 51.4 118.4 55 116 58 C118.2 53.4 118.4 48.6 116.8 44 Z" fill="#fdf8ef"/>
   <ellipse cx="116.6" cy="45.4" rx="3.4" ry="4.4" fill="#fffdf7" opacity=".85" transform="rotate(38 116.6 45.4)"/>
   <ellipse cx="105" cy="60.6" rx="9" ry="3.2" fill="url(#{U}Rump)" opacity=".5" transform="rotate(-26 105 60.6)"/>
+ </g>
 </g>
 
 <!-- ===== КОРПУС ===== -->
@@ -9138,20 +9181,39 @@ function LIV_afterRender(){
     LIV_spawnFireflies(ff);
   }
 
-  // Питомец — постоянный компаньон на экране, вне прокручиваемой области
+  // Питомец — постоянный компаньон на экране, вне прокручиваемой области.
+  // Раньше бейдж создавался только один раз, поэтому смена стадии, настроения
+  // и состояния «спит» на иконке не появлялась до перезагрузки.
   const app = document.getElementById('app');
-  if (app && !app.querySelector('.liv-pet')){
-    const wrap = document.createElement('div');
-    wrap.innerHTML = LIV_renderPetBadge();
-    const petEl = wrap.firstElementChild;
-    if (petEl){
-      // прячем на экранах, где перекрыл бы контент
-      petEl.style.display = (ui.tab === 'farm') ? '' : 'none';
-      app.appendChild(petEl);
+  if (app){
+    const want = (ui.tab === 'farm');
+    const existing = app.querySelector('.liv-pet');
+    const moodKey = S && S.liv && S.liv.pet ? LIV_petMood().key : '';
+    const stageLvl = S && S.liv && S.liv.pet ? LIV_petStage().lvl : 0;
+    const stamp = stageLvl + '|' + moodKey;
+    if (!existing){
+      const wrap = document.createElement('div');
+      wrap.innerHTML = LIV_renderPetBadge();
+      const petEl = wrap.firstElementChild;
+      if (petEl){
+        petEl.dataset.stamp = stamp;
+        petEl.style.display = want ? '' : 'none';
+        app.appendChild(petEl);
+      }
+    } else {
+      existing.style.display = want ? '' : 'none';
+      // обновляем разметку, когда сменились стадия или настроение
+      if (existing.dataset.stamp !== stamp){
+        const wrap = document.createElement('div');
+        wrap.innerHTML = LIV_renderPetBadge();
+        const fresh = wrap.firstElementChild;
+        if (fresh){
+          fresh.dataset.stamp = stamp;
+          fresh.style.display = want ? '' : 'none';
+          existing.replaceWith(fresh);
+        }
+      }
     }
-  } else if (app){
-    const pet = app.querySelector('.liv-pet');
-    if (pet) pet.style.display = (ui.tab === 'farm') ? '' : 'none';
   }
 }
 
