@@ -881,6 +881,10 @@ body.ret-offline-open #modal-root .backdrop{padding-top:60px;}
    VISUAL JUICE — частицы, живой фон, эффекты
    ============================================================ */
 #fx-canvas{position:fixed;inset:0;z-index:120;pointer-events:none;transition:z-index 0s;}
+/* Когда открыт диалог, canvas опускается ПОД подложку (50) и лист (60):
+   иначе листья/бабочки амбиента и остатки эффектов плавали поверх карточек.
+   В обычном режиме canvas остаётся 120 — над контентом, но под HUD-оверлеями. */
+body:has(.backdrop) #fx-canvas{z-index:45;}
 /* когда идёт праздничный эффект (конфетти в честь награды) — поднимаем поверх диалогов */
 body.fx-front #fx-canvas{z-index:220;}
 #ambient{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;border-radius:inherit;
@@ -6981,8 +6985,11 @@ const FX = (()=>{
   let ambSpawned = 0;
   function spawnAmbient(){
     if (reduce || document.hidden) return;
-    // под открытым диалогом атмосферные капли/листья не рисуем — они мешают читать
+    // под открытым диалогом атмосферные капли/листья не рисуем — они мешают читать.
+    // #fx-canvas лежит на z-index 120, то есть ВЫШЕ подложки диалога (50),
+    // и листья/бабочки плавали прямо поверх карточек гаража.
     if (document.body.classList.contains('wallet-overlay')) return;
+    if (document.querySelector('.backdrop, .sheet')) return;
     // на праздничной сцене уже есть снег, искры и боке — амбиент только жрёт кадры
     if (typeof ui !== 'undefined' && ui && ui.farmView === 'xmas') return;
     if (ambSpawned > 46) return;
