@@ -4083,7 +4083,9 @@ function renderFarm(){
   const tutAttr = S.tutorial && !S.tutorial.done && (S.tutorial.step===0 && focus?.id==='f1' || S.tutorial.step===2 && focus?.id==='f1') ? `data-tut="${S.tutorial.step===0?'harvest':'field-f1'}"` : '';
   $('#screen').innerHTML = `
     <div class="farm-scene compact-scene season-${seasonInfo().id} weather-${weatherInfo().id}" role="group" aria-label="Островная ферма · ${seasonInfo().name}, ${weatherInfo().name}">
-      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())?'ЗИМА · ПРАЗДНИК':seasonInfo().name.toUpperCase()}</span><button class="scene-weather" onclick="App.openForecast()" aria-label="Прогноз погоды: ${weatherInfo().name}">${ic(weatherInfo().icon)} ${weatherInfo().name}<span class="forecast-chevron">›</span></button></div>
+      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())
+          ? (S.settings.fixedSummer ? 'ЭВЕНТ · ПРАЗДНИК' : 'ЗИМА · ПРАЗДНИК')
+          : seasonInfo().name.toUpperCase()}</span><button class="scene-weather" onclick="App.openForecast()" aria-label="Прогноз погоды: ${weatherInfo().name}">${ic(weatherInfo().icon)} ${weatherInfo().name}<span class="forecast-chevron">›</span></button></div>
       <div class="scene-copy"><div class="scene-title">Твоя ферма</div><div class="scene-caption">Всё важное — под рукой</div></div>
       <div class="scene-count">${owned.length} / ${S.fields.length} полей</div>
     </div>
@@ -4818,6 +4820,7 @@ const App = {
       if (typeof MUS_setWinter === 'function'){
         try{ MUS_setWinter(typeof XMAS_active === 'function' ? XMAS_active() : XMAS_inWindow()); }catch(e){}
       }
+      renderAll();   // перерисовать сцену и шапку с новым оформлением
     }
     save(); openSettings(); applySettings();
   },
@@ -6044,7 +6047,9 @@ function RET_renderFarm(){
   // --- сцена (только для карты)
   const scene = view === 'map' ? `
     <div class="farm-scene compact-scene season-${seasonInfo().id} weather-${weatherInfo().id}" role="group" aria-label="Островная ферма · ${seasonInfo().name}">
-      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())?'ЗИМА · ПРАЗДНИК':seasonInfo().name.toUpperCase()}</span>
+      <div class="scene-top"><span class="scene-kicker">ОСТРОВ • ${(typeof XMAS_active==='function'&&XMAS_active())
+          ? (S.settings.fixedSummer ? 'ЭВЕНТ · ПРАЗДНИК' : 'ЗИМА · ПРАЗДНИК')
+          : seasonInfo().name.toUpperCase()}</span>
         <button class="scene-weather" onclick="App.openForecast()">${ic(weatherInfo().icon)} ${weatherInfo().name}</button></div>
       <div class="scene-copy"><div class="scene-title">Твоя ферма</div><div class="scene-caption">Всё важное — под рукой</div></div>
       <div class="scene-count">${owned.length} / ${S.fields.length} полей</div>
