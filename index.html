@@ -1431,6 +1431,11 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 /* иконки в списках — с подложкой */
 .goods-symbol,.quest-ic,.ach-ic,.pen-ic,.liv-exp-ic{box-shadow:inset 0 1px 0 rgba(255,255,255,.07);}
 /* тосты — стеклянные и читаемые */
+.toast{padding:7px 12px !important;font-size:12px !important;font-weight:700 !important;
+  border-radius:11px !important;line-height:1.25;gap:6px;
+  animation:toastIn .26s cubic-bezier(.2,.8,.3,1) both;}
+.toast .ic,.toast svg{width:14px;height:14px;}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
 .toast{background:rgba(14,24,18,.94) !important;border:1px solid rgba(160,200,150,.3) !important;
   box-shadow:0 8px 24px rgba(0,0,0,.5) !important;backdrop-filter:blur(8px);}
 .toast.good{border-color:rgba(140,200,110,.45) !important;}
@@ -1574,6 +1579,180 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .liv-exp-card.scene{position:relative;}
 .liv-exp-card.scene::before{content:'';position:absolute;left:0;top:0;bottom:0;width:78px;pointer-events:none;
   background:linear-gradient(90deg,rgba(10,20,15,.35),rgba(10,20,15,0));border-radius:13px 0 0 13px;}
+
+
+/* загоны — с арт-сценой */
+.pen-card.has-art{padding:0 !important;overflow:hidden;}
+.pen-art{margin:0;height:74px;position:relative;display:block;}
+.pen-art svg{width:100%;height:74px;display:block;}
+.pen-art::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,18,14,0) 52%,rgba(20,30,24,.8) 100%);}
+.pen-card.has-art .pen-head{padding:0 11px;margin-top:-6px;position:relative;z-index:2;}
+.pen-card.has-art .pen-care,.pen-card.has-art .pen-mood,
+.pen-card.has-art > .btn{margin-left:11px;margin-right:11px;}
+.pen-card.has-art .pen-mood{margin-bottom:10px;}
+.pen-card.has-art .pen-ic{width:26px;height:26px;border-radius:8px;
+  box-shadow:0 2px 7px rgba(0,0,0,.4);background:#2f3d32;z-index:3;}
+.pen-card.has-art > .btn{margin-bottom:11px;}
+.pen-head{gap:8px;}
+.pen-head b{font-size:13.5px;}
+.pen-status{box-shadow:inset 0 1px 0 rgba(255,255,255,.1);}
+
+
+/* уход — компактные капсулы с уровнем-полоской */
+.pen-care{gap:6px !important;margin-top:9px !important;}
+.pen-care button{padding:6px 5px 5px !important;border-radius:10px !important;gap:2px !important;
+  font-size:8.5px !important;line-height:1.15;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#2f3f34,#263429) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 2px 5px rgba(0,0,0,.22) !important;}
+.pen-care button span{display:block;white-space:nowrap;font-size:8.5px;letter-spacing:-.01em;}
+.pen-care button span b{font-size:10px;font-weight:800;color:#e3f0d9;}
+.pen-care button.low{border:1px solid rgba(232,180,106,.45);}
+.pen-care button.low span b{color:#f0c184;}
+.pen-care button .ic{width:15px;height:15px;}
+
+
+/* иконка «в работе» вместо пустой кнопки */
+.quest-todo{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+.quest-todo .ic,.quest-todo svg{width:13px;height:13px;color:#8fa78c;opacity:.8;}
+/* тосты — стек сверху, компактнее */
+#toast-root{display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;}
+.toast{max-width:min(88vw,340px);}
+/* склад — строки плотнее и с иконкой в плашке */
+.goods-item{border-radius:12px;padding:9px 11px !important;}
+.goods-symbol{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#2d3d31,#253227) !important;border:1px solid rgba(255,255,255,.06);}
+.goods-symbol svg{width:17px;height:17px;}
+.goods-item b{font-size:12.5px;}
+
+
+/* склад — карточки товаров */
+.goods-grid{gap:8px !important;}
+.goods-item{grid-template-columns:auto 1fr auto !important;align-items:center;gap:9px !important;
+  min-height:56px !important;border-radius:14px !important;padding:9px 11px !important;
+  background:linear-gradient(160deg,#25322b,#1e2923) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  box-shadow:0 3px 9px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.05) !important;
+  transition:transform .15s cubic-bezier(.2,.75,.25,1);}
+.goods-item:active{transform:scale(.97);}
+.goods-copy{min-width:0;display:flex;flex-direction:column;gap:1px;}
+.goods-copy span{font-size:11.5px;font-weight:700;color:#e8f1e2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.goods-copy small{font-size:9px;color:#8da189;font-weight:600;}
+.goods-item b{font-size:13px !important;font-weight:800 !important;color:#cfe3c2 !important;
+  background:rgba(120,170,110,.12);border:1px solid rgba(140,190,120,.16);
+  border-radius:8px;padding:3px 7px;white-space:nowrap;}
+.goods-symbol{width:34px !important;height:34px !important;border-radius:10px !important;}
+.goods-symbol svg{width:19px !important;height:19px !important;}
+
+
+/* склад: экономим место, чтобы названия не обрезались */
+.goods-item{gap:6px !important;padding:8px 9px !important;}
+.goods-symbol{width:28px !important;height:28px !important;border-radius:8px !important;}
+.goods-symbol svg{width:16px !important;height:16px !important;}
+.goods-copy span{font-size:11px !important;letter-spacing:-.015em;}
+.goods-copy small{font-size:8.5px !important;}
+.goods-item b{font-size:11.5px !important;padding:2px 5px !important;border-radius:7px !important;}
+@media (max-width:360px){
+  .goods-symbol{width:25px !important;height:25px !important;}
+  .goods-copy span{font-size:10.2px !important;}
+  .goods-item b{font-size:10.5px !important;padding:2px 4px !important;}
+}
+
+
+/* ============================================================
+   ЗАКАЗЫ И ДОСКА — карточки с характером
+   ============================================================ */
+.contract-card,.board-card{border-radius:15px !important;padding:0 !important;overflow:hidden;
+  border-left:0 !important;position:relative;
+  background:linear-gradient(160deg,#25322b,#1e2923) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  box-shadow:0 3px 10px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.05) !important;
+  display:flex;flex-direction:column;gap:0 !important;}
+/* верхняя сцена с техникой */
+.contract-visual{width:100% !important;height:52px !important;border-radius:0 !important;
+  display:flex !important;align-items:flex-end;justify-content:flex-end;padding:0 10px 6px;
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% 120%,rgba(96,140,90,.5),rgba(96,140,90,0) 70%),
+    linear-gradient(160deg,#2c4a35 0%,#24392b 60%,#1f2f25 100%) !important;}
+.contract-visual::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 40% 100% at 18% 130%,rgba(70,105,70,.55),rgba(70,105,70,0) 70%),
+             radial-gradient(ellipse 50% 90% at 82% 130%,rgba(58,92,64,.6),rgba(58,92,64,0) 70%);}
+.contract-visual .ic,.contract-visual svg{position:relative;z-index:1;}
+.contract-visual svg,.contract-visual .ic svg{width:58px !important;height:44px !important;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));}
+.contract-visual .ic{color:#cfe0c5 !important;background:none !important;}
+.contract-main{padding:9px 11px 11px;display:flex;flex-direction:column;gap:6px;}
+.contract-main .row,.contract-main .row.between{gap:6px;}
+.contract-main b{font-size:13px;letter-spacing:-.01em;}
+.contract-main>small{font-size:10px;line-height:1.35;}
+.contract-reward{font-size:11px !important;color:#f0c884 !important;
+  background:rgba(240,200,132,.1);border:1px solid rgba(240,200,132,.2);
+  border-radius:8px;padding:2px 7px;}
+.contract-main .mini-cta,.contract-main .btn{border-radius:11px;margin-top:2px;}
+.contract-progress{margin-top:2px;}
+.contract-progress .bar{height:5px;border-radius:99px;}
+/* доска */
+.board-card{position:relative;}
+.board-card .mini-cta.full,.board-card .btn{width:100%;}
+
+
+/* сцена заказа: небо, поле, дорога и техника */
+.contract-visual{height:64px !important;justify-content:center !important;padding:0 !important;
+  background:linear-gradient(180deg,#2e4a52 0%,#35554a 42%,#2f4a36 43%,#27402c 100%) !important;}
+.contract-visual::before{background:
+  radial-gradient(ellipse 90% 60% at 50% 118%,rgba(24,38,28,.75) 0%,rgba(24,38,28,0) 62%),
+  radial-gradient(ellipse 40% 60% at 14% 0%,rgba(150,190,140,.16),rgba(150,190,140,0) 70%) !important;}
+.contract-visual::after{content:'';position:absolute;left:0;right:0;bottom:9px;height:7px;
+  background:repeating-linear-gradient(90deg,rgba(226,214,168,.34) 0 9px,transparent 9px 19px);
+  opacity:.55;}
+.contract-visual svg,.contract-visual .ic svg{width:118px !important;height:86px !important;
+  margin-bottom:2px;margin-left:-14px;
+  filter:drop-shadow(0 4px 7px rgba(0,0,0,.55));}
+.contract-visual .ic{display:flex;align-items:center;justify-content:center;}
+.contract-card,.board-card{padding-top:0;}
+.contract-main{padding:10px 12px 12px !important;}
+
+
+/* ============================================================
+   НАСТРОЙКИ — переключатели и сегменты в тёмной теме
+   ============================================================ */
+.dialog .toggle{width:46px;height:27px;background:#2f3d33 !important;
+  border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 5px rgba(0,0,0,.45);}
+.dialog .toggle::after{width:21px;height:21px;top:2px;left:2px;
+  background:linear-gradient(180deg,#e8eee1,#c3cdb9);box-shadow:0 2px 5px rgba(0,0,0,.45);}
+.dialog .toggle.on{background:linear-gradient(180deg,#6d9b4f,#577f3f) !important;
+  border-color:rgba(180,220,140,.4);box-shadow:inset 0 2px 5px rgba(0,0,0,.3),0 0 12px rgba(140,190,100,.28);}
+.dialog .toggle.on::after{left:21px;}
+
+.dialog .seg{background:#1b241f !important;border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:3px;box-shadow:inset 0 2px 6px rgba(0,0,0,.4);}
+.dialog .seg button{border:0;background:transparent;color:#9fb09c;font:750 12px var(--font-ui);
+  padding:8px 6px;border-radius:9px;cursor:pointer;flex:1;transition:all .16s;}
+.dialog .seg button.on{background:linear-gradient(180deg,#3d5540,#324636) !important;
+  color:#eaf4e2 !important;box-shadow:0 2px 7px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.1) !important;}
+/* список действий */
+.action-list{display:flex;flex-direction:column;gap:8px;}
+.action-list .btn{border-radius:13px;min-height:44px;font-weight:750;}
+.dialog .divider{background:rgba(255,255,255,.07);height:1px;margin:12px 0;}
+
+
+/* достижения — иконки по смыслу + прогресс */
+.ach-item{padding:10px 11px !important;border-radius:13px !important;gap:10px !important;
+  background:linear-gradient(160deg,#212d26,#1c2721) !important;
+  box-shadow:0 2px 8px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04);}
+.ach-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#2e3f33,#26352b);border:1px solid rgba(255,255,255,.07);
+  color:#a9c88f;}
+.ach-ic .ic,.ach-ic svg{width:17px;height:17px;}
+.ach-ic.unlocked{background:linear-gradient(180deg,#5d8a45,#486b36);color:#f2f9e8;
+  border-color:rgba(200,235,160,.4);box-shadow:0 0 14px rgba(140,190,100,.3);}
+.ach-body b{font-size:12.5px;}
+.ach-body small{font-size:10px;line-height:1.35;}
+.ach-item.locked .ach-ic{opacity:.75;}
+.ach-item.done .ach-body small{color:#a9d48c;}
+.ach-rw{font-size:10px;font-weight:800;color:#e8c98a;}
 
 </style>
 </head>
@@ -2567,8 +2746,10 @@ function toast(msg, kind='', icon=''){
   const t = document.createElement('div');
   t.className = 'toast ' + kind;
   t.innerHTML = (icon ? ic(icon) : '') + `<span>${msg}</span>`;
-  $('#toast-root').appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),320); }, 2600);
+  const root = $('#toast-root');
+  root.appendChild(t);
+  while (root.children.length > 3){ root.firstElementChild.remove(); }
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),320); }, 2400);
 }
 function flyCoin(fromEl){
   try{
@@ -2798,7 +2979,7 @@ function renderBusiness(){
   } else {
     const goods=Object.keys(S.goods).filter(g=>S.goods[g]>0);
     body=`<div class="warehouse-summary"><div><small>ЗАНЯТО НА СКЛАДЕ</small><b>${fmt(warehouseUsed())} <i>/ ${fmt(S.warehouseCap)}</i></b></div><button class="mini-cta" onclick="App.openMarket()">${ic('coin')} Продать</button></div>
-      ${goods.length?`<div class="goods-grid">${goods.map(g=>`<div class="goods-item"><span class="goods-symbol">${goodsIcon(g)}</span><span>${GOODS[g].name}</span><b>×${fmt(S.goods[g])}</b></div>`).join('')}</div>`:`<div class="empty-state"><span>${ic('box')}</span><b>Склад пока пуст</b><small>Убери урожай или собери продукцию</small></div>`}
+      ${goods.length?`<div class="goods-grid">${goods.map(g=>`<div class="goods-item"><span class="goods-symbol">${goodsIcon(g)}</span><div class="goods-copy"><span>${GOODS[g].name}</span><small>${GOODS[g].price}/шт</small></div><b>×${fmt(S.goods[g])}</b></div>`).join('')}</div>`:`<div class="empty-state"><span>${ic('box')}</span><b>Склад пока пуст</b><small>Убери урожай или собери продукцию</small></div>`}
       <div class="warehouse-actions"><button class="btn btn-primary" onclick="App.openMarket()">${ic('coin')} Рынок</button><button class="btn btn-ghost" onclick="App.openLoan()">${ic('card')} Аванс ${S.debt?`· долг ${fmt(S.debt)}`:''}</button></div>
       <div class="business-hint">${S.autoSell?'Авто-продажа включена':'Продажа вручную · цены меняются на рынке'}<button class="mini-cta" onclick="App.toggleAutoSell()">${S.autoSell?'Отключить':'Авто-продажа'}</button></div>`;
   }
@@ -4133,7 +4314,7 @@ function RET_renderDailyQuests(){
         ? `<span class="quest-check">${ic('check')}</span>`
         : st.done
           ? `<button class="quest-claim" onclick="App.claimQuest('${qid}')">Забрать</button>`
-          : `<button class="quest-claim" disabled>…</button>`}
+          : `<span class="quest-todo">${ic('clock')}</span>`}
     </div>`;
   }
   html += `</div>`;
@@ -4288,16 +4469,17 @@ function RET_renderPens(){
     const b = S.buildings[id], d = BUILDINGS[id];
     const mood = RET_penMood(b);
     const ready = b.stored > 0;
-    html += `<div class="pen-card">
+    html += `<div class="pen-card has-art">
+      <figure class="pen-art">${BUILDING_ART[id]||''}</figure>
       <div class="pen-head">
         <span class="pen-ic">${ic(BLD_ICON[id]||'barn')}</span>
         <div><b>${d.name}</b><small>${ready?`${b.stored} ед. ${GOODS[d.good].name} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
         <span class="pen-status ${mood.level}">${mood.label}</span>
       </div>
       <div class="pen-care">
-        <button class="${b.feed<40?'low':''}" onclick="App.feedPen('${id}')">${ic('sack')}Корм ${b.feed}%</button>
-        <button class="${b.water<40?'low':''}" onclick="App.waterPen('${id}')">${ic('droplet')}Вода ${b.water}%</button>
-        <button class="${b.clean<40?'low':''}" onclick="App.cleanPen('${id}')">${ic('wrench')}Чисто ${b.clean}%</button>
+        <button class="${b.feed<40?'low':''}" onclick="App.feedPen('${id}')">${ic('sack')}<span>Корм <b>${Math.round(b.feed)}%</b></span></button>
+        <button class="${b.water<40?'low':''}" onclick="App.waterPen('${id}')">${ic('droplet')}<span>Вода <b>${Math.round(b.water)}%</b></span></button>
+        <button class="${b.clean<40?'low':''}" onclick="App.cleanPen('${id}')">${ic('wrench')}<span>Чисто <b>${Math.round(b.clean)}%</b></span></button>
       </div>
       <div class="pen-mood">Настроение: <b>${mood.level==='good'?'отличное':mood.level==='warn'?'нормальное':'плохое'}</b> · Доход ×${mood.mult}</div>
       ${ready ? `<button class="btn btn-gold btn-block btn-sm" style="margin-top:8px" onclick="App.collectPen('${id}')">${ic('box')} Забрать ${b.stored} ${GOODS[d.good].name}</button>` : ''}
@@ -4465,8 +4647,8 @@ function RET_renderAchievements(){
     const done = R.ach.unlocked.includes(a.id);
     const cur = Math.min(a.need, statVal[a.stat]||0);
     html += `<div class="ach-item ${done?'done':'locked'}">
-      <span class="ach-ic">${ic(done?'medal':'info')}</span>
-      <div class="ach-body"><b>${a.name}</b><small>${done?'Получено':a.desc + ' · ' + cur + '/' + a.need}</small></div>
+      <span class="ach-ic ${done?'unlocked':''}">${ic(done?'medal':a.icon)}</span>
+      <div class="ach-body"><b>${a.name}</b><small>${done?'Получено':a.desc + ' · ' + fmt(cur) + '/' + fmt(a.need)}</small></div>
       <span class="ach-rw">${a.reward.coins?`<span class="ic" style="width:9px;height:9px;display:inline-block;vertical-align:-1px">${I.coin}</span> ${fmt(a.reward.coins)}`:''}${a.reward.gems?` <span class="ic" style="width:9px;height:9px;display:inline-block;vertical-align:-1px">${I.gem}</span> ${a.reward.gems}`:''}</span>
     </div>`;
   }
