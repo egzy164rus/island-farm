@@ -3407,6 +3407,50 @@ function MUS_chirp(){
   o.start(t0); o.stop(t0+0.18);
 }
 
+
+/* ---------- ЗИМНИЙ ЛАД: колокольчики и шиммер ---------- */
+MUS.winter = false;
+/* Колокольчик: два расстроенных синуса + короткий «удар» — звучит как глокеншпиль */
+function MUS_bell(freq, when, vol=0.05){
+  const a = ac(); if (!a) return;
+  const t0 = a.currentTime + when;
+  [1, 2.02, 2.98].forEach((mult, i) => {
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq * mult;
+    const decay = [1.5, 0.7, 0.42][i];
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol * [1, 0.34, 0.16][i], t0 + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + decay);
+    o.connect(g); g.connect(MUS.gain);
+    o.start(t0); o.stop(t0 + decay + 0.03);
+  });
+}
+/* «Шиммер» — стайка высоких нот, как блеск снега */
+function MUS_shimmer(){
+  const a = ac(); if (!a) return;
+  const base = MUS.scale[3 + (Math.random()*5|0)] * (Math.random() < 0.5 ? 2 : 4);
+  for (let i=0;i<3;i++){
+    MUS_bell(base * (1 + i*0.25), 0.06*i + Math.random()*0.05, 0.016);
+  }
+}
+/* Переключение лада: зимой — мягкие «колокольные» аккорды */
+MUS_setWinter = function(on){
+  MUS.winter = !!on;
+  MUS.bpm = on ? 68 : 76;
+  MUS.scale = on
+    ? [261.63, 293.66, 349.23, 392.00, 440.00, 523.25, 587.33, 698.46]     // до-мажор с F#, «снежно»
+    : [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];    // ля-минор пентатоника
+  MUS.chords = on
+    ? [[261.63, 329.63, 392.00], [174.61, 261.63, 349.23], [196.00, 246.94, 392.00], [220.00, 261.63, 329.63]]
+    : [[220.00, 261.63, 329.63], [174.61, 220.00, 261.63], [261.63, 329.63, 392.00], [196.00, 246.94, 293.66]];
+  /* если играет — перезапускаем с новым ладом на границе фразы */
+  if (MUS.on){
+    MUS.step = Math.ceil(MUS.step/8)*8;
+    MUS.nextTime = Math.max(MUS.nextTime, ac() ? ac().currentTime + 0.25 : 0);
+  }
+};
+
 /* Планировщик: держим очередь нот на 1.2 сек вперёд */
 function MUS_schedule(){
   if (!MUS.on || !MUS.gain) return;
@@ -3419,18 +3463,21 @@ function MUS_schedule(){
       const ch = MUS.chords[(s/8) % MUS.chords.length];
       MUS_pad([ch[0]/2, ch[1], ch[2]], beat*8*1.05, 0.030);
     }
-    // мотив: пентатоника с паузами
-    if (s % 2 === 0 && Math.random() < 0.62){
+    // мотив: зимой — колокольчики, иначе — щипковая гитара
+    if (s % 2 === 0 && Math.random() < (MUS.winter ? 0.54 : 0.62)){
       const deg = (Math.random()*MUS.scale.length)|0;
-      MUS_pluck(MUS.scale[deg], MUS.nextTime - a.currentTime, 0.038 + Math.random()*0.016);
+      if (MUS.winter) MUS_bell(MUS.scale[deg]*2, MUS.nextTime - a.currentTime, 0.042 + Math.random()*0.014);
+      else MUS_pluck(MUS.scale[deg], MUS.nextTime - a.currentTime, 0.038 + Math.random()*0.016);
     }
+    // зимой — искры-шиммер раз в две фразы
+    if (MUS.winter && s % 16 === 10 && Math.random() < 0.42) MUS_shimmer();
     // бас на сильную долю
     if (s % 8 === 0){
       const ch = MUS.chords[(s/8) % MUS.chords.length];
       MUS_pluck(ch[0]/2, MUS.nextTime - a.currentTime, 0.05, 'sine');
     }
     // редкая «птичка»
-    if (s % 16 === 6 && Math.random() < 0.5) MUS_chirp();
+    if (!MUS.winter && s % 16 === 6 && Math.random() < 0.5) MUS_chirp();
 
     MUS.nextTime += beat;
     MUS.step++;
@@ -3443,6 +3490,7 @@ function MUS_start(){
   if (!MUS_init()) return;
   const a = ac(); if (!a) return;
   MUS.on = true;
+  try{ if (typeof XMAS_inWindow === 'function') MUS_setWinter(XMAS_inWindow()); }catch(e){}
   MUS.step = 0;
   MUS.nextTime = a.currentTime + 0.12;
   MUS.gain.gain.cancelScheduledValues(a.currentTime);
