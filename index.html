@@ -358,6 +358,9 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;ba
 .btn-blue{background:#537d83;color:white;}
 .btn-ghost{background:#f5f6f2;color:#344139;border:1px solid #dfe4dc;}
 .btn-danger{background:#a85545;color:white;}
+
+
+
 .btn-shine::after{display:none;}
 .card{background:#fff;border:1px solid #e6e9e2;border-radius:14px;box-shadow:0 2px 8px rgba(28,45,35,.045);padding:14px;margin-bottom:10px;backdrop-filter:none;animation:fadeUp .2s both;}
 .card h3{font-size:15px;font-weight:750;}
@@ -706,7 +709,7 @@ body{background:#0f1512;color:var(--sim-text);}
 .pick-row .pick-card .t{display:flex;align-items:center;justify-content:center;min-width:0;width:100%;min-height:2.25em;font-size:clamp(8px,2.35vw,15px);font-weight:750;line-height:1.12;text-align:center;overflow-wrap:normal;word-break:normal;}
 .pick-row .pick-card .d{display:block;flex:1;width:100%;min-width:0;margin:0;font-size:clamp(9px,2.35vw,11px);line-height:1.32;text-align:center;overflow-wrap:normal;word-break:normal;color:#c2ccc0;}
 .pick-row .pick-card.sel{border-width:2px;}
-.hud-btn{flex:none;min-width:74px;}
+.hud-btn{flex:none;}
 #hud .hud-top .icon-btn{appearance:none;-webkit-appearance:none;box-sizing:border-box;position:relative;display:grid;place-items:center;flex:0 0 34px;width:34px;min-width:34px;max-width:34px;height:34px;min-height:34px;padding:0;margin:0;overflow:hidden;line-height:1;color:#e4ecdf;background:#253229;border:1px solid #46564a;border-radius:9px;box-shadow:none;}
 #hud .hud-top .icon-btn .ic{display:flex;align-items:center;justify-content:center;width:17px;height:17px;flex:none;color:inherit;filter:none;}
 #hud .hud-top .icon-btn .ic svg{display:block;width:100%;height:100%;}
@@ -731,7 +734,7 @@ body{background:#0f1512;color:var(--sim-text);}
 /* Stable single-row HUD: balances stay left, settings stays right. */
 #hud .hud-top{display:flex!important;align-items:center;gap:7px;width:100%;min-width:0;min-height:35px;}
 #hud .hud-top .chip{display:flex!important;flex:0 0 auto;min-width:max-content;visibility:visible;white-space:nowrap;}
-#hud .hud-top .hud-btn{display:flex!important;align-items:center;justify-content:flex-end;flex:0 0 34px;width:34px;min-width:34px;max-width:34px;min-height:34px;margin:0 0 0 auto;}
+#hud .hud-top .hud-btn{display:flex!important;align-items:center;justify-content:flex-end;flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;gap:6px;min-height:34px;margin:0 0 0 auto;}
 #hud .hud-top .icon-btn{appearance:none;-webkit-appearance:none;box-sizing:border-box;position:relative!important;inset:auto!important;display:grid!important;place-items:center;flex:0 0 34px!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:34px!important;min-height:34px!important;max-height:34px!important;padding:0!important;margin:0!important;overflow:hidden;line-height:1;color:#e4ecdf!important;background:#253229;border:1px solid #46564a;border-radius:9px;box-shadow:none;}
 #hud .hud-top .icon-btn .ic{display:flex;align-items:center;justify-content:center;width:17px!important;height:17px!important;flex:none;color:inherit;filter:none;}
 #hud .hud-top .icon-btn svg{display:block;width:100%;height:100%;}
@@ -3116,7 +3119,16 @@ function addXP(n){
       <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично!</button></div>`);
   }
 }
-function addCoins(n){ S.coins += n; if (n>0) S.stats.earned += n; }
+function addCoins(n){
+  /* VIP даёт +50% к ЛЮБОМУ доходу, кроме возвратов и штрафов */
+  if (n > 0){
+    try{
+      const mul = (typeof PUR_vipCoinMul==='function') ? PUR_vipCoinMul() : 1;
+      if (mul !== 1) n = Math.round(n * mul);
+    }catch(e){}
+  }
+  S.coins += n; if (n>0) S.stats.earned += n;
+}
 function seasonInfo(){
   if (S.settings.fixedSummer) return {name:'Лето (фикс.)', icon:'sun', id:'summer'};
   const days = Math.floor((Date.now()-S.createdAt)/86400000);
@@ -3156,7 +3168,13 @@ function machineSpeed(mid){
   const def = MACHINES[mid];
   const tier = (def.tiers||[])[ m.tier||0 ];
   const base = tier ? tier.speed : def.speed;
-  return base * (1 + ((m.lvl||1)-1)*0.12);
+  /* Премиум: VIP ×2, разовый буст ×5 — складываются с моделью и уровнем */
+  let mul = 1;
+  try{
+    if (typeof PUR_vipSpeedMul==='function')  mul *= PUR_vipSpeedMul();
+    if (typeof PUR_boostActive==='function' && PUR_boostActive()) mul *= 5;
+  }catch(e){}
+  return base * (1 + ((m.lvl||1)-1)*0.12) * mul;
 }
 /* Одна операция снимает прочность модели: дешёвая изнашивается быстрее */
 function machineWear(mid){
@@ -5724,9 +5742,9 @@ function renderHUD(){
     <div class="hud-top">
       <div class="chip money-chip ${coinFx}">${ic('coin')} <b data-coins>${fmt(S.coins)}</b>${S.debt>0?`<small>−${fmt(S.debt)}</small>`:''}</div>
       <div class="chip gem-chip ${gemFx}">${ic('gem')} <b data-gems>${S.gems}</b></div>
-      <div class="hud-btn"><button class="icon-btn settings-control" onclick="App.openSettings()" title="Настройки" aria-label="Настройки">${ic('gear')}</button></div>
+      <div class="hud-btn"><button class="prem-enter ${(typeof PUR_isVip==='function'&&PUR_isVip())?'is-vip':''}" onclick="App.openPremium()" title="Премиум" aria-label="Премиум">${ic('gem')}<span>${(typeof PUR_isVip==='function'&&PUR_isVip())?'VIP':'Премиум'}</span></button><button class="icon-btn settings-control" onclick="App.openSettings()" title="Настройки" aria-label="Настройки">${ic('gear')}</button></div>
     </div>
-    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span><span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span><span class="weather-meta">${seas.name} <i>·</i> ${ic(wea.icon)} ${wea.name}</span></div>
+    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span>${(typeof PUR_isVip==='function' && PUR_isVip()) ? `<span class="hud-flag vip">${ic('medal')} VIP ${PUR_vipDaysLeft()}д</span>` : ''}${(typeof PUR_boostActive==='function' && PUR_boostActive()) ? `<span class="hud-flag boost">${ic('bolt')} ${purBoostLeft()}</span>` : ''}<span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span><span class="weather-meta">${seas.name} <i>·</i> ${ic(wea.icon)} ${wea.name}</span></div>
     <div class="xpbar"><i style="width:${xpPct}%"></i></div>`;
 }
 
@@ -6478,6 +6496,7 @@ const App = {
   selectStyle(id){ ui.selStyle = id; sfx.click(); renderStart(); },
   startGame(){
     S = freshState(ui.selPreset, ui.selStyle);
+    if (typeof PUR_init === 'function') PUR_init();
     genBoard(); refreshMarket(true);
     if (!S.tut2) S.tut2 = { step:0, done:false, rewarded:{} };
     save(); renderAll();
@@ -6694,6 +6713,210 @@ const App = {
   },
 };
 window.App = App;
+
+/* ============================================================
+   ПРЕМИУМ-МАГАЗИН · v66
+   ------------------------------------------------------------
+   Демо-витрина: реальных списаний нет. Все покупки идут через
+   PUR_storeBuy(), который в проде подменяется на биллинг
+   (App Store / Google Play / ЮKassa). Здесь — полный UI, каталог,
+   состояния «куплено/активно», VIP-статус и эффекты на игру.
+   ============================================================ */
+
+/* --- Каталог. Цены в рублях, id совпадают с SKU в сторах. --- */
+const PUR_ITEMS = [
+  { id:'gems_s',  kind:'gems',  sku:'gems_250',   gems:250,  price:99,   name:'Горсть самоцветов',   icon:'gem',
+    desc:'250 самоцветов на любые ускорения' },
+  { id:'gems_m',  kind:'gems',  sku:'gems_700',   gems:700,  price:249,  name:'Сумка самоцветов',    icon:'gem',
+    desc:'700 самоцветов · выгода 20%', badge:'Выгодно' },
+  { id:'gems_l',  kind:'gems',  sku:'gems_1600',  gems:1600, price:499,  name:'Сундук самоцветов',   icon:'gem',
+    desc:'1600 самоцветов · выгода 35%', badge:'Лучшая цена' },
+  { id:'gems_xl', kind:'gems',  sku:'gems_4000',  gems:4000, price:999,  name:'Гора самоцветов',     icon:'gem',
+    desc:'4000 самоцветов · выгода 50%' },
+
+  { id:'vip_week',  kind:'sub',  sku:'vip_7',   days:7,   price:199, name:'VIP на неделю',   icon:'medal',
+    desc:'+50% монет, +2 к скорости, автосбор' },
+  { id:'vip_month', kind:'sub',  sku:'vip_30',  days:30,  price:599, name:'VIP на месяц',    icon:'medal',
+    desc:'всё из VIP + 400 самоцветов сразу', badge:'Хит', gems:400 },
+  { id:'vip_year',  kind:'sub',  sku:'vip_365', days:365, price:3990, name:'VIP на год',      icon:'medal',
+    desc:'всё из VIP + 2000 самоцветов и золотой ник', gems:2000, badge:'−44%' },
+
+  { id:'pack_boost', kind:'pack', sku:'pack_boost_x5', price:149, name:'x5 Ускорение',  icon:'bolt',
+    desc:'5 ускорений времени ×5 по 10 минут', grant:'boost', qty:5 },
+  { id:'pack_fert',  kind:'pack', sku:'pack_fert_x20', price:129, name:'Удобрение ×20',  icon:'seed',
+    desc:'20 премиальных удобрений (+60% урожая)', grant:'fert', qty:20 },
+  { id:'pack_repair',kind:'pack', sku:'pack_repair_x3', price:179, name:'Ремкомплект ×3', icon:'wrench',
+    desc:'3 полных ремонта любой техники', grant:'repair', qty:3 },
+
+  { id:'decor_gold', kind:'decor', sku:'decor_golden_field', price:349, name:'Золотые поля', icon:'sparkle',
+    desc:'Золотая текстура полей + свечение полос' },
+  { id:'decor_sky',  kind:'decor', sku:'decor_aurora',       price:299, name:'Северное сияние', icon:'sparkle',
+    desc:'Анимированное небо над островом' },
+  { id:'perk_noads', kind:'perk',  sku:'perk_no_ads',        price:299, name:'Без рекламы навсегда', icon:'shield',
+    desc:'Убирает все рекламные блоки и баннеры' },
+];
+
+/* --- Состояние игрока (живёт в S.pur) --- */
+function PUR_init(){
+  if (!S.pur) S.pur = { owned:[], vipUntil:0, boost:0, fert:0, repair:0, decor:[], noads:false, spent:0 };
+  if (!Array.isArray(S.pur.owned)) S.pur.owned = [];
+  if (!Array.isArray(S.pur.decor)) S.pur.decor = [];
+  return S.pur;
+}
+const PUR_isVip = () => !!(S && S.pur && S.pur.vipUntil > Date.now());
+function PUR_vipDaysLeft(){
+  if (!PUR_isVip()) return 0;
+  return Math.max(1, Math.ceil((S.pur.vipUntil - Date.now())/86400000));
+}
+const PUR_owns = id => PUR_init().owned.includes(id);
+
+/* --- Покупка. Здесь точка интеграции реального биллинга. --- */
+function PUR_storeBuy(id){
+  const item = PUR_ITEMS.find(x=>x.id===id);
+  if (!item) return;
+  /* Разовые товары (декор, «без рекламы») второй раз не продаём:
+     иначе игрок заплатит за то, что у него уже есть. */
+  const oneTime = (item.kind==='decor' || item.kind==='perk');
+  if (oneTime && PUR_owns(item.id)){
+    toast('Уже куплено', '', 'check'); return;
+  }
+  /* ПРОД: здесь вызывается нативный биллинг и только после
+     подтверждения чека выдаётся товар. Демо — выдаём сразу. */
+  PUR_grant(item);
+}
+function PUR_grant(item){
+  const p = PUR_init();
+  if (!p.owned.includes(item.id)) p.owned.push(item.id);
+  if (item.kind==='gems'  && item.gems) S.gems += item.gems;
+  if (item.kind==='sub'){
+    if (item.gems) S.gems += item.gems;
+    const base = Math.max(Date.now(), p.vipUntil || 0);
+    p.vipUntil = base + item.days*86400000;
+  }
+  if (item.kind==='pack'){
+    if (item.grant==='fert')   p.fert   += (item.qty||1);
+    if (item.grant==='repair') p.repair += (item.qty||1);
+    if (item.grant==='boost')  p.boost  += (item.qty||1);
+  }
+  if (item.kind==='decor' && !p.decor.includes(item.id)) p.decor.push(item.id);
+  if (item.kind==='perk' && item.id==='perk_noads') p.noads = true;
+  PUR_applyDecor();
+  sfx.good(); buzz(40);
+  toast(`Куплено: ${item.name}`, 'good', item.icon);
+  save(); renderAll();
+  if (ui.modal==='prem') PUR_open();
+  else { try{ FX.confetti(); }catch(e){} }
+}
+
+/* --- Декор применяется классами на body --- */
+function PUR_applyDecor(){
+  if (!S || !S.pur) return;
+  const d = S.pur.decor || [];
+  document.body.classList.toggle('decor-golden', d.includes('decor_gold'));
+  document.body.classList.toggle('decor-aurora', d.includes('decor_sky'));
+  document.body.classList.toggle('prem-noads',    !!S.pur.noads);
+  document.body.classList.toggle('prem-vip',      PUR_isVip());
+}
+
+/* --- Что даёт VIP в игре --- */
+const PUR_vipCoinMul = () => PUR_isVip() ? 1.5 : 1;   // +50% монет
+const PUR_vipSpeedMul = () => PUR_isVip() ? 2 : 1;    // ×2 к скорости работ
+
+/* --- Расходуемые премиум-запасы --- */
+function PUR_useRepair(id){
+  const p = PUR_init();
+  if (!p.repair) { toast('Нет ремкомплектов', 'bad', 'wrench'); return false; }
+  const m = S.machines[id];
+  if (!m || !m.owned) return false;
+  p.repair--; m.cond = 100;
+  toast('Ремкомплект применён: техника как новая', 'good', 'wrench');
+  save(); renderAll(); return true;
+}
+function PUR_useFert(){
+  const p = PUR_init();
+  if (!p.fert) { toast('Нет удобрений', 'bad', 'seed'); return false; }
+  p.fert--;
+  S.pur.fertActive = true;                 // поле получит бонус при посеве
+  toast('Удобрение готово к применению на поле', 'good', 'seed');
+  save(); renderAll(); return true;
+}
+function PUR_useBoost(){
+  const p = PUR_init();
+  if (!p.boost) { toast('Нет ускорений', 'bad', 'bolt'); return false; }
+  p.boost--;
+  p.boostUntil = Date.now() + 10*60000;    // 10 минут ×5
+  toast('Ускорение ×5 на 10 минут!', 'good', 'bolt');
+  save(); renderAll(); return true;
+}
+const PUR_boostActive = () => !!(S && S.pur && S.pur.boostUntil > Date.now());
+function purBoostLeft(){
+  const ms = Math.max(0, (S.pur.boostUntil||0) - Date.now());
+  const m = Math.floor(ms/60000), sec = Math.floor(ms%60000/1000);
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+/* --- Витрина --- */
+function PUR_open(){
+  PUR_init();
+  ui.modal = 'prem'; document.body.classList.add('wallet-overlay');
+  const vip = PUR_isVip();
+  const days = PUR_vipDaysLeft();
+
+  const card = (it)=>{
+    const owned = PUR_owns(it.id) && it.kind!=='sub';
+    const badge = it.badge ? `<span class="prem-flag">${it.badge}</span>` : '';
+    const per = it.kind==='sub' ? ` · ${Math.round(it.price/it.days)} ₽/день` : '';
+    return `<button class="prem-item ${owned?'is-owned':''} ${it.badge?'is-hot':''}"
+              onclick="App.premBuy('${it.id}')" ${owned?'disabled':''}>
+      <span class="prem-ico ${it.kind}">${ic(it.icon)}</span>
+      <span class="prem-txt">
+        <span class="prem-name">${it.name} ${badge}</span>
+        <span class="prem-desc">${it.desc}</span>
+      </span>
+      <span class="prem-price">${owned ? 'Куплено' : `${fmt(it.price)} ₽`}</span>
+      ${it.kind==='sub' ? `<span class="prem-per">${per.trim()}</span>` : ''}
+    </button>`;
+  };
+
+  const sec = (title, sub, ids)=>`
+    <div class="prem-sec">
+      <div class="prem-sec-head"><b>${title}</b>${sub?`<small>${sub}</small>`:''}</div>
+      ${ids.map(id=>card(PUR_ITEMS.find(i=>i.id===id))).join('')}
+    </div>`;
+
+  const html = `
+    <div class="prem-head">
+      <h2>${ic('gem')} Премиум</h2>
+      <p class="muted">Больше монет, меньше ожидания. Всё покупается один раз — без подписок-ловушек.</p>
+      ${vip ? `<div class="prem-vip-badge pr-shine">${ic('medal')} VIP активен · ещё ${days} дн.</div>` : ''}
+    </div>
+
+    <div class="prem-balance">
+      <span class="chip money-chip">${ic('coin')} <b>${fmt(S.coins)}</b></span>
+      <span class="chip gem-chip">${ic('gem')} <b>${S.gems}</b></span>
+    </div>
+
+    ${sec('VIP-статус', 'выгоднее всего на длинный срок', ['vip_week','vip_month','vip_year'])}
+    ${sec('Самоцветы', 'мгновенное пополнение', ['gems_s','gems_m','gems_l','gems_xl'])}
+    ${sec('Наборы', 'разовые усиления', ['pack_boost','pack_fert','pack_repair'])}
+    ${sec('Оформление', 'меняет вид фермы', ['decor_gold','decor_sky'])}
+    ${sec('Навсегда', 'один платёж', ['perk_noads'])}
+
+    <p class="prem-legal">Демо-режим: платежи не проводятся. В релизе здесь подключается App Store / Google Play.</p>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>
+  `;
+
+  $('#modal-root').innerHTML =
+    `<div class="backdrop center prem-backdrop" onclick="if(event.target===this)App.closeModal()">${walletMarkup()}
+      <div class="dialog prem-dialog">${html}</div>
+    </div>`;
+}
+
+Object.assign(App, {
+  openPremium(){ sfx.click(); PUR_open(); },
+  premBuy(id){ sfx.click(); PUR_storeBuy(id); },
+});
+window.PUR_open = PUR_open;
 
 /* ============================================================
    TICK (1 сек): таймеры, прогресс, автосейв
@@ -7127,6 +7350,7 @@ function init(){
   if (saved){
     S = saved;
     migrateMachines(S);
+    if (typeof PUR_init === 'function') PUR_init();
     if(!S.loginReward) S.loginReward={lastClaim:'',streak:0};
     applySettings();
     genBoardIfNeeded();
@@ -9079,7 +9303,436 @@ function LIV_petSVG(){
     .replace(/#4fba88/g, P.collar[0]).replace(/#2f7d59/g, P.collar[1]).replace(/#154a2c/g, P.collar[2])
     .replace(/#e5be58/g, P.tag);
   return `<svg viewBox="0 0 128 104" aria-hidden="true" class="liv-pet-svg">
-    <style>${PET_CSS}</style>
+    <style>${PET_CSS}
+/* ============================================================
+   ПРЕМИУМ-СЛОЙ · v66
+   Дорогая типографика, глубина, золотой акцент.
+   Ничего не ломает: только обогащает существующие классы.
+   ============================================================ */
+:root{
+  --pr-gold:#e3b872; --pr-gold-2:#f3d9a4; --pr-gold-deep:#a9772f;
+  --pr-ink:#1c2a22; --pr-line:rgba(227,184,114,.30);
+  --pr-glass:rgba(255,255,255,.075); --pr-glass-2:rgba(255,255,255,.045);
+  --pr-hair:rgba(255,255,255,.10);
+  --pr-shadow:0 10px 30px rgba(0,0,0,.34), 0 2px 6px rgba(0,0,0,.22);
+  --pr-shadow-sm:0 4px 14px rgba(0,0,0,.24);
+  --pr-emboss:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.22);
+}
+
+/* --- фон приложения: дорогая глубина вместо плоского цвета --- */
+#app{
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(227,184,114,.055) 0%, transparent 58%),
+    radial-gradient(90% 45% at 0% 100%, rgba(90,140,110,.10) 0%, transparent 60%),
+    linear-gradient(180deg,#121a15 0%,#16201a 40%,#131c17 100%) !important;
+}
+
+/* --- HUD: стеклянная панель с золотой линией --- */
+#hud{
+  background:linear-gradient(180deg,rgba(30,44,36,.96),rgba(22,33,27,.92)) !important;
+  border-bottom:1px solid rgba(227,184,114,.16);
+  box-shadow:0 6px 22px rgba(0,0,0,.32);
+  position:relative;
+}
+#hud::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(227,184,114,.45) 18%,rgba(243,217,164,.65) 50%,rgba(227,184,114,.45) 82%,transparent);
+}
+.chip{
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045)) !important;
+  border:1px solid rgba(255,255,255,.13) !important;
+  box-shadow:var(--pr-emboss),0 2px 10px rgba(0,0,0,.20) !important;
+  color:#f6f3e8 !important;
+  letter-spacing:.01em;
+}
+.chip b{font-variant-numeric:tabular-nums;letter-spacing:.01em;}
+.chip .ic{opacity:.95;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+.money-chip .ic{color:#f0cf8f;}
+.gem-chip .ic{color:#9fd8e8;}
+
+/* --- ТАБЫ снизу: полированная панель --- */
+#tabs{
+  background:linear-gradient(180deg,rgba(24,35,28,.97),rgba(17,25,20,.99)) !important;
+  border-top:1px solid rgba(227,184,114,.14) !important;
+  box-shadow:0 -10px 30px rgba(0,0,0,.38) !important;
+}
+.tab-btn{color:#8fa094 !important;}
+.tab-btn .ic{opacity:.62;filter:none !important;transition:transform .18s,opacity .18s;}
+.tab-btn.active{
+  color:var(--pr-gold-2) !important;
+  background:linear-gradient(180deg,rgba(227,184,114,.16),rgba(227,184,114,.06)) !important;
+  box-shadow:inset 0 0 0 1px rgba(227,184,114,.24),0 2px 10px rgba(0,0,0,.24) !important;
+  font-weight:800;
+}
+.tab-btn.active .ic{opacity:1;transform:translateY(-1px);}
+.tab-badge{
+  background:linear-gradient(180deg,#e0603f,#b8391f) !important;
+  border:2px solid #1a2620 !important;
+  box-shadow:0 2px 8px rgba(200,70,35,.55) !important;
+}
+
+/* --- КНОПКИ: объём, золото, тактильность --- */
+.btn{
+  letter-spacing:.012em;
+  position:relative;
+  transition:transform .12s cubic-bezier(.2,.8,.3,1),filter .16s,box-shadow .16s;
+}
+.btn:active{transform:scale(.975) !important;filter:brightness(.94);}
+.btn-primary{
+  background:linear-gradient(180deg,#3f6a4f,#2c4d3a) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 12px rgba(0,0,0,.28) !important;
+  border:1px solid rgba(255,255,255,.07);
+}
+.btn-gold{
+  background:linear-gradient(180deg,#f0d7a2,#d3ac6e 46%,#c09250) !important;
+  color:#231a08 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 14px rgba(160,110,40,.40) !important;
+  border:1px solid rgba(255,235,190,.5);
+  text-shadow:0 1px 0 rgba(255,245,220,.5);
+}
+.btn-blue{
+  background:linear-gradient(180deg,#5f8e95,#436c74) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 12px rgba(0,0,0,.26) !important;
+}
+.btn-ghost{
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03)) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  color:#e8ede2 !important;
+  box-shadow:var(--pr-emboss) !important;
+}
+.btn-danger{
+  background:linear-gradient(180deg,#b25e4c,#8d3f31) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 12px rgba(120,40,25,.34) !important;
+}
+
+/* --- КАРТОЧКИ: тонкая грань, глубина, блик --- */
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.032)) !important;
+  border:1px solid var(--pr-hair) !important;
+  box-shadow:var(--pr-shadow-sm),var(--pr-emboss) !important;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.30) 30%,rgba(255,255,255,.42) 50%,rgba(255,255,255,.30) 70%,transparent);
+  opacity:.55;
+}
+
+/* --- ДИАЛОГИ: дорогое стекло --- */
+.dialog,.sheet{
+  background:linear-gradient(180deg,rgba(34,47,39,.985),rgba(22,32,26,.995)) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 30px 80px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+/* Градиентный текст только для ЗАГОЛОВКА диалога (первый h2),
+   иначе он перехватывает h2 внутри карточек и они тускнеют */
+.dialog > h2:first-child,.sheet > h2:first-child{
+  letter-spacing:-.012em;
+  background:linear-gradient(180deg,#ffffff,#dbe4d6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:none;
+}
+.dialog > h2:first-child .ic,.sheet > h2:first-child .ic{
+  -webkit-text-fill-color:initial;color:var(--pr-gold);
+}
+/* заголовки внутри содержимого — обычные, яркие */
+.dialog h3,.dialog .card h2,.dialog section h2{color:#eef3e9;}
+
+/* --- #screen прозрачен, и снизу в него пробивался пейзаж #ambient.
+       Даём мягкую подложку: сверху пропускаем сцену, книзу — плотный фон. --- */
+#app > #screen{
+  background:linear-gradient(180deg,
+    rgba(20,29,24,0) 0%,
+    rgba(20,29,24,.55) 34%,
+    rgba(19,27,22,.88) 62%,
+    #141d18 82%,
+    #141d18 100%) !important;
+}
+.backdrop{
+  backdrop-filter:blur(7px) saturate(.9) !important;
+  -webkit-backdrop-filter:blur(7px) saturate(.9) !important;
+  background:radial-gradient(120% 80% at 50% 0%,rgba(6,12,9,.55),rgba(4,8,6,.72)) !important;
+}
+
+/* --- ВЕРХНИЙ ПЕРЕКЛЮЧАТЕЛЬ: премиальная пилюля --- */
+.farm-switch{
+  background:linear-gradient(180deg,rgba(27,39,32,.94),rgba(20,30,24,.94)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:0 6px 20px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.07) !important;
+  backdrop-filter:blur(14px) saturate(1.05) !important;
+}
+.farm-switch button{color:#9aa89c !important;}
+.farm-switch button.active{
+  background:linear-gradient(180deg,rgba(227,184,114,.26),rgba(227,184,114,.13)) !important;
+  box-shadow:inset 0 0 0 1px rgba(243,217,164,.42),0 2px 8px rgba(0,0,0,.28) !important;
+  color:#fff8e7 !important;
+}
+
+/* --- ТИПОГРАФИКА: заголовки и цифры --- */
+b,h1,h2,h3,.stat-big,.big-num{font-variant-numeric:tabular-nums;}
+.small.muted,.muted{color:#93a396 !important;}
+
+/* --- ПОЛОСЫ ПРОГРЕССА: золотое свечение --- */
+.bar,.xpbar{border-radius:99px;overflow:hidden;}
+.bar>i,.xpbar>i{
+  background:linear-gradient(90deg,#c99b52,#f0d7a2) !important;
+  box-shadow:0 0 10px rgba(227,184,114,.45) !important;
+}
+
+/* --- ПРЕМИУМ-БЕЙДЖ (корона) --- */
+.pr-crown{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);
+  color:#2a1e07;font:900 10px/1 var(--font-ui,inherit);letter-spacing:.06em;
+  padding:3px 8px 3px 6px;border-radius:99px;
+  box-shadow:0 2px 8px rgba(190,140,60,.45),inset 0 1px 0 rgba(255,255,255,.6);
+  text-transform:uppercase;
+}
+.pr-crown .ic{width:11px;height:11px;color:#5d421a;}
+@keyframes pr-shine{
+  0%{transform:translateX(-120%) skewX(-18deg);opacity:0}
+  25%{opacity:.85}
+  100%{transform:translateX(320%) skewX(-18deg);opacity:0}
+}
+.pr-shine{position:relative;overflow:hidden;}
+.pr-shine::after{
+  content:'';position:absolute;top:0;bottom:0;width:45%;
+  background:linear-gradient(90deg,transparent,rgba(255,246,220,.55),transparent);
+  animation:pr-shine 3.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@media (prefers-reduced-motion:reduce){ .pr-shine::after{animation:none;} }
+
+/* ============================================================
+   ПРЕМИУМ-МАГАЗИН · стили витрины
+   ============================================================ */
+.prem-backdrop{padding-top:46px !important;}
+.prem-dialog{
+  max-width:520px;width:min(520px,calc(100vw - 20px));
+  max-height:88dvh;overflow-y:auto;
+  padding:16px 14px calc(env(safe-area-inset-bottom) + 16px);
+  border-radius:22px 22px 0 0;
+  background:linear-gradient(180deg,#20302a 0%,#141d18 100%) !important;
+  scrollbar-width:thin;
+}
+.prem-dialog::-webkit-scrollbar{width:4px}
+.prem-dialog::-webkit-scrollbar-thumb{background:rgba(227,184,114,.34);border-radius:4px}
+
+.prem-head{position:relative;margin-bottom:12px;}
+.prem-head h2{
+  display:flex;align-items:center;gap:9px;margin:0 0 5px;
+  font-size:23px;letter-spacing:-.015em;
+  background:linear-gradient(180deg,#fff6e2,#e2c79a);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.prem-head h2 .ic{color:var(--pr-gold);-webkit-text-fill-color:initial;}
+.prem-head p{margin:0;font-size:12.5px;line-height:1.45;color:#9db0a2;}
+
+.prem-vip-badge{
+  display:inline-flex;align-items:center;gap:7px;margin-top:10px;
+  padding:7px 13px;border-radius:99px;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(243,217,164,.24),rgba(201,160,90,.14));
+  border:1px solid rgba(243,217,164,.46);
+  color:#ffeecb;font:800 11.5px/1 var(--font-ui,inherit);letter-spacing:.02em;
+  box-shadow:0 4px 16px rgba(190,140,60,.24),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.prem-vip-badge .ic{width:14px;height:14px;color:var(--pr-gold-2);}
+
+.prem-balance{display:flex;gap:8px;margin-bottom:16px;}
+
+.prem-sec{margin-bottom:16px;}
+.prem-sec-head{
+  display:flex;align-items:baseline;gap:8px;margin:0 2px 8px;
+}
+.prem-sec-head b{
+  font-size:12px;letter-spacing:.10em;text-transform:uppercase;
+  color:#c9b48a;font-weight:850;
+}
+.prem-sec-head small{font-size:11px;color:#7d8f84;font-weight:600;}
+
+/* --- карточка товара --- */
+.prem-item{
+  position:relative;display:grid;width:100%;
+  grid-template-columns:44px 1fr auto;grid-template-areas:"ico txt price";
+  align-items:center;gap:11px;
+  padding:11px 12px;margin-bottom:8px;
+  border-radius:14px;text-align:left;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
+  border:1px solid rgba(255,255,255,.095);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 2px 10px rgba(0,0,0,.20);
+  transition:transform .13s,box-shadow .16s,border-color .16s;
+  font-family:inherit;
+}
+.prem-item:active{transform:scale(.985);}
+.prem-item.is-hot{
+  border-color:rgba(243,217,164,.40);
+  background:linear-gradient(180deg,rgba(227,184,114,.14),rgba(227,184,114,.05));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 18px rgba(160,115,45,.24);
+}
+.prem-item.is-owned{opacity:.52;cursor:default;filter:saturate(.55);}
+.prem-item[disabled]{pointer-events:none;}
+
+.prem-ico{
+  grid-area:ico;width:44px;height:44px;border-radius:12px;
+  display:grid;place-items:center;flex:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 2px 8px rgba(0,0,0,.28);
+}
+.prem-ico .ic{width:22px;height:22px;}
+.prem-ico.gems {background:linear-gradient(180deg,#5fa8c4,#2f6f89);color:#e8f8ff;}
+.prem-ico.sub  {background:linear-gradient(180deg,#f0d7a2,#b98d45);color:#3a2a0c;}
+.prem-ico.pack {background:linear-gradient(180deg,#6aa374,#436b4c);color:#e8f5e2;}
+.prem-ico.decor{background:linear-gradient(180deg,#8f7bc4,#5a4a8c);color:#f0eaff;}
+.prem-ico.perk {background:linear-gradient(180deg,#c97a5a,#8d4a33);color:#fff0e8;}
+
+.prem-txt{grid-area:txt;display:flex;flex-direction:column;gap:2px;min-width:0;}
+.prem-name{font-size:13.5px;font-weight:800;color:#f2f6ee;letter-spacing:.005em;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.prem-desc{font-size:11px;color:#8ea095;font-weight:600;line-height:1.35;}
+
+.prem-flag{
+  font:900 8.5px/1 var(--font-ui,inherit);letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 6px;border-radius:5px;
+  background:linear-gradient(180deg,#efc98a,#c29a55);color:#2b1e07;
+  box-shadow:0 1px 4px rgba(180,130,50,.4);
+}
+
+.prem-price{
+  grid-area:price;justify-self:end;white-space:nowrap;
+  font-size:13px;font-weight:850;color:#ffe9bd;
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.13);
+  padding:7px 11px;border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+}
+.prem-item.is-owned .prem-price{
+  color:#9fb8a6;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);
+}
+.prem-per{
+  grid-column:1/-1;font-size:9.5px;color:#7d8f84;font-weight:700;
+  margin-top:-2px;letter-spacing:.02em;
+}
+.prem-legal{
+  font-size:10px;line-height:1.5;color:#6f8177;text-align:center;
+  margin:14px 8px 10px;
+}
+
+@media (max-width:360px){
+  .prem-name{font-size:12.5px;}
+  .prem-desc{font-size:10.5px;}
+  .prem-price{font-size:12px;padding:6px 9px;}
+  .prem-ico{width:40px;height:40px;}
+  .prem-item{grid-template-columns:40px 1fr auto;}
+}
+
+/* --- эффекты купленного декора --- */
+body.decor-golden #screen .field-tile,
+body.decor-golden .field{
+  filter:saturate(1.28) contrast(1.06) sepia(.16) hue-rotate(-8deg);
+  transition:filter .5s ease;
+}
+body.decor-golden .mapv2{filter:sepia(.14) saturate(1.18) brightness(1.03);}
+body.decor-aurora #app::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60% 30% at 20% 0%,rgba(120,220,190,.16),transparent 70%),
+    radial-gradient(50% 26% at 75% 4%,rgba(150,150,240,.14),transparent 72%);
+  animation:pr-aurora 14s ease-in-out infinite alternate;
+}
+@keyframes pr-aurora{
+  0%{opacity:.55;transform:translateX(-2%) scaleY(1)}
+  100%{opacity:1;transform:translateX(2%) scaleY(1.06)}
+}
+@media (prefers-reduced-motion:reduce){ body.decor-aurora #app::before{animation:none;} }
+
+/* --- VIP в HUD --- */
+.chip.vip-chip{
+  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.14)) !important;
+  border-color:rgba(243,217,164,.48) !important;
+  color:#ffeecb !important;
+}
+.chip.vip-chip .ic{color:var(--pr-gold-2);}
+
+/* --- кнопка «Премиум» в шапке --- */
+.prem-enter{
+  position:relative;display:inline-flex;align-items:center;gap:5px;
+  height:34px;padding:0 11px 0 8px;border-radius:10px;cursor:pointer;
+  font:850 11px/1 var(--font-ui,inherit);letter-spacing:.02em;white-space:nowrap;
+  color:#2b1e07;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);
+  border:1px solid rgba(255,236,198,.55);
+  box-shadow:0 2px 10px rgba(190,140,60,.38),inset 0 1px 0 rgba(255,255,255,.62);
+  transition:transform .12s,filter .16s;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.prem-enter .ic{width:14px;height:14px;color:#5d421a;}
+.prem-enter:active{transform:scale(.95);filter:brightness(.94);}
+.prem-enter::after{
+  content:'';position:absolute;top:0;bottom:0;width:42%;
+  background:linear-gradient(90deg,transparent,rgba(255,250,235,.62),transparent);
+  transform:translateX(-130%) skewX(-18deg);
+  animation:pr-enter-shine 4.4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes pr-enter-shine{
+  0%,68%{transform:translateX(-130%) skewX(-18deg);opacity:0}
+  74%{opacity:.9}
+  88%,100%{transform:translateX(320%) skewX(-18deg);opacity:0}
+}
+@media (prefers-reduced-motion:reduce){ .prem-enter::after{animation:none;} }
+@media (max-width:359px){
+  .prem-enter span{display:none;}
+  .prem-enter{padding:0 8px;width:34px;justify-content:center;}
+}
+/* VIP-статус в шапке вместо кнопки */
+.prem-enter.is-vip{
+  background:linear-gradient(180deg,rgba(243,217,164,.28),rgba(201,160,90,.16));
+  color:#ffeecb;border-color:rgba(243,217,164,.5);
+  box-shadow:0 2px 10px rgba(190,140,60,.22),inset 0 1px 0 rgba(255,255,255,.18);
+}
+.prem-enter.is-vip .ic{color:var(--pr-gold-2);}
+
+.chip.boost-chip{
+  background:linear-gradient(180deg,rgba(240,200,90,.26),rgba(200,150,40,.14)) !important;
+  border-color:rgba(240,210,120,.5) !important;color:#ffeab5 !important;
+  animation:pr-boost-pulse 1.6s ease-in-out infinite;
+}
+.chip.boost-chip .ic{color:#ffd96b;}
+/* на узком экране чипы статуса сжимаем, но текст не рвём */
+.chip.vip-chip small,.chip.boost-chip b{font-size:11px;font-weight:850;}
+@media (max-width:400px){
+  .chip.vip-chip,.chip.boost-chip{padding-inline:7px;gap:4px;font-size:11px;}
+  .chip.vip-chip small{display:none;}
+  .prem-enter span{font-size:10px;}
+}
+@media (max-width:359px){
+  .chip.vip-chip,.chip.boost-chip{padding-inline:6px;}
+}
+
+/* --- статус VIP / буст во второй строке HUD --- */
+.hud-flag{
+  display:inline-flex;align-items:center;gap:3px;
+  font:850 10px/1 var(--font-ui,inherit);letter-spacing:.03em;
+  padding:3px 7px;border-radius:99px;white-space:nowrap;
+}
+.hud-flag .ic{width:11px;height:11px;}
+.hud-flag.vip{
+  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.14));
+  border:1px solid rgba(243,217,164,.46);color:#ffeecb;
+}
+.hud-flag.vip .ic{color:var(--pr-gold-2);}
+.hud-flag.boost{
+  background:linear-gradient(180deg,rgba(240,200,90,.24),rgba(200,150,40,.12));
+  border:1px solid rgba(240,210,120,.48);color:#ffeab5;
+  animation:pr-boost-pulse 1.6s ease-in-out infinite;
+}
+.hud-flag.boost .ic{color:#ffd96b;}
+@media (prefers-reduced-motion:reduce){ .hud-flag.boost{animation:none;} }
+@keyframes pr-boost-pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,200,90,.30)}50%{box-shadow:0 0 0 6px rgba(240,200,90,0)}}
+@media (prefers-reduced-motion:reduce){ .chip.boost-chip{animation:none;} }
+
+</style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
   </svg>`;
