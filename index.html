@@ -3732,6 +3732,7 @@ function MUS_chirp(){
 
 /* ---------- ЗИМНИЙ ЛАД: колокольчики и шиммер ---------- */
 MUS.winter = false;
+MUS.xmasSong = true;   // играть узнаваемую мелодию зимой
 /* Колокольчик: два расстроенных синуса + короткий «удар» — звучит как глокеншпиль */
 function MUS_bell(freq, when, vol=0.05){
   const a = ac(); if (!a) return;
@@ -3773,40 +3774,60 @@ MUS_setWinter = function(on){
   }
 };
 
-/* ---------- УЗНАВАЕМАЯ НОВОГОДНЯЯ ТЕМА ----------
-   «Jingle Bells» (James Lord Pierpont, 1857) — общественное достояние.
-   Играем мотив на колокольчиках поверх зимней подложки, тихо и в мажоре. */
-const MUS_JINGLE = {
-  // [нота, длительность в восьмых]  — 4/4, шаг = восьмая
-  notes: [
-    // "Jingle, jingle, jingle bells..."  (припев)
-    ['E4',1],['E4',1],['E4',2], ['E4',1],['E4',1],['E4',2],
-    ['E4',1],['G4',1],['C4',1.5],['D4',.5],['E4',4],
-    // второй такт
-    ['F4',1],['F4',1],['F4',1.5],['F4',.5], ['F4',1],['E4',1],['E4',1],['E4',.5],['E4',.5],
-    // "...in a one-horse open sleigh"
-    ['E4',1],['D4',1],['D4',1],['E4',1], ['D4',2],['G4',2],
+/* ---------- НОВОГОДНЯЯ МЕЛОДИЯ ----------
+   «В лесу родилась ёлочка» (Л. Бекман, 1903; слова Р. Кудашевой) —
+   общественное достояние. Играем на мягком пианино поверх зимней подложки. */
+const MUS_XMAS = {
+  // [нота, длительность в восьмых] — размер 4/4, шаг = восьмая
+  // Куплет 1: «В лесу родилась ёлочка, в лесу она росла…»
+  verse: [
+    ['G3',1],['E4',1],['E4',1],['D4',1],['E4',1],['C4',1],['G3',2],
+    ['G3',1],['E4',1],['E4',1],['F4',1],['D4',1],['G4',2],
+    ['G4',1],['A4',1],['A4',1],['F4',1],['F4',1],['E4',1],['D4',1],['C4',1],
+    ['G3',1],['E4',1],['E4',1],['D4',1],['E4',1],['C4',2],
   ],
-  // продолжение — «Jingle all the way»
-  tail: [
-    ['E4',1],['E4',1],['E4',2], ['E4',1],['E4',1],['E4',2],
-    ['E4',1],['G4',1],['C4',1.5],['D4',.5],['E4',4],
-    ['F4',1],['F4',1],['F4',1.5],['F4',.5], ['F4',1],['E4',1],['E4',1],['E4',.5],['E4',.5],
-    ['G4',1],['G4',1],['F4',1],['D4',1], ['C4',4],
+  // Куплет 1, вторая половина: «Зимой и летом стройная, зелёная была»
+  verse2: [
+    ['C4',1],['A3',1],['A3',1],['F4',1],['F4',1],['E4',1],['D4',1],['C4',1],
+    ['G3',1],['E4',1],['E4',1],['D4',1],['E4',1],['C4',2],
+    ['C4',1],['A3',1],['A3',1],['F4',1],['F4',1],['E4',1],['D4',1],['C4',1],
+    ['G3',1],['E4',1],['E4',1],['D4',1],['E4',1],['C4',2],
   ],
-  idx: 0, cycle: 0, timer: 0
+  cycle: 0
 };
 const MUS_NOTE = {
-  C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
-  C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99
+  A3:220.00, B3:246.94, C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00,
+  A4:440.00, B4:493.88, C5:523.25, G3:196.00, F3:174.61, E5:659.25
 };
-/* Проигрываем одну фразу темы; возвращаем длительность в восьмых */
-function MUS_jinglePhrase(seq, startTime){
-  const beat = 60 / MUS.bpm / 2;    // одна восьмая
+/* Мягкое пианино: треугольник + синус, быстрая атака и долгий хвост */
+function MUS_piano(freq, when, vol){
+  const a = ac(); if (!a) return;
+  const t0 = a.currentTime + when;
+  // основной тон
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = 'triangle'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.014);
+  g.gain.exponentialRampToValueAtTime(vol * 0.32, t0 + 0.28);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+  o.connect(g); g.connect(MUS.gain);
+  o.start(t0); o.stop(t0 + 1.15);
+  // вторая гармоника — «деревянный» призвук пианино
+  const o2 = a.createOscillator(), g2 = a.createGain();
+  o2.type = 'sine'; o2.frequency.value = freq * 2;
+  g2.gain.setValueAtTime(0.0001, t0);
+  g2.gain.exponentialRampToValueAtTime(vol * 0.22, t0 + 0.02);
+  g2.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+  o2.connect(g2); g2.connect(MUS.gain);
+  o2.start(t0); o2.stop(t0 + 0.55);
+}
+/* Проигрываем фразу; возвращаем время её конца */
+function MUS_xmasPhrase(seq, startTime){
+  const beat = 60 / MUS.bpm / 2;      // одна восьмая
   let t = startTime;
   seq.forEach(([n, dur]) => {
     const f = MUS_NOTE[n];
-    if (f) MUS_bell(f * 1.5, t, 0.036, 1.15);   // чуть выше и мягче — не режет слух
+    if (f) MUS_piano(f, t, 0.052);
     t += beat * dur;
   });
   return t;
@@ -3824,8 +3845,8 @@ function MUS_schedule(){
       const ch = MUS.chords[(s/8) % MUS.chords.length];
       MUS_pad([ch[0]/2, ch[1], ch[2]], beat*8*1.05, 0.030);
     }
-    // мотив: зимой — колокольчики (реже, чтобы не спорить с темой), иначе — гитара
-    if (s % 2 === 0 && Math.random() < (MUS.winter ? 0.26 : 0.62)){
+    // мотив: зимой основную линию ведёт мелодия, поэтому случайные ноты редки
+    if (s % 2 === 0 && Math.random() < (MUS.winter ? 0.14 : 0.62)){
       const deg = (Math.random()*MUS.scale.length)|0;
       if (MUS.winter) MUS_bell(MUS.scale[deg]*2, MUS.nextTime - a.currentTime, 0.042 + Math.random()*0.014);
       else MUS_pluck(MUS.scale[deg], MUS.nextTime - a.currentTime, 0.038 + Math.random()*0.016);
@@ -3837,12 +3858,12 @@ function MUS_schedule(){
       const ch = MUS.chords[(s/8) % MUS.chords.length];
       MUS_pluck(ch[0]/2, MUS.nextTime - a.currentTime, 0.05, 'sine');
     }
-    // зимой: узнаваемый мотив «Jingle Bells». Первый раз — после 8 тактов
-    // подложки, дальше по кругу: 32 восьмых мотив + 32 восьмых пауза.
-    if (MUS.winter && s > 0 && s % 64 === 32){
-      const song = (MUS_JINGLE.cycle % 2 === 0) ? MUS_JINGLE.notes : MUS_JINGLE.tail;
-      MUS_jinglePhrase(song, MUS.nextTime - a.currentTime);
-      MUS_JINGLE.cycle++;
+    // зимой: «В лесу родилась ёлочка» на пианино.
+    // Первые 8 тактов — подложка, потом куплет, потом пауза.
+    if (MUS.winter && MUS.xmasSong && s > 0 && s % 96 === 32){
+      const song = (MUS_XMAS.cycle % 2 === 0) ? MUS_XMAS.verse : MUS_XMAS.verse2;
+      MUS_xmasPhrase(song, MUS.nextTime - a.currentTime);
+      MUS_XMAS.cycle++;
     }
     // редкая «птичка»
     if (!MUS.winter && s % 16 === 6 && Math.random() < 0.5) MUS_chirp();
@@ -3859,6 +3880,7 @@ function MUS_start(){
   const a = ac(); if (!a) return;
   MUS.on = true;
   try{ if (typeof XMAS_inWindow === 'function') MUS_setWinter(XMAS_inWindow()); }catch(e){}
+  try{ if (S && S.settings) MUS.xmasSong = S.settings.xmasSong !== false; }catch(e){}
   MUS.step = 0;
   MUS.nextTime = a.currentTime + 0.12;
   MUS.gain.gain.cancelScheduledValues(a.currentTime);
@@ -3879,6 +3901,12 @@ function MUS_stop(fade=true){
     MUS.gain.gain.setValueAtTime(MUS.gain.gain.value, t);
     MUS.gain.gain.exponentialRampToValueAtTime(0.0001, t + (fade?1.1:0.05));
   }catch(e){}
+}
+function MUS_setXmasSong(v){
+  MUS.xmasSong = !!v;
+  if (MUS.winter) MUS_setWinter(true);   // сбросим фразу, чтобы не доигрывала старая
+  try{ toast(v ? 'Новогодняя мелодия включена' : 'Новогодняя мелодия выключена', 'info', 'music'); }catch(e){}
+  sfx.click(); save();
 }
 function MUS_setEnabled(v){
   if (!S) return;
@@ -4273,6 +4301,8 @@ function openSettings(){
   openDialog(`<h2>${ic('gear')} Настройки</h2>
     ${tog('sound','Звук')}
     ${tog('music','Музыка')}
+    ${(typeof XMAS_inWindow==='function' && XMAS_inWindow())
+      ? tog('xmasSong','Новогодняя мелодия') : ''}
     ${tog('vibrate','Вибрация')}
     ${tog('colorblind','Режим для дальтоников')}
     ${tog('fixedSummer','Фиксированное лето (без сезонов)')}
@@ -4739,6 +4769,7 @@ const App = {
   setSetting(k, v){
     S.settings[k] = v; sfx.click();
     if (k === 'music' && typeof MUS_setEnabled === 'function') MUS_setEnabled(v);
+    if (k === 'xmasSong' && typeof MUS_setXmasSong === 'function') MUS_setXmasSong(v);
     save(); openSettings(); applySettings();
   },
   openHelp(){ openHelp(); },
@@ -5335,6 +5366,7 @@ function RET_migrate(){
   if (typeof XMAS_migrate==='function') XMAS_migrate();
   if (!S.settings) S.settings = {};
   if (S.settings.music === undefined) S.settings.music = true;
+  if (S.settings.xmasSong === undefined) S.settings.xmasSong = true;
   if (!S.ret) S.ret = {};
   const R = S.ret;
   if (!R.daily) R.daily = { date:'', ids:[], prog:{}, claimed:{} };
