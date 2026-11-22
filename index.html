@@ -8539,45 +8539,105 @@ function LIV_weekClaim(){
    ============================================================ */
 
 /* ---------- SVG ПИТОМЦА ---------- */
+let LIV_PET_UID = 0;
 function LIV_petSVG(){
   const stage = LIV_petStage().lvl;
   const mood = LIV_petMood().key;
-  const bodyC = ['#c8955e','#b8824e','#a87440','#946336','#7d5128'][Math.min(4, stage-1)];
-  const dark = ['#8f6238','#7d5330','#6b4626','#57381e','#432a15'][Math.min(4, stage-1)];
-  const eyeY = mood === 'sad' || mood === 'bad' ? 23 : 21;
-  const earUp = stage >= 3;
-  const lightC = ['#e8c9a0','#dbb98c','#cda97a','#bb9464','#a67f52'][Math.min(4, stage-1)];
-  const earDark = ['#a2703f','#8f6236','#7c532c','#684323','#54341a'][Math.min(4, stage-1)];
-  return `<svg viewBox="0 0 64 52" aria-hidden="true">
-    <ellipse cx="32" cy="49.5" rx="18" ry="2.4" fill="rgba(0,0,0,.3)"/>
-    <!-- хвост -->
-    <path d="M45.5 32 q8.5 -2.5 7 -11" stroke="${dark}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <!-- задние лапы -->
-    <ellipse cx="24.5" cy="44.5" rx="3.6" ry="2.4" fill="${dark}"/>
-    <ellipse cx="34.5" cy="44.5" rx="3.6" ry="2.4" fill="${dark}"/>
-    <!-- тело -->
-    <ellipse cx="29.5" cy="33" rx="15.5" ry="11.5" fill="${bodyC}"/>
-    <ellipse cx="29.5" cy="37.5" rx="9.5" ry="5.6" fill="${dark}" opacity=".26"/>
-    <!-- уши (висячие, ПОВЕРХ тела) -->
-    <path d="M17.5 23.5 q-5 4.5 -3.8 11 q.9 4.2 4.4 3 q2.2 -3 1.8 -9.2 z" fill="${earDark}"/>
-    <path d="M27.5 21.5 q-1.8 8.5 1.6 11.6 q3.2 -3.6 2.6 -11 z" fill="${earDark}"/>
-    <!-- голова -->
-    <ellipse cx="15" cy="27.5" rx="8.6" ry="7.8" fill="${bodyC}"/>
-    <!-- морда -->
-    <ellipse cx="10.6" cy="31" rx="4.6" ry="3.4" fill="${lightC}"/>
-    <ellipse cx="11.4" cy="29.2" rx="1.6" ry="1.2" fill="#241708"/>
-    <!-- глаза -->
-    <ellipse cx="14.6" cy="${eyeY}" rx="1.7" ry="1.9" fill="#241708"/>
-    <ellipse cx="22.2" cy="${eyeY}" rx="1.7" ry="1.9" fill="#241708"/>
-    <circle cx="15.1" cy="${eyeY-0.9}" r=".55" fill="#fff" opacity=".8"/>
-    <circle cx="22.7" cy="${eyeY-0.9}" r=".55" fill="#fff" opacity=".8"/>
-    <!-- рот / настроение -->
-    ${mood==='happy' ? `<path d="M29.5 29 q5 3.6 9 0" stroke="#241708" stroke-width="1.6" fill="none" stroke-linecap="round"/>` : ''}
-    ${mood==='ok' ? `<ellipse cx="34.5" cy="30" rx="1.6" ry="1.2" fill="#241708"/>` : ''}
-    ${(mood==='sad'||mood==='bad') ? `<path d="M30 31 q4.4 -2.6 8.6 0" stroke="#241708" stroke-width="1.6" fill="none" stroke-linecap="round"/>` : ''}
-    ${mood==='bad' ? `<path d="M32 35.5 q2.2 -1.6 4 0 q1.7 -1.6 3.8 0" stroke="#7fb8e0" stroke-width="1.2" fill="none" opacity=".85"/>` : ''}
-    <!-- ошейник на 4-5 уровне -->
-    ${stage >= 4 ? `<path d="M20 24.5 q8 -4 16 1" stroke="#c94a3c" stroke-width="2.8" fill="none" stroke-linecap="round"/><circle cx="29" cy="24" r="2.2" fill="#e0b850"/>` : ''}
+  const si = Math.min(4, Math.max(0, stage - 1));
+  const u = 'pt' + (++LIV_PET_UID);
+  /* палитры по стадиям: щенок → легенда */
+  const P = [
+    {a:'#fdeacb',b:'#f0cb9b',c:'#c99a63',h1:'#fff6e3',h2:'#f6d0a0',h3:'#cd9a63',e1:'#dda95f',e2:'#94683c',mz:'#fffcf5',p1:'#f5d0a2',p2:'#e0b483'},
+    {a:'#f9dfb0',b:'#e5b47a',c:'#b07a44',h1:'#ffeecb',h2:'#f0c188',h3:'#bd8750',e1:'#cb9559',e2:'#7a5129',mz:'#fffaf0',p1:'#efc08a',p2:'#dbaa72'},
+    {a:'#f4d09b',b:'#d99f62',c:'#a26d38',h1:'#fde5bb',h2:'#e5ad73',h3:'#aa7342',e1:'#c08748',e2:'#6d4720',mz:'#fdf5e6',p1:'#e5ad76',p2:'#cb955f'},
+    {a:'#e2b278',b:'#bf8348',c:'#8a592c',h1:'#f7d7a2',h2:'#cf9559',h3:'#925e2e',e1:'#a87239',e2:'#5c3b18',mz:'#fcf1dc',p1:'#cd9c65',p2:'#b2804b'},
+    {a:'#cb945a',b:'#9e6533',c:'#6b421c',h1:'#eac088',h2:'#ad7542',h3:'#71451d',e1:'#8b5b29',e2:'#482b11',mz:'#f8ebd2',p1:'#ad7945',p2:'#8d5d2f'}
+  ][si];
+  const collarOn = stage >= 4;
+  const cg1 = collarOn ? '#dd5b42' : '#3f9d73';
+  const cg2 = collarOn ? '#a83420' : '#2a7252';
+  const cg3 = collarOn ? '#f28066' : '#63c294';
+  const tagC = collarOn ? '#f5d97a' : '#e8c25c';
+  const sc = [0.84, 0.9, 0.95, 1, 1.04][si];
+  const droop = mood === 'bad' ? 9 : mood === 'sad' ? 6 : 0;
+  const lid = mood === 'bad' ? 0.6 : mood === 'sad' ? 0.72 : mood === 'ok' ? 0.86 : 1;
+  const eyeHL = mood === 'happy' ? 1 : 0.8;
+  return `<svg viewBox="0 0 128 104" aria-hidden="true">
+    <defs>
+      <linearGradient id="${u}b" x1="18%" y1="8%" x2="82%" y2="96%">
+        <stop offset="0%" stop-color="${P.a}"/><stop offset="52%" stop-color="${P.b}"/><stop offset="100%" stop-color="${P.c}"/>
+      </linearGradient>
+      <radialGradient id="${u}h" cx="38%" cy="18%" r="88%">
+        <stop offset="0%" stop-color="${P.h1}"/><stop offset="46%" stop-color="${P.h2}"/><stop offset="100%" stop-color="${P.h3}"/>
+      </radialGradient>
+      <linearGradient id="${u}e" x1="0" y1="0" x2=".2" y2="1">
+        <stop offset="0%" stop-color="${P.e1}"/><stop offset="100%" stop-color="${P.e2}"/>
+      </linearGradient>
+      <radialGradient id="${u}s"><stop offset="0%" stop-color="#fff" stop-opacity=".8"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${cg1}"/><stop offset="100%" stop-color="${cg2}"/></linearGradient>
+    </defs>
+    <g transform="translate(64 100) scale(${sc}) translate(-64 -100)">
+    <ellipse cx="66" cy="97.5" rx="39" ry="5" fill="#000" opacity=".26"/>
+    <path d="M97 61 q17 4 19 -12" stroke="${P.c}" stroke-width="9.5" fill="none" stroke-linecap="round"/>
+    <path d="M97 61 q17 4 19 -12" stroke="${P.b}" stroke-width="5.6" fill="none" stroke-linecap="round" opacity=".85"/>
+    <ellipse cx="85" cy="87" rx="9.5" ry="7" fill="${P.c}"/>
+    <ellipse cx="58" cy="88" rx="9.5" ry="7" fill="${P.p2}"/>
+    <ellipse cx="68" cy="63" rx="32" ry="25" fill="url(#${u}b)"/>
+    <ellipse cx="68" cy="77" rx="21" ry="12" fill="${P.c}" opacity=".22"/>
+    <ellipse cx="61" cy="75" rx="19" ry="11" fill="${P.h1}" opacity=".72"/>
+    <ellipse cx="55" cy="47" rx="16" ry="7.5" fill="url(#${u}s)" opacity=".55"/>
+    <path d="M40 52 q14 -7 27 -1" stroke="url(#${u}c)" stroke-width="6.6" fill="none" stroke-linecap="round"/>
+    <path d="M40 51.2 q14 -6.6 27 -1" stroke="${cg3}" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>
+    <circle cx="66.2" cy="53.4" r="3.1" fill="${tagC}"/>
+    <circle cx="65.3" cy="52.4" r="1.2" fill="#fffaf0" opacity=".75"/>
+    <g transform="rotate(${-droop} 35 20)">
+      <path d="M32 26 q-12 6 -13 22 q-1 14 8 17 q9 1 11 -9 q2 -13 0 -27 z" fill="url(#${u}e)"/>
+      <path d="M34.6 33 q-7.6 6.4 -8 17 q-.4 8.4 3.4 10.6" stroke="#4a3018" stroke-width="2.2" fill="none" opacity=".25"/>
+    </g>
+    <g transform="rotate(${droop} 55 20)">
+      <path d="M54 17 q-8 10 -4.5 28 q2 12 10 7.6 q6.4 -4.4 5 -16 q-1.6 -14 -8 -19.6 z" fill="url(#${u}e)"/>
+      <path d="M56 25 q-4.4 8.6 -2.2 19.6" stroke="#4a3018" stroke-width="2.2" fill="none" opacity=".22"/>
+    </g>
+    <ellipse cx="45" cy="36" rx="26" ry="23.5" fill="url(#${u}h)"/>
+    <ellipse cx="58" cy="41" rx="13" ry="16" fill="${P.h3}" opacity=".17"/>
+    <ellipse cx="40" cy="22" rx="11" ry="5" fill="url(#${u}s)" opacity=".62"/>
+    <ellipse cx="30" cy="43.4" rx="15.6" ry="11" fill="${P.mz}"/>
+    <ellipse cx="20.4" cy="38.2" rx="5.5" ry="4.3" fill="#33241a"/>
+    <ellipse cx="18.9" cy="36.7" rx="2.05" ry="1.35" fill="#fff" opacity=".62"/>
+    <path d="M20.4 42.4 v2.4" stroke="#5b4230" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    ${mood==='sad'||mood==='bad'
+      ? `<path d="M19 48.6 q2.6 -3 ${mood==='bad'?5.6:4.8} 0" stroke="#5b4230" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+      : `<path d="M20.4 44.8 q-1.6 3 -4 3" stroke="#5b4230" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+         <path d="M20.4 44.8 q1.6 3 4 3" stroke="#5b4230" stroke-width="1.7" fill="none" stroke-linecap="round"/>`}
+    ${mood==='happy'
+      ? `<path d="M21.4 47.6 q2.9 1.5 5 -.8 q.9 3.3 -1.5 4.4 q-2.3 .9 -3.5 -3.6 z" fill="#f2939c"/>
+         <path d="M22.8 49.6 q2 .5 3 -.5" stroke="#cf6874" stroke-width=".8" fill="none"/>`
+      : ''}
+    ${mood==='bad' ? `<path d="M36.6 40.6 q1.6 3.4 -.4 4.6 q-2 1.2 -2.6 -1.2 q-.5 -2.2 3 -3.4 z" fill="#7fb8e0" opacity=".92"/>` : ''}
+    <g transform="translate(0 31.5) scale(1 ${lid}) translate(0 -31.5)">
+      <ellipse cx="37" cy="31.5" rx="7" ry="7.8" fill="#1d1108"/>
+      <ellipse cx="36.8" cy="33.6" rx="4.7" ry="4.5" fill="#6d421c"/>
+      <circle cx="34.4" cy="28.4" r="${(2.7*eyeHL).toFixed(2)}" fill="#fff"/>
+      <circle cx="39.8" cy="35.2" r="${(1.15*eyeHL).toFixed(2)}" fill="#fff" opacity=".8"/>
+    </g>
+    <g transform="translate(0 29.6) scale(1 ${lid}) translate(0 -29.6)">
+      <ellipse cx="55" cy="29.6" rx="6.6" ry="7.3" fill="#1d1108"/>
+      <ellipse cx="54.8" cy="31.6" rx="4.3" ry="4.1" fill="#6d421c"/>
+      <circle cx="52.7" cy="26.7" r="${(2.5*eyeHL).toFixed(2)}" fill="#fff"/>
+      <circle cx="57.6" cy="33" r="${(1.05*eyeHL).toFixed(2)}" fill="#fff" opacity=".8"/>
+    </g>
+    ${mood==='sad'||mood==='bad'
+      ? `<path d="M31 25.2 q6 -1.4 11.2 -3.6" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".55"/>
+         <path d="M49.4 21.6 q6 -2.2 11.2 1.2" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".55"/>`
+      : `<path d="M30.4 23.6 q6 -3.2 11.4 -1" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".62"/>
+         <path d="M49.6 21.6 q6 -2.6 11.2 1.4" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".62"/>`}
+    <path d="M46.6 75.4 q-2.6 8.6 -1.6 14.4 q1.4 6.6 10 6.2 q8 -.4 7.6 -7.4 q-.6 -7.4 -2 -13.2 z" fill="${P.p1}"/>
+    <path d="M47.6 87.6 q4.6 2.8 13 2.2" stroke="${P.c}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".45"/>
+    <path d="M68.4 75.6 q-1.4 8.6 -.4 14.2 q1.4 6.6 9.6 6 q7.6 -.6 7.4 -7.4 q-.4 -7 -1.8 -12.8 z" fill="${P.p2}"/>
+    <path d="M70.4 86.8 q4.6 2.8 12 2" stroke="${P.c}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".45"/>
+    <ellipse cx="53" cy="92.8" rx="2.4" ry="1.6" fill="${P.b}" opacity=".6"/>
+    <ellipse cx="74.6" cy="92" rx="2.4" ry="1.6" fill="${P.c}" opacity=".6"/>
+    </g>
   </svg>`;
 }
 
