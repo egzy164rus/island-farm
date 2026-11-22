@@ -3670,6 +3670,14 @@ const I = {
   card:'<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3" fill="#42a5f5"/><rect x="2" y="9" width="20" height="3" fill="#1565c0"/><rect x="5" y="15" width="6" height="2" rx="1" fill="#bbdefb"/></svg>',
   shield:'<svg viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z" fill="#42a5f5"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   medal:'<svg viewBox="0 0 24 24"><circle cx="12" cy="14" r="6" fill="#ffb300"/><path d="M8.5 9 6 2h4l2 4 2-4h4l-2.5 7" fill="#ef5350"/><path d="M12 11l.9 1.9 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z" fill="#fff8e1"/></svg>',
+  /* ДОБАВЛЕНО v66: эти ключи использовались в коде, но в наборе отсутствовали —
+     иконки молча рисовались пустыми (7 вызовов ic('wheat') и др.) */
+  wheat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="M12 9c0-2 1-3.5 3-4-.4 2-1.2 3.4-3 4z"/><path d="M12 9c0-2-1-3.5-3-4 .4 2 1.2 3.4 3 4z"/><path d="M12 13.5c0-2 1-3.5 3-4-.4 2-1.2 3.4-3 4z"/><path d="M12 13.5c0-2-1-3.5-3-4 .4 2 1.2 3.4 3 4z"/><path d="M12 18c0-2 1-3.5 3-4-.4 2-1.2 3.4-3 4z"/><path d="M12 18c0-2-1-3.5-3-4 .4 2 1.2 3.4 3 4z"/></svg>',
+  corn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20c-3 0-5-2.6-5-6 0-4.4 2.4-8 5-8s5 3.6 5 8c0 3.4-2 6-5 6z"/><path d="M9.6 9.2h.01M12 8.4h.01M14.4 9.2h.01M9.2 12.6h.01M12 11.8h.01M14.8 12.6h.01M10 16h.01M12 15.4h.01M14 16h.01"/><path d="M12 20v1.6"/></svg>',
+  potato:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 5.6c2-1.4 5.4-1.2 7.8.5 2.6 1.8 3.4 5.4 2.2 8.4-1.2 3-4.4 4.6-7.6 4-3.2-.6-5.2-3.4-4.9-6.6.2-2.4 1-4.9 2.5-6.3z"/><path d="M10 9.4h.01M13.6 8.6h.01M12 13h.01M14.8 12.2h.01"/></svg>',
+  grape:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="11" r="2"/><circle cx="14.4" cy="10.2" r="2"/><circle cx="7.2" cy="15.4" r="2"/><circle cx="11.8" cy="14.8" r="2"/><circle cx="16.4" cy="14.6" r="2"/><circle cx="9.6" cy="19" r="2"/><circle cx="14.6" cy="18.6" r="2"/><path d="M12 8.4V4.6M12 4.6c1.6-.6 3-.4 4 .6-1.2 1-2.6 1.2-4 .4z"/></svg>',
+  flame:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c3.4 0 6-2.4 6-5.6 0-4-3.4-6.2-4.6-9.4-.3-.9-1.6-.9-1.9 0-.7 2.2-2 3.4-2.6 4.6-.4-1-.7-2.1-.7-3.1 0-1-1.4-1.4-1.9-.5C5 10 6 13 6 15.4 6 18.6 8.6 21 12 21z"/><path d="M12 21c-1.5 0-2.6-1.1-2.6-2.5 0-1.7 1.4-2.6 2-4 .2-.5.9-.6 1.2 0 .7 1.4 2 2.3 2 4 0 1.4-1.1 2.5-2.6 2.5z"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.4 1.4A3.3 3.3 0 0 0 7 18z"/></svg>',
 };
 function ic(name, cls){ return `<span class="ic ${cls||''}">${I[name]||''}</span>`; }
 
@@ -6748,9 +6756,9 @@ const PUR_ITEMS = [
   { id:'pack_repair',kind:'pack', sku:'pack_repair_x3', price:179, name:'Ремкомплект ×3', icon:'wrench',
     desc:'3 полных ремонта любой техники', grant:'repair', qty:3 },
 
-  { id:'decor_gold', kind:'decor', sku:'decor_golden_field', price:349, name:'Золотые поля', icon:'sparkle',
+  { id:'decor_gold', kind:'decor', sku:'decor_golden_field', price:349, name:'Золотые поля', icon:'star',
     desc:'Золотая текстура полей + свечение полос' },
-  { id:'decor_sky',  kind:'decor', sku:'decor_aurora',       price:299, name:'Северное сияние', icon:'sparkle',
+  { id:'decor_sky',  kind:'decor', sku:'decor_aurora',       price:299, name:'Северное сияние', icon:'zap',
     desc:'Анимированное небо над островом' },
   { id:'perk_noads', kind:'perk',  sku:'perk_no_ads',        price:299, name:'Без рекламы навсегда', icon:'shield',
     desc:'Убирает все рекламные блоки и баннеры' },
