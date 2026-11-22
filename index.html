@@ -1829,7 +1829,11 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .xmas-count b{font-size:20px;font-weight:900;color:#ffd45e;}
 .xmas-count span{font-size:10px;font-weight:700;color:#b9d4ea;}
 
-.xmas-body{padding:14px 2px 0;}
+.xmas-body{padding:14px 2px 0;position:relative;z-index:1;
+  background:#18211c;border-radius:16px 16px 0 0;margin-top:-6px;}
+/* подложка под заданиями и календарём — чтобы зимний фон фермы не просвечивал */
+.xmas-screen::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(15,21,18,0) 0%,rgba(15,21,18,.92) 42%,#0f1512 62%);}
 .xmas-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
 .xmas-head h3{display:flex;align-items:center;gap:6px;margin:0;font-size:14px;font-weight:800;color:#eaf2fb;}
 .xmas-head h3 .ic,.xmas-head h3 svg{width:15px;height:15px;color:#ffd45e;}
@@ -1865,6 +1869,36 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .xq-done .ic,.xq-done svg{width:14px;height:14px;}
 .xmas-note{display:flex;gap:6px;align-items:flex-start;font-size:9.5px;color:#7c93a8;margin:8px 0 0;line-height:1.4;}
 .xmas-note .ic,.xmas-note svg{width:12px;height:12px;flex:none;margin-top:1px;}
+
+/* ---------- АДВЕНТ-КАЛЕНДАРЬ ---------- */
+.adv-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:9px;}
+.adv-cell{aspect-ratio:1;border-radius:9px;display:grid;place-items:center;
+  font:800 11px var(--font-ui);position:relative;
+  background:linear-gradient(160deg,#1c2836,#16202b);
+  border:1px solid rgba(140,190,255,.1);color:#5d7288;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+.adv-cell .ic,.adv-cell svg{width:13px;height:13px;}
+.adv-cell.locked{opacity:.55;}
+.adv-cell.ready{background:linear-gradient(160deg,#4a3a18,#6b5220);
+  border-color:rgba(255,212,94,.55);color:#ffd45e;
+  box-shadow:0 2px 10px rgba(255,200,80,.22),inset 0 1px 0 rgba(255,255,255,.14);
+  animation:advPulse 1.9s ease-in-out infinite;}
+.adv-cell.open{background:linear-gradient(160deg,#2c4436,#213528);
+  border-color:rgba(150,220,140,.28);color:#9fdc8e;}
+@keyframes advPulse{0%,100%{box-shadow:0 2px 10px rgba(255,200,80,.18),inset 0 1px 0 rgba(255,255,255,.12);}
+  50%{box-shadow:0 3px 16px rgba(255,200,80,.42),inset 0 1px 0 rgba(255,255,255,.2);}}
+.adv-claim{width:100%;border:0;border-radius:12px;padding:11px 12px;cursor:pointer;
+  display:flex;align-items:center;gap:8px;font-family:var(--font-ui);
+  background:linear-gradient(180deg,#f2c95e,#d9a83c);color:#3a2a08;
+  box-shadow:0 4px 14px rgba(220,170,60,.34),inset 0 1px 0 rgba(255,255,255,.42);}
+.adv-claim .ic,.adv-claim svg{width:17px;height:17px;flex:none;}
+.adv-claim b{font-size:12.5px;font-weight:850;}
+.adv-claim span{margin-left:auto;font-size:10.5px;font-weight:750;opacity:.72;}
+.adv-claim:active{transform:scale(.98);}
+.adv-wait{display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px;border-radius:12px;font-size:11px;font-weight:700;color:#8fa6bd;
+  background:rgba(140,190,255,.06);border:1px dashed rgba(140,190,255,.18);}
+.adv-wait .ic,.adv-wait svg{width:14px;height:14px;}
 
 /* бейдж-снежинка в HUD */
 .hud-xmas{color:#bfe0ff !important;}
@@ -2812,6 +2846,7 @@ function hint(key){
    SVG LIBRARY — иконки, растения, техника
    ============================================================ */
 const I = {
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17" stroke-linecap="round"/><path d="M8 14h2M8 17.2h2M14 14h2M14 17.2h2" stroke-linecap="round"/></svg>',
   coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffb300"/><circle cx="12" cy="12" r="7.4" fill="#ffca28"/><path d="M12 7.4l1.35 2.8 3.05.4-2.2 2.1.5 3-2.7-1.45-2.7 1.45.5-3-2.2-2.1 3.05-.4z" fill="#fff8e1"/></svg>',
   gem:'<svg viewBox="0 0 24 24"><path d="M12 2.5 20 8.5 12 21.5 4 8.5Z" fill="#7e57c2"/><path d="M12 2.5 20 8.5 12 10.5 4 8.5Z" fill="#b39ddb"/><path d="M12 10.5 20 8.5 12 21.5Z" fill="#673ab7"/><path d="M12 10.5 4 8.5 12 21.5Z" fill="#5e35b1"/></svg>',
   star:'<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z" fill="#ffb300"/></svg>',
@@ -3245,6 +3280,7 @@ function XMAS_migrate(){
   if (!S.xmas) S.xmas = { done:{}, claimed:{}, thanked:false, seen:0 };
   if (!S.xmas.done) S.xmas.done = {};
   if (!S.xmas.claimed) S.xmas.claimed = {};
+  if (!S.xmas.advent) S.xmas.advent = { opened:0, lastDay:'' };
 }
 function XMAS_progress(id){
   const x = S.xmas || { done:{} };
@@ -3287,6 +3323,109 @@ function XMAS_decorLevel(){
   return XMAS_QUESTS.filter(q => (S.xmas.done[q.id]||0) >= q.need).length;
 }
 
+
+/* ---------- АДВЕНТ-КАЛЕНДАРЬ ---------- */
+/* Каждый день сезона — один подарок. Открывается раз в сутки, пропущенные дни
+   не сгорают: их можно забрать любой день (накопительно, но не больше 4 разом). */
+const XMAS_ADVENT_START = { m:12, d:1 };   // 1 декабря — старт календаря
+const XMAS_ADVENT_POOL = [
+  { id:'c',   type:'coins', amount:250,  name:'250 монет' },
+  { id:'c2',  type:'coins', amount:400,  name:'400 монет' },
+  { id:'c3',  type:'coins', amount:650,  name:'650 монет' },
+  { id:'g',   type:'gems',  amount:1,    name:'Самоцвет' },
+  { id:'g2',  type:'gems',  amount:2,    name:'2 самоцвета' },
+  { id:'xp',  type:'xp',    amount:40,   name:'40 опыта' },
+  { id:'seed',type:'seeds', amount:3,    name:'3 семечка' },
+  { id:'feed',type:'feed',  amount:5,    name:'5 корма' },
+];
+
+/* Календарь стартует с первого дня, когда игрок зашёл в сезон:
+   так подарки получают все, независимо от даты входа. Одно окошко в сутки. */
+function XMAS_adventEnsure(){
+  XMAS_migrate();
+  if (!S.xmas.advent) S.xmas.advent = { opened:0, lastDay:'', started:'' };
+  if (!S.xmas.advent.started && XMAS_inWindow()) S.xmas.advent.started = XMAS_todayKey();
+  return S.xmas.advent;
+}
+function XMAS_daysBetween(a, b){
+  const [ay,am,ad] = a.split('-').map(Number);
+  const [by,bm,bd] = b.split('-').map(Number);
+  return Math.round((Date.UTC(by,bm-1,bd) - Date.UTC(ay,am-1,ad)) / 86400000);
+}
+/* Сколько окошек уже «наступило» (1 в первый день, +1 каждые сутки) */
+function XMAS_adventIndex(){
+  const adv = XMAS_adventEnsure();
+  if (!adv.started) return 0;
+  return Math.min(24, XMAS_daysBetween(adv.started, XMAS_todayKey()) + 1);
+}
+function XMAS_todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+/* Сколько окошек уже открыто */
+function XMAS_adventDone(){
+  const adv = XMAS_adventEnsure();
+  return Math.max(adv.opened || 0, 0);
+}
+function XMAS_adventAvailable(){
+  return Math.max(0, XMAS_adventIndex() - XMAS_adventDone());
+}
+/* Награда за конкретное окошко — детерминированная (не «кубик» при каждом рендере) */
+function XMAS_adventReward(n){
+  const r = XMAS_ADVENT_POOL[(n*7 + 3) % XMAS_ADVENT_POOL.length];
+  const mult = 1 + Math.floor(n/7)*0.5;             // каждую неделю чуть щедрее
+  return { ...r, amount: Math.round(r.amount*mult) };
+}
+function XMAS_adventClaim(){
+  const adv = XMAS_adventEnsure();
+  const avail = XMAS_adventAvailable();
+  if (avail <= 0){ toast('Сегодня окошко уже открыто — заходи завтра!', 'info', 'calendar'); sfx.nope(); return; }
+  if (adv.lastDay === XMAS_todayKey()){ toast('Уже сегодня открывали', 'info', 'calendar'); return; }
+  const n = (adv.opened || 0) + 1;
+  const rw = XMAS_adventReward(n);
+  // выдаём награду
+  try{
+    if (rw.type === 'coins') addCoins(rw.amount);
+    else if (rw.type === 'gems') S.gems += rw.amount;
+    else if (rw.type === 'xp' && typeof addXP === 'function') addXP(rw.amount);
+    else if (rw.type === 'seeds' && S.seeds) S.seeds.forEach(x => x.n = (x.n||0) + rw.amount);
+    else if (rw.type === 'feed') { S.goods = S.goods || {}; S.goods.feed = (S.goods.feed||0) + rw.amount; }
+  }catch(e){}
+  adv.opened = n;
+  adv.lastDay = XMAS_todayKey();
+  toast(`День ${n}: ${rw.name}`, 'good', 'gift');
+  sfx.reward(); buzz([15,35,15]);
+  save(); renderAll();
+  if (n % 7 === 0) setTimeout(()=>{ try{ FX.confetti(); }catch(e){} }, 220);
+}
+
+function XMAS_adventHTML(){
+  const total = XMAS_adventIndex();          // сколько окошек уже «наступило»
+  const opened = XMAS_adventDone();          // сколько открыто
+  const avail = XMAS_adventAvailable();
+  const cells = [];
+  for (let i = 1; i <= 24; i++){
+    const isOpen = i <= opened;
+    const isReady = i > opened && i <= total;
+    const cls = isOpen ? 'open' : isReady ? 'ready' : 'locked';
+    const face = isOpen ? '✓' : isReady ? i : i;
+    cells.push(`<div class="adv-cell ${cls}">${isOpen ? ic('check') : `<span>${face}</span>`}</div>`);
+  }
+  const nextReward = XMAS_adventReward(opened + 1);
+  return `<div class="xmas-head" style="margin-top:14px">
+      <h3>${ic('calendar')} Адвент-календарь</h3>
+      <small>${opened} / 24 открыто</small>
+    </div>
+    <div class="adv-grid">${cells.join('')}</div>
+    ${avail > 0
+      ? `<button class="adv-claim" onclick="App.xmasAdvent()">
+           ${ic('gift')} <b>Открыть день ${opened+1}</b>
+           <span>${nextReward.name}</span>
+         </button>`
+      : `<div class="adv-wait">${ic('clock')} Следующее окошко откроется завтра</div>`}`;
+}
+
 /* ---------- ЭКРАН ЭВЕНТА ---------- */
 function XMAS_renderScreen(){
   XMAS_migrate();
@@ -3324,6 +3463,7 @@ function XMAS_renderScreen(){
     <div class="xmas-body">
       <div class="xmas-head"><h3>${ic('gift')} Задания эвента</h3><small>награды сразу на счёт</small></div>
       ${rows}
+      ${XMAS_adventHTML()}
       <p class="xmas-note">${ic('info')} Задания считаются с момента открытия эвента. Награды не сгорают.</p>
     </div>
   </div>`;
@@ -5842,6 +5982,7 @@ function RET_installHooks(){
     Object.assign(App, {
       farmView(v){ ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen(); if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
       xmasClaim(id){ XMAS_claim(id); },
+  xmasAdvent(){ XMAS_adventClaim(); },
       tut2Finish(){ TUT2_finish(); },
       welcomeStart(){ const h=$('#overlay-root'); if(h) h.innerHTML=''; S.welcomed = true; save(); TUT2_start(); renderAll(); },
       openXmas(){ ui.tab='farm'; ui.farmView='xmas'; renderScreen(); },
