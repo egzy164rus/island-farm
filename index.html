@@ -2165,6 +2165,108 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .wr-banner-go{color:#e2c15c;flex:none;display:flex;}
 .wr-banner-go .ic,.wr-banner-go svg{width:15px;height:15px;}
 
+/* ---------- ШЛЕЙФ УРОЖАЯ ---------- */
+.coin-beat{animation:coinBeat .42s cubic-bezier(.34,1.56,.64,1);}
+@keyframes coinBeat{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.coin-beat{animation:none;}}
+
+/* ---------- ПОРТРЕТЫ СОСЕДЕЙ ---------- */
+/* в карточке заказа полоса-сцена остаётся, а слева — круглый аватар соседа */
+.contract-visual.npc{
+  width:100% !important;height:64px !important;border-radius:0 !important;
+  display:flex !important;align-items:center !important;justify-content:flex-start !important;
+  padding:0 10px !important;overflow:hidden;
+  background:linear-gradient(160deg,#2c4a35 0%,#24392b 60%,#1f2f25 100%) !important;}
+.contract-visual.npc::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 42% 120% at 12% 130%,rgba(90,130,80,.5),rgba(90,130,80,0) 72%);}
+.contract-visual.npc .npc-face{
+  position:relative;z-index:1;display:block !important;
+  width:44px !important;height:44px !important;border-radius:50%;
+  box-shadow:0 3px 10px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.16);}
+.npc-side{position:relative;z-index:1;margin-left:auto;display:flex;align-items:center;gap:6px;
+  color:#cfe0c5;opacity:.9;}
+.npc-side .ic,.npc-side svg{width:20px;height:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+.npc-name-tag{position:relative;z-index:1;margin-left:9px;display:flex;flex-direction:column;gap:1px;}
+.npc-name-tag b{font-size:10.5px;font-weight:800;color:#eaf2e2;letter-spacing:-.01em;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);}
+.npc-name-tag small{font-size:8.5px;color:#a8bfa0;letter-spacing:.02em;}
+
+/* ---------- ПОГОДА НА КАРТЕ ---------- */
+.mapv2 .wx-layer{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden;border-radius:inherit;}
+/* дождь */
+.wx-rain::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(30,50,70,.34),rgba(20,34,48,.16));
+  transition:opacity .5s ease;}
+.wx-rain i{position:absolute;top:-14%;width:1.4px;display:block;
+  background:linear-gradient(180deg,rgba(200,225,255,0),rgba(200,225,255,.75));
+  border-radius:1px;animation:wxFall var(--d,0.8s) linear infinite;animation-delay:var(--dl,0s);}
+@keyframes wxFall{
+  0%{transform:translateY(-30px)}
+  100%{transform:translateY(620px)}
+}
+.wx-puddle{position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 45%,rgba(150,195,225,.5),rgba(90,140,175,.16) 65%,rgba(0,0,0,0) 72%);
+  box-shadow:inset 0 1px 2px rgba(220,240,255,.35);
+  animation:wxRipple 3.4s ease-in-out infinite;}
+@keyframes wxRipple{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.1);opacity:.95}}
+/* засуха */
+.wx-drought::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(120,86,40,.3),rgba(86,60,26,.2));}
+.wx-dust{position:absolute;display:block;width:3px;height:3px;border-radius:50%;
+  background:rgba(226,200,150,.6);box-shadow:0 0 6px rgba(226,200,150,.5);
+  animation:wxDust var(--dur,3s) ease-in-out infinite;animation-delay:var(--dl,0s);}
+@keyframes wxDust{
+  0%{transform:translate(0,0) scale(.6);opacity:0}
+  25%{opacity:.85}
+  70%{opacity:.6}
+  100%{transform:translate(var(--dx,20px),-26px) scale(1.3);opacity:0}
+}
+.wx-cracks{position:absolute;inset:0;width:100%;height:100%;opacity:.28;}
+.wx-cracks path{fill:none;stroke:#1d1408;stroke-width:1.6;stroke-linecap:round;}
+/* плывущие облака-тени */
+.wx-cloud{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit;}
+.wx-cloud span{position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(6,18,14,.3),rgba(6,18,14,0) 70%);
+  animation:wxDrift linear infinite;}
+@keyframes wxDrift{from{transform:translateX(0)}to{transform:translateX(560px)}}
+@media(prefers-reduced-motion:reduce){
+  .wx-rain i,.wx-dust,.wx-puddle,.wx-cloud span{animation:none !important;}
+  .wx-rain i{opacity:.5;}
+}
+
+/* ---------- ЖИВОЙ ФОН МЕНЮ ---------- */
+.menu-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;border-radius:inherit;}
+.start-wrap{position:relative;}
+.start-content,.start-hero{position:relative;z-index:1;}
+.mb-glow{position:absolute;left:50%;top:8%;width:150%;height:70%;transform:translateX(-50%);
+  background:radial-gradient(ellipse at 50% 40%,rgba(140,200,160,.20),rgba(90,150,130,.08) 45%,rgba(0,0,0,0) 70%);
+  animation:mbBreath 9s ease-in-out infinite;}
+@keyframes mbBreath{0%,100%{opacity:.55;transform:translateX(-50%) scale(1)}50%{opacity:.95;transform:translateX(-50%) scale(1.08)}}
+.mb-stars{position:absolute;inset:0;}
+.mb-stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#eaf6e2;
+  box-shadow:0 0 6px rgba(220,245,210,.8);animation:mbTwinkle var(--d,3s) ease-in-out infinite;animation-delay:var(--dl,0s);}
+@keyframes mbTwinkle{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.25)}}
+.mb-hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:52%;}
+.mb-h1{fill:#2a3f34;opacity:.55;animation:mbSway 26s ease-in-out infinite;}
+.mb-h2{fill:#20332a;opacity:.75;animation:mbSway 19s ease-in-out infinite reverse;}
+.mb-h3{fill:#16241d;opacity:.95;animation:mbSway 33s ease-in-out infinite;}
+@keyframes mbSway{0%,100%{transform:translateX(-6px)}50%{transform:translateX(6px)}}
+.mb-water{position:absolute;left:0;right:0;bottom:0;height:16%;overflow:hidden;}
+.mb-water i{position:absolute;left:-30%;width:70%;height:1px;display:block;
+  background:linear-gradient(90deg,rgba(190,230,200,0),rgba(190,230,200,.5),rgba(190,230,200,0));
+  animation:mbShine 7s linear infinite;}
+.mb-water i:nth-child(1){top:18%;animation-duration:6.5s;}
+.mb-water i:nth-child(2){top:48%;width:46%;animation-duration:9s;animation-delay:-3s;}
+.mb-water i:nth-child(3){top:76%;width:56%;animation-duration:11s;animation-delay:-6s;}
+@keyframes mbShine{from{transform:translateX(0)}to{transform:translateX(220%)}}
+.mb-birds span{position:absolute;left:16%;top:16%;font-size:0;width:14px;height:6px;
+  border-top:1.5px solid rgba(230,245,225,.45);
+  border-left:1.5px solid rgba(230,245,225,.45);
+  border-radius:60% 0 0 0;transform:rotate(-12deg);animation:mbFly 22s linear infinite;}
+@keyframes mbFly{0%{transform:translate(0,0) rotate(-12deg);opacity:.2}
+  20%{opacity:.6}80%{opacity:.5}100%{transform:translate(220px,-44px) rotate(-12deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.mb-glow,.mb-stars i,.mb-h1,.mb-h2,.mb-h3,.mb-water i,.mb-birds span{animation:none !important;}}
+
 /* бейдж-снежинка в HUD */
 .hud-xmas{color:#bfe0ff !important;}
 @media (max-width:360px){
@@ -2835,13 +2937,14 @@ function completeFieldWork(f){
   else if (a==='water'){ f.watered = true; }
   else if (a==='lime'){ f.limed = true; }
   else if (a==='harvest'){
+    const cropId = f.crop, fieldId = f.id;   // запоминаем ДО сброса поля
     let units = fieldYield(f);
     if (typeof PRE_mult === 'function') units = Math.round(units * PRE_mult());
-    const got = addGoods(f.crop, units);
+    const got = addGoods(cropId, units);
     f.manualBonus = b.manualBonus||0;
     f.state='sterna'; f.crop=null; f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false;
     S.stats.harvests++; addXP(10);
-    if (typeof STAT_harvest === 'function') STAT_harvest(f.crop, got, f.id);
+    if (typeof STAT_harvest === 'function') STAT_harvest(cropId, got, fieldId);
     if (typeof DCH_track === 'function') DCH_track('harvest_n', 1);
     if (typeof XMAS_track==='function') XMAS_track('gifts', 1);
     ui.fieldFx={id:f.id,action:'harvest',at:Date.now()};
@@ -2856,6 +2959,7 @@ function completeFieldWork(f){
         if (p){
           FX.floatText(p.x, p.y - 24, '+'+fmt(got), '#d7f0b0');
           if (window.JUICE) JUICE.harvest(el, b.crop);
+          if (typeof FX_harvestStream === 'function') FX_harvestStream(el, b.crop);
         }
         FX.coin(el);
       }
@@ -3907,6 +4011,48 @@ function STAT_render(){
 }
 
 /* ============================================================
+   ШЛЕЙФ УРОЖАЯ — частицы от поля к кошельку
+   ============================================================ */
+function FX_harvestStream(el, crop){
+  try {
+    const coinChip = document.querySelector('.money-chip');
+    if (!coinChip || !window.__spawnJuice) return;
+    const a = el.getBoundingClientRect(), c = coinChip.getBoundingClientRect();
+    const sx = a.left + a.width/2, sy = a.top + a.height/2;
+    const ex = c.left + c.width/2, ey = c.top + c.height/2;
+    const pal = (window.JUICE && JUICE.CROP_PAL && (JUICE.CROP_PAL[crop]||JUICE.CROP_PAL.default)) || { main:['#c8e08a'] };
+    const N = 14;
+    for (let i=0;i<N;i++){
+      const x0 = sx + (Math.random()-0.5)*38, y0 = sy + (Math.random()-0.5)*28;
+      const x1 = ex + (Math.random()-0.5)*10, y1 = ey + (Math.random()-0.5)*8;
+      const mx = (x0+x1)/2 + (Math.random()-0.5)*30;
+      const my = Math.min(y0,y1) - 26 - Math.random()*22;
+      const total = 34 + Math.random()*8;
+      window.setTimeout(()=>{
+        try {
+          if (!window.FX || !FX.burst) return;
+          let t = 0;
+          const draw = () => {
+            t++;
+            const u = Math.min(1, t/total), iu = 1-u;
+            const x = iu*iu*x0 + 2*iu*u*mx + u*u*x1;
+            const y = iu*iu*y0 + 2*iu*u*my + u*u*y1;
+            FX.burst(x, y, { n:1, speed:0.1, colors:[pal.main[(t+i)%pal.main.length]], size:[2,3], type:'dot' });
+            if (u < 1) requestAnimationFrame(draw);
+          };
+          requestAnimationFrame(draw);
+        } catch(e){}
+      }, i*24);
+    }
+    window.setTimeout(()=>{
+      coinChip.classList.add('coin-beat');
+      window.setTimeout(()=>coinChip.classList.remove('coin-beat'), 440);
+    }, N*24 + total_guess_offset());
+  } catch(e){}
+}
+function total_guess_offset(){ return 200; }
+
+/* ============================================================
    ПРЕСТИЖ «НОВЫЙ ОСТРОВ» — перерождение с постоянным множителем
    ============================================================ */
 const PRESTIGE_MIN_LEVEL = 15;
@@ -4179,6 +4325,182 @@ function WR_bannerHTML(){
       <small>${fmt(r.coins)} монет · ${fmt(r.harvests)} урожаев · ${r.contracts} заказов</small></span>
     <span class="wr-banner-go">${ic('arrow')}</span>
   </button>`;
+}
+
+/* ============================================================
+   ПОРТРЕТЫ СОСЕДЕЙ — рисунок вместо иконки техники
+   ============================================================ */
+/* Каждому NPC-имени — свой персонаж: цвет кожи/волос/футболки/шляпы */
+const NPC_LOOKS = [
+  { hat:'cap',   skin:'#e8b98f', hair:'#5a4632', shirt:'#7ba05b', beard:false, glasses:false, scarf:'#c9d99a' },
+  { hat:'panama',skin:'#f0c9a4', hair:'#8a5a32', shirt:'#c2743e', beard:true,  glasses:false, scarf:'#e8c46a' },
+  { hat:'kerchief',skin:'#d9a273',hair:'#3f2d1f', shirt:'#6f8fc0', beard:false, glasses:true,  scarf:'#d2dcec' },
+  { hat:'cap',   skin:'#f2d0ae', hair:'#b87333', shirt:'#a85a72', beard:false, glasses:false, scarf:'#efc9d4' },
+  { hat:'panama',skin:'#e0ab7e', hair:'#2f2419', shirt:'#6a9c9c', beard:true,  glasses:false, scarf:'#c4e0e0' },
+  { hat:'kerchief',skin:'#f5d6b8',hair:'#6b4a2b', shirt:'#9a7ab8', beard:false, glasses:true,  scarf:'#e0d2ef' },
+  { hat:'cap',   skin:'#d8a06c', hair:'#4a3524', shirt:'#8a8a4a', beard:true,  glasses:false, scarf:'#d8d8a0' },
+  { hat:'panama',skin:'#f0c49a', hair:'#a06a3a', shirt:'#5f88a8', beard:false, glasses:false, scarf:'#b8d4e8' },
+];
+function NPC_lookFor(name){
+  const i = NPC_NAMES.indexOf(name);
+  return NPC_LOOKS[(i>=0 ? i : Math.abs(hash32(name))%NPC_LOOKS.length) % NPC_LOOKS.length];
+}
+function hash32(str){
+  let h=0; for (let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) | 0; }
+  return h;
+}
+/* Портрет 100×100: плечи, шея, голова, волосы, шляпа, глаза, улыбка */
+function NPC_portrait(name, size=52){
+  const L = NPC_lookFor(name);
+  const id = 'np' + (Math.abs(hash32(name))%9999);
+  // шляпы
+  let hat = '';
+  if (L.hat === 'cap'){
+    hat = `<path d="M28 40 Q50 22 72 40 L72 44 Q50 34 28 44 Z" fill="${L.shirt}" opacity=".95"/>
+           <path d="M28 43 Q22 44 20 47 L34 47 Z" fill="${L.shirt}" opacity=".8"/>`;
+  } else if (L.hat === 'panama'){
+    hat = `<ellipse cx="50" cy="39" rx="30" ry="7" fill="#e8d5a6"/>
+           <path d="M33 38 Q50 18 67 38 Z" fill="#f0e0b8"/>
+           <path d="M33 37 Q50 31 67 37 L67 39 Q50 34 33 39 Z" fill="#8a6a3a" opacity=".85"/>`;
+  } else {
+    hat = `<path d="M27 44 Q30 20 50 20 Q70 20 73 44 Q50 38 27 44 Z" fill="${L.scarf}"/>
+           <circle cx="73" cy="41" r="4" fill="${L.scarf}"/>
+           <path d="M70 42 q4 -2 6 1 q-2 4 -6 2 Z" fill="${L.scarf}" opacity=".85"/>`;
+  }
+  const beard = L.beard ? `<path d="M34 58 Q50 78 66 58 Q64 70 50 72 Q36 70 34 58 Z" fill="${L.hair}" opacity=".75"/>` : '';
+  const glasses = L.glasses
+    ? `<g stroke="#2b3440" stroke-width="1.8" fill="none" opacity=".85">
+         <circle cx="42" cy="52" r="6"/><circle cx="58" cy="52" r="6"/><path d="M48 52 h4"/></g>`
+    : '';
+  return `<svg class="npc-face" viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
+    <defs><clipPath id="${id}"><rect x="0" y="0" width="100" height="100" rx="0"/></clipPath></defs>
+    <g clip-path="url(#${id})">
+      <rect width="100" height="100" fill="#2a3a30"/>
+      <circle cx="50" cy="46" r="34" fill="#3a5044" opacity=".7"/>
+      <!-- плечи и футболка -->
+      <path d="M12 100 Q14 76 34 70 L66 70 Q86 76 88 100 Z" fill="${L.shirt}"/>
+      <path d="M42 70 L50 80 L58 70 Z" fill="${L.skin}" opacity=".55"/>
+      <!-- шея -->
+      <rect x="43" y="60" width="14" height="14" rx="5" fill="${L.skin}" opacity=".9"/>
+      <!-- голова -->
+      <ellipse cx="50" cy="47" rx="19" ry="21" fill="${L.skin}"/>
+      <ellipse cx="31" cy="50" rx="4" ry="5" fill="${L.skin}" opacity=".95"/>
+      <ellipse cx="69" cy="50" rx="4" ry="5" fill="${L.skin}" opacity=".95"/>
+      <!-- волосы у висков -->
+      <path d="M31 40 Q33 30 50 29 Q67 30 69 40 Q66 36 50 35 Q34 36 31 40 Z" fill="${L.hair}" opacity=".9"/>
+      ${beard}
+      <!-- глаза -->
+      <ellipse cx="42" cy="52" rx="2.6" ry="3.1" fill="#2b3440"/>
+      <ellipse cx="58" cy="52" rx="2.6" ry="3.1" fill="#2b3440"/>
+      <circle cx="42.9" cy="51" r=".9" fill="#fff" opacity=".9"/>
+      <circle cx="58.9" cy="51" r=".9" fill="#fff" opacity=".9"/>
+      <!-- брови -->
+      <path d="M37 46 Q42 44 46 46" stroke="${L.hair}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M54 46 Q58 44 63 46" stroke="${L.hair}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      ${glasses}
+      <!-- нос и улыбка -->
+      <path d="M50 53 q2 4 0 6" stroke="#b07a52" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M43 62 Q50 68 57 62" stroke="#8a4a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="38" cy="58" rx="4" ry="2.4" fill="#e08a7a" opacity=".35"/>
+      <ellipse cx="62" cy="58" rx="4" ry="2.4" fill="#e08a7a" opacity=".35"/>
+      ${hat}
+    </g>
+  </svg>`;
+}
+
+/* ============================================================
+   ПОГОДА НА КАРТЕ — дождь струями, лужи; засуха — пыль и трещины
+   ============================================================ */
+let WX_timer = null;
+function WX_build(kind){
+  const host = document.querySelector('.mapv2'); if (!host) return;
+  if (host.querySelector('.wx-layer')) return;
+  const layer = document.createElement('div');
+  layer.className = 'wx-layer wx-' + kind;
+  layer.setAttribute('aria-hidden','true');
+  let inner = '';
+  if (kind === 'rain'){
+    // 26 струй дождя — разная длина/скорость/задержка
+    for (let i=0;i<26;i++){
+      const x = (i*3.7 + (i%5)*2.3) % 100;
+      const dur = 0.55 + (i%7)*0.09;
+      const delay = (i%9)*0.16;
+      const len = 12 + (i%5)*5;
+      inner += `<i style="left:${x.toFixed(1)}%;--d:${dur.toFixed(2)}s;--dl:${delay.toFixed(2)}s;height:${len}px"></i>`;
+    }
+    // лужи в низинах
+    inner += `<span class="wx-puddle" style="left:14%;top:66%;width:64px;height:18px"></span>
+              <span class="wx-puddle" style="left:56%;top:78%;width:50px;height:14px;animation-delay:1.1s"></span>
+              <span class="wx-puddle" style="left:78%;top:40%;width:40px;height:11px;animation-delay:.5s"></span>`;
+  } else if (kind === 'drought'){
+    // пыльные вихри + трещины
+    for (let i=0;i<10;i++){
+      const x = (i*9.3 + 6) % 100, y = (i*13.7 + 14) % 70;
+      inner += `<i class="wx-dust" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--dx:${(18+i*4)}px;--dur:${(2.6+i*0.24).toFixed(2)}s;--dl:${(i*0.31).toFixed(2)}s"></i>`;
+    }
+    inner += `<svg class="wx-cracks" viewBox="0 0 200 120" preserveAspectRatio="none">
+      <path d="M18 92 l14 -11 l9 6 l13 -13 l10 7" />
+      <path d="M92 108 l11 -14 l8 5 l12 -16" />
+      <path d="M146 30 l9 12 l-7 9 l10 11" /></svg>`;
+  }
+  layer.innerHTML = inner;
+  host.appendChild(layer);
+  host.dataset.weather = kind;
+}
+function WX_clear(){
+  document.querySelectorAll('.wx-layer').forEach(el=>el.remove());
+  document.querySelectorAll('.mapv2').forEach(el=>{
+    if (el.dataset.weather) el.dataset.weather = 'sunny';
+  });
+}
+function WX_refresh(){
+  const kind = weatherInfo().id;
+  WX_clear();
+  // страховка: если слой осиротел после перерендера #screen — снести
+  document.querySelectorAll('.wx-layer, .wx-cloud').forEach(el=>{
+    if (!el.parentElement || !el.parentElement.classList.contains('mapv2')) el.remove();
+  });
+  if (kind === 'rain' || kind === 'drought'){
+    // сначала рисуем солнце/тучи, потом капли — слой поверх
+    setTimeout(()=>WX_build(kind), 30);
+  }
+}
+/* Тень облака, плывущая по карте — общий приём «живого» острова */
+function WX_clouds(){
+  const host = document.querySelector('.mapv2'); if (!host) return;
+  if (kindNow() === 'rain') return;   // в дождь облака уже «налиты»
+  if (host.querySelector('.wx-cloud')) return;
+  const c = document.createElement('div');
+  c.className = 'wx-cloud'; c.setAttribute('aria-hidden','true');
+  c.innerHTML = `<span style="width:120px;height:46px;top:18%;left:-20%;animation-duration:48s"></span>
+                 <span style="width:88px;height:34px;top:52%;left:-30%;animation-duration:64s;animation-delay:-12s"></span>`;
+  host.appendChild(c);
+  host.dataset.weather = host.dataset.weather || 'sunny';
+}
+function kindNow(){ return weatherInfo().id; }
+
+/* ============================================================
+   ЖИВОЙ ФОН МЕНЮ — силуэты острова, плывущий свет, звёзды
+   ============================================================ */
+function MENU_bgHTML(){
+  // три слоя параллакса + дышащее свечение + мерцающие звёзды + бегущие блики на воде
+  let stars = '';
+  for (let i=0;i<18;i++){
+    const x = (i*5.6 + (i%4)*3.1) % 100;
+    const y = (i*7.3 + (i%5)*2.4) % 46;
+    stars += `<i style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--d:${(2.4+(i%6)*0.5).toFixed(1)}s;--dl:${((i%9)*0.4).toFixed(1)}s"></i>`;
+  }
+  return `<div class="menu-bg" aria-hidden="true">
+    <div class="mb-glow"></div>
+    <div class="mb-stars">${stars}</div>
+    <svg class="mb-hills" viewBox="0 0 400 200" preserveAspectRatio="none">
+      <path class="mb-h1" d="M0 132 C50 112 90 126 132 116 C176 106 208 124 248 118 C292 111 330 126 400 112 L400 200 L0 200 Z"/>
+      <path class="mb-h2" d="M0 160 C60 146 108 158 156 150 C206 142 244 160 292 152 C336 145 372 158 400 150 L400 200 L0 200 Z"/>
+      <path class="mb-h3" d="M0 184 C70 174 120 184 180 178 C244 171 300 184 400 176 L400 200 L0 200 Z"/>
+    </svg>
+    <div class="mb-water"><i></i><i></i><i></i></div>
+    <div class="mb-birds"><span>две птицы</span></div>
+  </div>`;
 }
 
 /* ---------- АДВЕНТ-КАЛЕНДАРЬ ---------- */
@@ -4990,7 +5312,7 @@ function renderTasks(){
     if(!act.length) html+=`<div class="empty-state"><span>${ic('clipboard')}</span><b>Пока нет активных заказов</b><small>Загляни на доску и выбери работу по силам</small><button class="mini-cta" onclick="App.taskSection('board')">Открыть доску</button></div>`;
     for(const c of act){
       const t=contractType(c), done=c.state==='done';
-      html+=`<article class="contract-card ${done?'done':''}"><div class="contract-visual">${machIcon(t.machine,'ic-lg')}</div><div class="contract-main"><div class="row between"><b>${t.name}</b><span class="contract-reward">${ic('coin')} ${fmt(c.reward)}</span></div><small>${esc(c.fieldName)} · ${MACHINES[t.machine].name}${c.rented?' · аренда':''}</small>
+      html+=`<article class="contract-card ${done?'done':''}"><div class="contract-visual npc">${NPC_portrait(c.fieldName, 46)}</div><div class="contract-main"><div class="row between"><b>${t.name}</b><span class="contract-reward">${ic('coin')} ${fmt(c.reward)}</span></div><small>${esc(c.fieldName)} · ${MACHINES[t.machine].name}${c.rented?' · аренда':''}</small>
         ${done?`<button class="btn btn-primary btn-block" data-tut="claim" onclick="App.claimContract('${c.id}')">${ic('gift')} Забрать награду</button>`:`<div class="contract-progress"><div class="bar"><i data-pb="contract-${c.id}" style="width:0%"></i></div><span data-timer="contract-${c.id}">…</span><button class="cancel-link" onclick="App.cancelContract('${c.id}')">Отменить</button></div>`}</div></article>`;
     }
     html+=`</div><button class="btn btn-primary btn-block board-link" onclick="App.taskSection('board')">${ic('clipboard')} Найти заказ</button>`;
@@ -5001,7 +5323,9 @@ function renderTasks(){
     for(const c of show){
       const t=contractType(c), st=machineStatus(t.machine), rent=st.rent?Math.round(c.reward*.25):0;
       const can=act.length<3&&S.rep>=c.repReq&&S.coins>=c.cost+rent;
-      html+=`<article class="board-card"><div class="contract-visual">${machIcon(t.machine,'ic-lg')}</div><div class="contract-main"><div class="row between"><b>${t.name}</b><span class="contract-reward">${ic('coin')} ${fmt(c.reward)}</span></div><small>${esc(c.fieldName)} · ${fmtTime(c.time/ts())} · ${MACHINES[t.machine].name}</small><small>Расход ${c.cost+rent} монет${c.repReq?` · репутация ${c.repReq}+`:''}</small><button class="mini-cta full" ${can?'':'disabled'} onclick="App.takeContract('${c.id}')">Взять заказ</button></div></article>`;
+      html+=`<article class="board-card"><div class="contract-visual npc">${NPC_portrait(c.fieldName, 44)}
+        <span class="npc-name-tag"><b>${esc(c.fieldName)}</b><small>сосед</small></span>
+        <span class="npc-side">${machIcon(t.machine)}</span></div><div class="contract-main"><div class="row between"><b>${t.name}</b><span class="contract-reward">${ic('coin')} ${fmt(c.reward)}</span></div><small>${t.name} · ${fmtTime(c.time/ts())} · ${MACHINES[t.machine].name}</small><small>Расход ${c.cost+rent} монет${c.repReq?` · репутация ${c.repReq}+`:''}</small><button class="mini-cta full" ${can?'':'disabled'} onclick="App.takeContract('${c.id}')">Взять заказ</button></div></article>`;
     }
     html+=`</div>`;
   }
@@ -5180,6 +5504,7 @@ function renderStart(){
       <span class="pic">${ic(icon)}</span><div class="t">${s.name}</div><div class="d">${s.desc}</div></div>`;
   };
   $('#screen').innerHTML = `<div class="start-wrap">
+    ${typeof MENU_bgHTML==='function'?MENU_bgHTML():''}
     <div class="start-hero"></div>
     <div class="start-content">
       <h1 class="start-title">Островная ферма</h1>
@@ -5238,6 +5563,7 @@ function WELCOME_show(){
   ];
   host.innerHTML = `
   <div class="welcome">
+    ${MENU_bgHTML()}
     <div class="wl-sky"><i class="wl-star" style="left:18%;top:12%"></i><i class="wl-star" style="left:72%;top:8%;animation-delay:1.2s"></i><i class="wl-star" style="left:44%;top:20%;animation-delay:.6s"></i></div>
     <div class="wl-inner">
       <div class="wl-badge">${ic('wheat')} ОСТРОВНАЯ ФЕРМА</div>
@@ -6654,6 +6980,12 @@ function RET_renderFarmMap(){
       <small>Нажми на здание, чтобы открыть</small>
     </div>`;
 }
+/* после вставки карты в DOM — навесить погодный слой */
+function WX_afterMapRender(){
+  if (typeof WX_refresh !== 'function') return;
+  requestAnimationFrame(()=>{ try{ WX_refresh(); WX_clouds(); }catch(e){} });
+}
+
 
 /* ---------- СКЛАД-БУНКЕР (выдержка) ---------- */
 function RET_renderBunker(){
@@ -6865,6 +7197,8 @@ function RET_renderFarm(){
 
   $('#screen').innerHTML = `${scene}${switcher}${body}`;
   positionCoach();
+  // погодный слой поверх карты (дождь/засуха/облака)
+  if (document.querySelector('.mapv2') && typeof WX_afterMapRender === 'function') WX_afterMapRender();
 }
 
 /* ---------- ПРОПУСК ---------- */
