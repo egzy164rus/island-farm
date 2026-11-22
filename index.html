@@ -2209,6 +2209,66 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .wr-banner-go{color:#e2c15c;flex:none;display:flex;}
 .wr-banner-go .ic,.wr-banner-go svg{width:15px;height:15px;}
 
+/* ---------- КНОПКА «ПОДЕЛИТЬСЯ» ---------- */
+.share-btn{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:10px;
+  border:1px solid rgba(160,200,170,.22);background:rgba(120,170,130,.12);
+  color:#a8d49a;cursor:pointer;padding:0;transition:transform .15s,background .15s;}
+.share-btn:active{transform:scale(.92);background:rgba(120,170,130,.22);}
+.share-btn .ic,.share-btn svg{width:14px;height:14px;}
+
+/* ---------- ПЛАНШЕТ И ДЕСКТОП ---------- */
+/* ---------- ПЛАНШЕТ И ДЕСКТОП: колонка приложения по центру ---------- */
+@media(min-width:600px){
+  #app{max-width:600px;margin:0 auto;box-shadow:0 0 60px rgba(0,0,0,.5);}
+  .start-wrap{max-width:540px;margin:0 auto;}
+  .mapv2{border-radius:20px;}
+}
+@media(min-width:1000px){
+  body{background:radial-gradient(ellipse at 50% 0%,#1a2b22,#0b1210 70%);}
+  #app{border-left:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05);}
+}
+
+/* ---------- БЫСТРЫЙ СТАРТ ---------- */
+.start-cta{position:relative;z-index:1;width:100%;max-width:420px;margin:18px auto 0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:18px 20px;border:0;border-radius:18px;cursor:pointer;font-family:var(--font-ui);
+  background:linear-gradient(180deg,#f2c665,#d9a13c);color:#3a2708;
+  font-size:21px;font-weight:900;letter-spacing:-.02em;
+  box-shadow:0 10px 28px rgba(200,150,50,.4),inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .15s cubic-bezier(.2,.75,.25,1);}
+.start-cta:active{transform:scale(.975);}
+.start-cta .ic,.start-cta svg{width:22px;height:22px;margin-bottom:1px;}
+.start-cta small{font-size:10px;font-weight:700;opacity:.72;letter-spacing:.01em;}
+.start-adv{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;max-width:420px;margin:10px auto 0;padding:9px;border:0;background:none;
+  color:#b8d4c0;font-family:var(--font-ui);font-size:11.5px;font-weight:700;cursor:pointer;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);}
+.start-chev{font-size:9px;opacity:.8;}
+.start-note{position:relative;z-index:1;text-align:center;color:#b0c6b4;font-size:10.5px;
+  margin:14px 0 0;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+.start-note a{color:#9fd08a;text-decoration:underline;}
+
+/* ---------- СОХРАНЕНИЯ ---------- */
+.sv-card{border-radius:14px;padding:12px;background:linear-gradient(160deg,#1e2a24,#18211d);
+  border:1px solid rgba(160,200,170,.14);margin:10px 0;}
+.sv-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.sv-head b{font-size:12px;color:#e8f0e4;}
+.sv-tag{font-size:9px;font-weight:800;color:#9fd08a;background:rgba(120,180,110,.14);
+  border-radius:7px;padding:2px 7px;}
+.sv-sub{font-size:9.5px;color:#8fa396;margin-top:2px;}
+.sv-code{width:100%;box-sizing:border-box;margin-top:9px;padding:9px;border-radius:10px;
+  background:#0f1815;border:1px solid rgba(160,200,170,.18);color:#a8c8b0;
+  font:600 9px/1.5 var(--font-mono,monospace);resize:vertical;
+  word-break:break-all;letter-spacing:0;}
+.sv-code:focus{outline:none;border-color:rgba(160,220,150,.45);}
+.sv-len{font-size:8.5px;color:#6f8279;margin-top:5px;text-align:right;}
+.sv-bak{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;
+  margin-top:12px;background:rgba(80,110,140,.13);border:1px solid rgba(120,170,220,.18);}
+.sv-bak b{display:flex;align-items:center;gap:5px;font-size:10.5px;color:#b8d4ea;}
+.sv-bak b .ic,.sv-bak b svg{width:12px;height:12px;}
+.sv-bak span{font-size:9px;color:#8fa4b4;}
+.sv-bak .mini-cta{margin-top:6px;align-self:flex-start;font-size:9px;padding:5px 10px;}
+
 /* ---------- ШЛЕЙФ УРОЖАЯ ---------- */
 .coin-beat{animation:coinBeat .42s cubic-bezier(.34,1.56,.64,1);}
 @keyframes coinBeat{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
@@ -2720,7 +2780,8 @@ function MUS_tryAutoStart(){
 
 /* ---------------- STATE ---------------- */
 let S = null;
-const ui = { tab:'farm', modal:null, selField:null, selPreset:'fresh', selStyle:'casual', mg:null, district:0, biz:'animals', taskView:'active', boardPage:0, fieldFx:null };
+const ui = {
+  showAdvanced:false, tab:'farm', modal:null, selField:null, selPreset:'fresh', selStyle:'casual', mg:null, district:0, biz:'animals', taskView:'active', boardPage:0, fieldFx:null };
 let deferredInstallPrompt = null;
 
 function freshState(presetId, styleId){
@@ -2916,6 +2977,11 @@ function sellGood(good, qty){
   if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
   addCoins(gain); S.stats.sold += qty;
   if (typeof DCH_track === 'function'){ DCH_track('sell_coins', Math.round(gain)); }
+  // ярмарочный день: продажа во время события засчитывается отдельно
+  if (typeof RET_fair === 'function' && RET_fair()){
+    S.stats.fairSales = (S.stats.fairSales||0) + 1;
+    if (typeof DCH_track === 'function') DCH_track('fair_sell', 1);
+  }
   if (typeof STAT_migrate === 'function'){ const d=STAT_migrate(); if(d) d.best.earn=Math.max(d.best.earn||0, Math.round(gain)); }
   if (typeof XMAS_track==='function') XMAS_track('seller', Math.round(gain));
   if (typeof TUT2_onAction==='function') TUT2_onAction('sell');
@@ -3167,6 +3233,7 @@ function startProduction(id){
   for (const g in pr.inp) if (S.goods[g] < pr.inp[g]){ toast(`Не хватает: ${GOODS[g].name} ${pr.inp[g]}`, 'bad', 'box'); sfx.bad(); return; }
   for (const g in pr.inp) S.goods[g] -= pr.inp[g];
   p.running = true; p.total = durMs(pr.time); p.endsAt = Date.now() + p.total;
+  if (typeof DCH_track === 'function') DCH_track('prod_start', 1);
   sfx.pop(); save(); renderAll();
 }
 function collectProduction(id){
@@ -3772,6 +3839,12 @@ const DCH_POOL = [
   { id:'buildings',  name:'Хозяин',          icon:'barn',      text:'Собери продукцию с построек {n} раз', base:3, step:2, reward:{coins:800, gems:1} },
   { id:'xp',         name:'Опытный',         icon:'star',      text:'Заработай {n} опыта',            base:120, step:80, reward:{coins:650,  gems:1} },
   { id:'levelup',    name:'Рост',            icon:'medal',     text:'Повысь уровень {n} раз',          base:1,   step:1, reward:{coins:1200, gems:2} },
+  /* --- новые: глубже в механики --- */
+  { id:'prod_start', name:'Смена в цеху',    icon:'factory',   text:'Запусти производство {n} раза',   base:1,   step:1, reward:{coins:950,  gems:1} },
+  { id:'feed_all',   name:'Добрый хозяин',   icon:'cow',       text:'Покорми животных {n} раз',        base:4,   step:2, reward:{coins:800,  gems:1} },
+  { id:'aged_take',  name:'Терпеливый',      icon:'clock',     text:'Забери товар с выдержки {n} раз', base:1,   step:1, reward:{coins:1000, gems:1} },
+  { id:'fair_sell',  name:'Ярмарочный день', icon:'gift',      text:'Продай на ярмарке {n} раз',       base:1,   step:1, reward:{coins:1100, gems:2} },
+  { id:'expedition', name:'Первопроходец',   icon:'map',       text:'Отправь экспедицию {n} раз',      base:1,   step:1, reward:{coins:1050, gems:2} },
 ];
 const DCH_XP_PER_LEVEL = 180;
 
@@ -3878,6 +3951,7 @@ function DCH_bonusClaim(){
   if (!rows.every(x=>x.done)){ toast('Сначала закрой все три испытания', 'bad', 'clock'); sfx.nope(); return; }
   if (d.claimed.__all){ sfx.nope(); return; }
   d.claimed.__all = true;
+  S.dch.fullDays = (S.dch.fullDays||0) + 1;
   const bonusCoins = 1500, bonusGems = 3;
   addCoins(bonusCoins); S.gems += bonusGems;
   toast(`Все испытания дня! +${fmt(bonusCoins)} монет и ${bonusGems} ${gemWord(bonusGems)}`, 'good','star');
@@ -4008,7 +4082,8 @@ function STAT_render(){
 
   return `<div class="stats-screen">
     <div class="page-heading"><div><small>ПРОФИЛЬ</small><h2>Дневник фермера</h2></div>
-      <div class="row"><span class="district-count">ур. ${lvl}</span></div></div>
+      <div class="row" style="gap:6px"><span class="district-count">ур. ${lvl}</span>
+        <button class="share-btn" onclick="App.shareStats()" title="Поделиться">${ic('gift')}</button></div></div>
 
     <div class="st-hero">
       <div class="st-lvl">
@@ -4103,7 +4178,8 @@ const PRESTIGE_MIN_LEVEL = 15;
 
 function PRE_migrate(){
   if (!S) return;
-  if (!S.prestige) S.prestige = { count:0, best:0, lastAt:0, pending:null };
+  if (!S.prestige) S.prestige = { count:0, best:0, lastAt:0, pending:null, times:0 };
+  if (typeof S.prestige.times !== 'number') S.prestige.times = 0;
   if (typeof S.prestige.count !== 'number') S.prestige.count = 0;
   if (typeof S.prestige.best !== 'number') S.prestige.best = 0;
   return S.prestige;
@@ -4139,6 +4215,7 @@ function PRE_rebirth(){
     count: (p.count||0) + stars,
     best: Math.max(p.best||0, S.level||1),
     lastAt: Date.now(),
+    times: (p.times||0) + 1,
     pending: { stars, level: S.level, earned: S.stats?.earned||0, harvests: S.stats?.harvests||0 }
   };
   // что сохраняем между островами
@@ -4343,7 +4420,8 @@ function WR_render(){
 
   return `<div class="stats-screen">
     <div class="page-heading"><div><small>ОТЧЁТЫ</small><h2>Итоги недели</h2></div>
-      <div class="row"><span class="district-count">${hist.length} отчётов</span></div></div>
+      <div class="row" style="gap:6px"><span class="district-count">${hist.length} отчётов</span>
+        <button class="share-btn" onclick="App.shareWeekly()" title="Поделиться">${ic('gift')}</button></div></div>
 
     <div class="wr-hero">
       <div class="wr-hero-top">
@@ -4378,6 +4456,164 @@ function WR_bannerHTML(){
       <small>${fmt(r.coins)} монет · ${fmt(r.harvests)} урожаев · ${r.contracts} заказов</small></span>
     <span class="wr-banner-go">${ic('arrow')}</span>
   </button>`;
+}
+
+/* ============================================================
+   ПОДЕЛИТЬСЯ ДОСТИЖЕНИЯМИ
+   ============================================================ */
+function SHARE_text(kind){
+  const d = (typeof STAT_migrate==='function') ? STAT_migrate() : (S.stats||{});
+  const p = PRE_migrate();
+  const lvl = S.level||1;
+  if (kind === 'weekly'){
+    const h = S.wr?.history||[];
+    const w = h[0];
+    if (!w) return `Моя ферма на острове: ${lvl} уровень, ${fmt(S.stats?.harvests||0)} урожаев!`;
+    return `Итоги недели на острове:\n${fmt(w.coins)} монет · ${fmt(w.harvests)} урожаев · ${w.contracts} заказов\n${w.levels>0?`+${w.levels} уровней · `:''}${p.count||0} ★ острова`;
+  }
+  return `Моя ферма на острове:\n${lvl} уровень · ${fmt(S.stats?.harvests||0)} урожаев · ${fmt(S.stats?.earned||0)} монет заработано${p.count?`\n${p.count} ★ острова, доход ×${PRE_mult().toFixed(2)}`:''}\n${(d.days||1)} дней на ферме`;
+}
+function SHARE_do(kind){
+  const text = SHARE_text(kind);
+  if (navigator.share){
+    navigator.share({ title:'Island Farm', text, url: location.href })
+      .then(()=>{ sfx.good(); })
+      .catch(()=>{});   // отмена — это нормально, молчим
+    return;
+  }
+  // фолбэк: копируем текст
+  const copy = () => toast('Текст скопирован — вставляй куда хочешь', 'good', 'check');
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text + '\n' + location.href).then(copy).catch(()=>{
+      openDialog(`<h2>${ic('gift')} Поделиться</h2><p class="muted">Скопируй текст:</p>
+        <textarea class="sv-code" rows="5" onclick="this.select()">${esc(text)}</textarea>
+        <button class="btn btn-primary btn-block" onclick="App.closeModal()">Готово</button>`);
+    });
+  } else {
+    openDialog(`<h2>${ic('gift')} Поделиться</h2><p class="muted">Скопируй текст:</p>
+      <textarea class="sv-code" rows="5" onclick="this.select()">${esc(text)}</textarea>
+      <button class="btn btn-primary btn-block" onclick="App.closeModal()">Готово</button>`);
+  }
+}
+
+/* ============================================================
+   СОХРАНЕНИЯ — код переноса, авто-бэкап, защита от потери
+   ============================================================ */
+const SAVE_KEY_MAIN = 'islandfarm_save_v1';
+const SAVE_KEY_BAK  = 'islandfarm_backup_v1';
+
+/* Код сохранения: base64(JSON) с префиксом версии и контрольной суммой.
+   Не «шифрование», а защита от случайной порчи при копировании. */
+function SAVE_checksum(str){
+  let h = 0x811c9dc5;
+  for (let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h >>> 0).toString(36);
+}
+function SAVE_encode(obj){
+  const json = JSON.stringify(obj);
+  // UTF-8 → base64 (btoa не умеет юникод)
+  const bytes = new TextEncoder().encode(json);
+  let bin = '';
+  for (let i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  const b64 = btoa(bin);
+  return 'IF1.' + SAVE_checksum(json) + '.' + b64;
+}
+function SAVE_decode(code){
+  code = String(code||'').trim().replace(/\s+/g,'');
+  if (!code.startsWith('IF1.')) throw new Error('Это не код Island Farm');
+  const parts = code.split('.');
+  if (parts.length < 3) throw new Error('Код обрезан — скопируй целиком');
+  const sum = parts[1], b64 = parts.slice(2).join('.');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  const json = new TextDecoder().decode(bytes);
+  if (SAVE_checksum(json) !== sum) throw new Error('Код повреждён — контрольная сумма не совпала');
+  const obj = JSON.parse(json);
+  if (!obj || typeof obj !== 'object' || !Array.isArray(obj.fields)) throw new Error('В коде нет данных фермы');
+  return obj;
+}
+/* Сводка для превью перед импортом */
+function SAVE_summary(obj){
+  return {
+    level: obj.level||1, coins: obj.coins||0, gems: obj.gems||0,
+    fields: (obj.fields||[]).filter(f=>f.owned).length,
+    created: obj.createdAt||0, stars: obj.prestige?.count||0,
+    harvests: obj.stats?.harvests||0,
+  };
+}
+function SAVE_code(){
+  try { return SAVE_encode(S); }
+  catch(e){ return ''; }
+}
+/* Авто-бэкап: раз в сутки кладём копию в отдельный ключ.
+   Если основной сейв испортится — поднимем из бэкапа. */
+function SAVE_autoBackup(){
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const last = localStorage.getItem('islandfarm_backup_day');
+    if (last === today) return;
+    const cur = localStorage.getItem(SAVE_KEY_MAIN);
+    if (!cur) return;
+    localStorage.setItem(SAVE_KEY_BAK, cur);
+    localStorage.setItem('islandfarm_backup_day', today);
+  } catch(e){}
+}
+/* Восстановление из бэкапа (вызывается вручную из настроек) */
+function SAVE_restoreBackup(){
+  try {
+    const bak = localStorage.getItem(SAVE_KEY_BAK);
+    if (!bak) return false;
+    const obj = JSON.parse(bak);
+    if (!obj || !Array.isArray(obj.fields)) return false;
+    S = obj;
+    save();
+    return true;
+  } catch(e){ return false; }
+}
+function SAVE_backupInfo(){
+  try {
+    const bak = localStorage.getItem(SAVE_KEY_BAK);
+    if (!bak) return null;
+    const obj = JSON.parse(bak);
+    return { at: Number(localStorage.getItem('islandfarm_backup_day')||'')||0, level: obj.level||1, coins: obj.coins||0 };
+  } catch(e){ return null; }
+}
+
+/* ---------- UI: экран сохранений ---------- */
+function SAVE_openUI(){
+  const code = SAVE_code();
+  const bak = SAVE_backupInfo();
+  const sm = SAVE_summary(S);
+  openDialog(`<h2>${ic('box')} Сохранение</h2>
+    <p class="muted">Прогресс хранится в этом браузере. Чтобы перенести его на другое
+    устройство или сохранить на случай очистки кэша — скопируй код.</p>
+
+    <div class="sv-card">
+      <div class="sv-head"><b>Твоя ферма</b>
+        <span class="sv-tag">${sm.level} ур. · ${fmt(sm.coins)} монет</span></div>
+      <div class="sv-sub">${sm.fields} полей · ${fmt(sm.harvests)} урожаев${sm.stars?` · ${sm.stars} ★`:''}</div>
+      <textarea class="sv-code" readonly rows="3" onclick="this.select()" id="sv-code-out">${code}</textarea>
+      <div class="row" style="gap:6px;margin-top:8px">
+        <button class="btn btn-primary btn-block btn-sm" onclick="App.saveCopy()">${ic('clipboard')} Скопировать</button>
+        <button class="btn btn-ghost btn-block btn-sm" onclick="App.saveShare()">${ic('gift')} Поделиться</button>
+      </div>
+      <div class="sv-len">${code.length} символов · проверочная сумма внутри</div>
+    </div>
+
+    <div class="sec-title" style="margin-top:14px"><h3>${ic('box')} Загрузить код</h3></div>
+    <textarea class="sv-code" rows="3" id="sv-code-in" placeholder="Вставь сюда код с другого устройства…"></textarea>
+    <button class="btn btn-gold btn-block" style="margin-top:8px" onclick="App.saveImport()">${ic('check')} Проверить и загрузить</button>
+
+    ${bak ? `<div class="sv-bak">
+      <b>${ic('clock')} Авто-бэкап</b>
+      <span>${bak.at||'—'} · ${bak.level} ур. · ${fmt(bak.coins)} монет</span>
+      <button class="mini-cta" onclick="App.saveRestore()">Восстановить</button>
+    </div>` : ''}
+
+    <div class="action-list" style="margin-top:12px">
+      <button class="btn btn-primary btn-block" onclick="App.closeModal()">Готово</button>
+    </div>`);
 }
 
 /* ============================================================
@@ -5507,6 +5743,7 @@ function openSettings(){
     <div class="divider"></div>
     <div class="action-list">
       <button class="btn btn-ghost btn-block" onclick="App.openHelp()">${ic('info')} Как играть</button>
+      <button class="btn btn-ghost btn-block" onclick="App.openSave()">${ic('box')} Сохранение и перенос</button>
       <button class="btn btn-ghost btn-block" onclick="App.installPwa()">Установить приложение</button>
       <button class="btn btn-danger btn-block" onclick="App.resetGame()">Сбросить прогресс</button>
       <button class="btn btn-primary btn-block" onclick="App.closeModal()">Готово</button>
@@ -5546,12 +5783,20 @@ function renderStart(){
     <div class="start-content">
       <h1 class="start-title">Островная ферма</h1>
       <div class="start-sub">Фермерский симулятор для телефона.<br>Отдавай команды, техника работает сама!</div>
+      <button class="start-cta" onclick="App.quickStart()">
+        ${ic('play')} Играть
+        <small>новая ферма · подсказки включены</small>
+      </button>
+      <button class="start-adv" onclick="App.toggleAdvanced()">
+        ${ui.showAdvanced ? 'Свернуть настройки' : 'Настроить старт и стиль'}
+        <span class="start-chev">${ui.showAdvanced ? '▴' : '▾'}</span>
+      </button>
+      ${ui.showAdvanced ? `
       <div class="pick-label">Выбери старт:</div>
       ${presetCard('fresh')}${presetCard('manager')}${presetCard('zero')}
       <div class="pick-label">Стиль игры:</div>
-      <div class="pick-row">${styleCard('casual')}${styleCard('classic')}${styleCard('expert')}</div>
-      <button class="btn btn-gold btn-block btn-shine" style="max-width:420px;margin-top:16px;min-height:60px;font-size:18px" onclick="App.startGame()">${ic('play')} Начать игру</button>
-      <p class="small" style="color:#e8f5e9;margin-top:10px;text-shadow:0 1px 3px rgba(0,0,0,.5)">Работает в браузере и на Android. Прогресс — на этом устройстве.</p>
+      <div class="pick-row">${styleCard('casual')}${styleCard('classic')}${styleCard('expert')}</div>` : ''}
+      <p class="small start-note">Прогресс — на этом устройстве. <a href="#" onclick="App.openSave();return false">Перенести?</a></p>
     </div>
   </div>`;
 }
@@ -5834,6 +6079,12 @@ const App = {
   district(n){ ui.district=n; sfx.click(); renderMap(); },
   closeModal(){ closeModal(); },
   selectPreset(id){ ui.selPreset = id; sfx.click(); renderStart(); },
+  toggleAdvanced(){ ui.showAdvanced = !ui.showAdvanced; sfx.click(); renderStart(); },
+  quickStart(){
+    // «Играть» — сразу свежая ферма с подсказками, без выбора
+    ui.selPreset = 'fresh'; ui.selStyle = 'casual'; sfx.click();
+    App.startGame();
+  },
   selectStyle(id){ ui.selStyle = id; sfx.click(); renderStart(); },
   startGame(){
     S = freshState(ui.selPreset, ui.selStyle);
@@ -6563,9 +6814,59 @@ const ACHIEVEMENTS = [
   { id:'age_25',        icon:'clock',   name:'Мастер выдержки',    desc:'Выдержи 25 партий',            need:25,   stat:'aged',       reward:{coins:1500, gems:3} },
   { id:'animals_6',     icon:'cow',     name:'Полный двор',        desc:'Построй все загоны',           need:6,    stat:'buildings',  reward:{coins:1200, gems:2} },
   { id:'streak_7',      icon:'gift',    name:'Неделя подряд',      desc:'Зайди 7 дней подряд',          need:7,    stat:'bestStreak', reward:{coins:800, gems:3} },
+  /* --- новые: престиж, испытания, культивация, экономика --- */
+  { id:'rebirth_1',     icon:'map',     name:'Новый горизонт',     desc:'Отправься на новый остров',    need:1,    stat:'rebirths',   reward:{coins:4000, gems:8}, secret:false },
+  { id:'stars_100',     icon:'star',    name:'Звёздный фермер',    desc:'Собери 100 звёзд острова',     need:100,  stat:'prestige',   reward:{coins:6000, gems:10} },
+  { id:'stars_500',     icon:'star',    name:'Созвездие',          desc:'Собери 500 звёзд острова',     need:500,  stat:'prestige',   reward:{coins:20000, gems:25} },
+  { id:'dch_all_1',     icon:'target',  name:'Полный день',        desc:'Закрой все 3 испытания за день',need:1,   stat:'dchDone',    reward:{coins:900} },
+  { id:'dch_streak_7',  icon:'flame',   name:'Неделя испытаний',   desc:'7 дней подряд закрывай испытания',need:7,stat:'dchStreak',  reward:{coins:3500, gems:6} },
+  { id:'crops_6',       icon:'seed',    name:'Шесть культур',      desc:'Вырасти 6 разных культур',     need:6,    stat:'cropsGrown', reward:{coins:2000, gems:4} },
+  { id:'crops_8',       icon:'leaf',    name:'Агроном',            desc:'Вырасти все 8 культур',        need:8,    stat:'cropsGrown', reward:{coins:5000, gems:8} },
+  { id:'prod_4',        icon:'factory', name:'Промышленник',       desc:'Запусти 4 цеха',               need:4,    stat:'productions',reward:{coins:3000, gems:5} },
+  { id:'level_25',      icon:'medal',   name:'Опытный управляющий',desc:'Достигни 25 уровня',           need:25,   stat:'level',      reward:{coins:5000, gems:6} },
+  { id:'level_50',      icon:'medal',   name:'Легенда острова',    desc:'Достигни 50 уровня',           need:50,   stat:'level',      reward:{coins:15000, gems:15} },
+  { id:'days_30',       icon:'calendar',name:'Месяц на ферме',     desc:'Проведи на ферме 30 дней',     need:30,   stat:'daysOnFarm', reward:{coins:4000, gems:5} },
+  { id:'hours_10',      icon:'clock',   name:'Десять часов',       desc:'Проведи в игре 10 часов',      need:10,   stat:'playHours',  reward:{coins:2500, gems:4} },
+  { id:'sold_5k',       icon:'box',     name:'Оптовик',            desc:'Продай 5 000 единиц товара',   need:5000, stat:'goodsSold',  reward:{coins:3000, gems:4} },
+  { id:'machines_all',  icon:'tractor', name:'Полный гараж',       desc:'Купи всю технику',            need:6,    stat:'machines',   reward:{coins:4500, gems:6} },
+  { id:'week_12',       icon:'chart',   name:'Летописец',          desc:'Получи 12 отчётов недели',     need:12,   stat:'weeklyReports',reward:{coins:6000, gems:8} },
 ];
 
 /* Последствия «просрочки» — мягкие, не карательные */
+/* ---------- ЗНАЧЕНИЯ ДЛЯ ДОСТИЖЕНИЙ (единый источник) ---------- */
+function ACH_statValues(){
+  const R = (typeof RET_migrate==='function' && (RET_migrate(), S.ret)) || {};
+  const crops = S.stats?.byCrop || {};
+  const cropsGrown = Object.values(crops).filter(v=>v>0).length;
+  const buildingsOwned = Object.values(S.buildings||{}).filter(b=>b.owned).length;
+  const prodOwned = Object.values(S.productions||{}).filter(p=>p.owned).length;
+  return {
+    harvests: S.stats?.harvests||0,
+    earned: S.stats?.earned||0,
+    contractsDone: S.stats?.contractsDone||0,
+    aged: S.stats?.aged||0,
+    buildings: buildingsOwned,
+    bestStreak: R.streak?.best||0,
+    // новые источники
+    prestige: S.prestige?.count||0,
+    rebirths: S.prestige?.times||0,
+    dchDone: S.dch?.fullDays||0,
+    dchStreak: S.dch?.streak||0,
+    cropsGrown: cropsGrown,
+    productions: prodOwned,
+    level: S.level||0,
+    xp: (S.stats?.xpGained||0)+((S.ret?.pass?.xp)||0),
+    daysOnFarm: S.stats?.days||1,
+    playHours: Math.floor((S.stats?.playMs||0)/3600000),
+    weeklyReports: (S.wr?.history||[]).length,
+    expeditions: (S.ret?.exped?.done||[]).length,
+    fairSales: (S.stats?.fairSales||0),
+    goodsSold: (S.stats?.sold||0),
+    machines: Object.values(S.machines||{}).filter(m=>m.owned).length,
+    coinsNow: S.coins||0,
+  };
+}
+
 const CARE_DECAY = { softAfterMs: 6*3600*1000, penalty: 0.6 }; // через 6 ч простоя загон даёт 60%
 const CONTRACT_EXPIRE_MS = 48*3600*1000;                        // заказ висит 48 ч, потом сгорает
 
@@ -6595,6 +6896,7 @@ function RET_migrate(){
   if (typeof STAT_migrate === 'function') STAT_migrate();
   if (typeof PRE_migrate === 'function') PRE_migrate();
   if (typeof WR_roll === 'function') WR_roll();
+  if (typeof SAVE_autoBackup === 'function') SAVE_autoBackup();
   if (typeof STAT_markDay === 'function') STAT_markDay();
   if (!S.contractExpire) S.contractExpire = {};
 }
@@ -6633,14 +6935,7 @@ function RET_track(kind, amount){
 
 function RET_checkAchievements(){
   const R = S.ret; if (!R) return;
-  const statVal = {
-    harvests: S.stats.harvests||0,
-    earned: S.stats.earned||0,
-    contractsDone: S.stats.contractsDone||0,
-    aged: S.stats.aged||0,
-    buildings: Object.values(S.buildings).filter(b=>b.owned).length,
-    bestStreak: R.streak?.best||0,
-  };
+  const statVal = ACH_statValues();
   for (const a of ACHIEVEMENTS){
     if (R.ach.unlocked.includes(a.id)) continue;
     if ((statVal[a.stat]||0) >= a.need){
@@ -6833,6 +7128,7 @@ function RET_takeFromAge(slotIndex){
   addCoins(gain);
   S.stats.aged = (S.stats.aged||0) + 1;
   RET_track('age', 1);
+  if (typeof DCH_track === 'function') DCH_track('aged_take', 1);
   toast(`Продано выдержанного: +${fmt(gain)} монет (${mult}×)`, 'good', 'coin');
   sfx.coin(); buzz(45);
   FX.confetti(); FX.coin(document.querySelector('#modal-root .dialog'), document.querySelector('[data-coins]'));
@@ -7181,7 +7477,7 @@ function RET_renderFarm(){
     ${sw('prestige','star','Остров')}
     ${sw('weekly','calendar','Итоги')}
     ${sw('pass','medal','Пропуск')}
-    ${sw('ach','star','Достижения')}
+    ${sw('ach','star','Награды')}
   </div>`;
 
   let body = '';
@@ -7270,11 +7566,7 @@ function RET_renderPassCard(){
 /* ---------- ДОСТИЖЕНИЯ ---------- */
 function RET_renderAchievements(){
   const R = S.ret;
-  const statVal = {
-    harvests: S.stats.harvests||0, earned: S.stats.earned||0, contractsDone: S.stats.contractsDone||0,
-    aged: S.stats.aged||0, buildings: Object.values(S.buildings).filter(b=>b.owned).length,
-    bestStreak: R.streak?.best||0,
-  };
+  const statVal = ACH_statValues();
   let html = `<div class="sec-title"><h3>${ic('star')} Достижения</h3><small>${R.ach.unlocked.length} / ${ACHIEVEMENTS.length}</small></div><div class="ach-grid">`;
   for (const a of ACHIEVEMENTS){
     const done = R.ach.unlocked.includes(a.id);
@@ -7444,6 +7736,75 @@ function RET_installHooks(){
   openStats(){ sfx.click(); ui.tab='farm'; ui.farmView='stats'; renderScreen(); },
   openPrestige(){ sfx.click(); ui.tab='farm'; ui.farmView='prestige'; renderScreen(); },
   openWeekly(){ sfx.click(); ui.tab='farm'; ui.farmView='weekly'; renderScreen(); WR_markSeen(); },
+  openSave(){ sfx.click(); SAVE_openUI(); },
+  shareStats(){ sfx.click(); SHARE_do('stats'); },
+  shareWeekly(){ sfx.click(); SHARE_do('weekly'); },
+  saveCopy(){
+    const code = SAVE_code();
+    if (!code){ toast('Не удалось собрать код', 'bad', 'info'); return; }
+    const done = () => toast('Код скопирован — сохрани его в заметках', 'good', 'check');
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(code).then(done).catch(()=>{
+        const ta = document.getElementById('sv-code-out'); if (ta){ ta.select(); document.execCommand('copy'); done(); }
+      });
+    } else {
+      const ta = document.getElementById('sv-code-out');
+      if (ta){ ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Выдели код и скопируй вручную','bad','info'); } }
+    }
+  },
+  saveShare(){
+    const code = SAVE_code();
+    if (!code) return;
+    if (navigator.share){
+      navigator.share({ title:'Island Farm — сохранение', text:'Код моей фермы', url: location.href })
+        .then(()=>{ /* код в share слишком длинный — отправляем ссылку, код копируем отдельно */ })
+        .catch(()=>{});
+    } else {
+      App.saveCopy();
+    }
+  },
+  saveImport(){
+    const ta = document.getElementById('sv-code-in');
+    const raw = ta ? ta.value : '';
+    if (!raw.trim()){ toast('Вставь код', 'bad', 'info'); return; }
+    let obj;
+    try { obj = SAVE_decode(raw); }
+    catch(e){ toast(e.message || 'Код не подошёл', 'bad', 'info'); sfx.nope(); return; }
+    const sm = SAVE_summary(obj);
+    openDialog(`<h2>${ic('info')} Загрузить эту ферму?</h2>
+      <p class="muted">В коде: <b>${sm.level} уровень</b>, ${fmt(sm.coins)} монет,
+      ${sm.fields} полей${sm.stars?`, ${sm.stars} ★`:''}.</p>
+      <p class="muted"><b>Текущий прогресс будет заменён.</b> Это необратимо.</p>
+      <div class="row" style="gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-block" onclick="App.openSave()">Отмена</button>
+        <button class="btn btn-danger btn-block" onclick="App.saveImportDo()">Загрузить</button>
+      </div>`);
+    window.__pendingImport = obj;
+  },
+  saveImportDo(){
+    const obj = window.__pendingImport;
+    if (!obj){ toast('Нет данных', 'bad', 'info'); return; }
+    try {
+      S = obj; save();
+      toast('Ферма загружена', 'good', 'check'); sfx.reward();
+      setTimeout(()=>location.reload(), 700);
+    } catch(e){ toast('Ошибка загрузки', 'bad', 'info'); }
+  },
+  saveRestore(){
+    openDialog(`<h2>${ic('clock')} Восстановить авто-бэкап?</h2>
+      <p class="muted">Загрузится копия сохранения <b>на начало сегодняшнего дня</b>.
+      Всё, что сделано после, будет потеряно.</p>
+      <div class="row" style="gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-block" onclick="App.openSave()">Отмена</button>
+        <button class="btn btn-gold btn-block" onclick="App.saveRestoreDo()">Восстановить</button>
+      </div>`);
+  },
+  saveRestoreDo(){
+    const ok = SAVE_restoreBackup();
+    if (!ok){ toast('Бэкап не найден или повреждён', 'bad', 'info'); return; }
+    toast('Бэкап восстановлен', 'good', 'check');
+    setTimeout(()=>location.reload(), 700);
+  },
   prestigeConfirm(){
     if (!PRE_canRebirth()){ toast(`Нужен ${PRESTIGE_MIN_LEVEL} уровень`, 'bad', 'clock'); sfx.nope(); return; }
     const stars = PRE_starsFor();
@@ -7496,6 +7857,7 @@ function RET_penCare(id, kind){
   if (!b || !b.owned) return;
   // Если уже максимум — не тратим деньги и не считаем действие
   if ((b[kind]||0) >= 100){ toast('Уже в порядке', '', 'check'); return; }
+  if (kind === 'feed' && typeof DCH_track === 'function') DCH_track('feed_all', 1);
   const cost = RET_freeCare() ? 0 : 8;
   if (cost && S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
   if (cost) addCoins(-cost);
@@ -7907,6 +8269,7 @@ function LIV_expStart(id){
   if (S.coins < def.cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
   addCoins(-def.cost);
   L.running = { id: def.id, startedAt: Date.now(), endsAt: Date.now() + def.dur*60000 };
+  if (typeof DCH_track === 'function') DCH_track('expedition', 1);
   toast(`Отправлен в ${def.name} · ${def.dur} мин`, 'good', 'map');
   sfx.pop(); save(); renderAll();
 }
@@ -8498,7 +8861,7 @@ function LIV_switchHTML(active){
   const preTab = sw('prestige','star','Остров');
   const wrTab = sw('weekly','calendar','Итоги');
   return sw('map','map','Ферма') + sw('quests','target','Задания') + xmasTab + statsTab + preTab
-       + wrTab + sw('pass','medal','Пропуск') + sw('ach','star','Достижения')
+       + wrTab + sw('pass','medal','Пропуск') + sw('ach','star','Награды')
        + sw('exped','map','Походы') + sw('cards','star','Коллекция');
 }
 
