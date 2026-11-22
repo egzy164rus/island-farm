@@ -1264,6 +1264,11 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .farm-switch{overflow-x:auto;scrollbar-width:none;}
 .farm-switch::-webkit-scrollbar{display:none;}
 .farm-switch button{min-width:56px;}
+@media(max-width:420px){
+  .farm-switch{gap:2px;padding:3px;}
+  .farm-switch button{min-width:0;flex:1 1 0;padding:6px 1px;font-size:7.6px;gap:1px;letter-spacing:-.02em;}
+  .farm-switch button .ic,.farm-switch button svg{width:13px;height:13px;}
+}
 
 /* питомец в диалоге */
 .liv-pet-hero{text-align:center;padding:4px 0 8px;}
@@ -2055,6 +2060,111 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .dch-all b{font-size:11px;font-weight:800;}
 .dch-all:disabled,.dch-all.claimed{background:rgba(150,220,140,.08);color:#9dc08c;cursor:default;}
 
+/* ---------- ПРЕСТИЖ ---------- */
+.pre-hero{position:relative;border-radius:18px;overflow:hidden;padding:16px;margin:4px 0 10px;
+  background:linear-gradient(150deg,#2a2233,#1d1a26);border:1px solid rgba(200,170,255,.18);
+  box-shadow:0 8px 24px rgba(30,10,50,.4),inset 0 1px 0 rgba(255,255,255,.06);}
+.pre-glow{position:absolute;inset:-40% -20%;pointer-events:none;
+  background:radial-gradient(circle at 50% 20%,rgba(190,150,255,.22),transparent 60%);}
+.pre-stars{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 12px;}
+.pre-star-big{color:#e8c86a;filter:drop-shadow(0 0 12px rgba(232,200,106,.55));}
+.pre-star-big .ic,.pre-star-big svg{width:34px;height:34px;}
+.pre-stars b{font:900 30px var(--font-display);color:#f4e9c4;letter-spacing:-.03em;
+  text-shadow:0 2px 12px rgba(232,200,106,.4);}
+.pre-stars small{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:#b9a6d8;}
+.pre-mult{position:relative;text-align:center;border-top:1px solid rgba(255,255,255,.08);padding-top:10px;}
+.pre-mult small{display:block;font-size:8.5px;letter-spacing:.14em;font-weight:800;color:#a892c8;}
+.pre-mult b{display:block;font:900 24px var(--font-display);color:#b9e88a;
+  text-shadow:0 2px 10px rgba(150,220,120,.35);}
+.pre-mult span{display:block;font-size:9.5px;color:#8d84a0;margin-top:1px;}
+
+.pre-gain{position:relative;padding:12px 13px;border-radius:14px;margin-bottom:14px;
+  background:linear-gradient(160deg,#1e2a22,#18211d);border:1px solid rgba(160,220,140,.16);}
+.pre-gain-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#9db897;}
+.pre-gain-head span{display:flex;align-items:center;gap:5px;}
+.pre-gain-head .ic,.pre-gain-head svg{width:13px;height:13px;color:#8fc45e;}
+.pre-gain-head b{font:900 15px var(--font-display);color:#b9e88a;}
+.pre-gain-after{margin-top:6px;font-size:10.5px;color:#8fa38c;}
+.pre-gain-after b{color:#d9ecc4;}
+.pre-up{display:inline-block;margin-left:5px;font-size:9px;font-weight:800;color:#8fc45e;
+  background:rgba(143,196,94,.15);border-radius:6px;padding:2px 5px;}
+.pre-req{margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,255,255,.06);}
+.pre-ok{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;color:#a8dc8e;}
+.pre-ok .ic,.pre-ok svg{width:13px;height:13px;}
+.pre-wait{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:#a8a095;}
+.pre-wait .ic,.pre-wait svg{width:13px;height:13px;}
+
+.pre-rules{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.pre-rule{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border-radius:11px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.05);}
+.pre-rule span{width:18px;height:18px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font:800 9.5px var(--font-ui);background:rgba(190,150,255,.18);color:#d9c4ff;}
+.pre-rule p{margin:0;font-size:10.5px;color:#a8b5ad;line-height:1.45;}
+.pre-note{display:flex;gap:6px;font-size:9.5px;color:#7c8a80;line-height:1.5;margin:0 0 14px;}
+.pre-note .ic,.pre-note svg{width:12px;height:12px;flex:none;margin-top:1px;}
+.pre-btn{width:100%;border:0;border-radius:14px;padding:15px;cursor:pointer;font-family:var(--font-ui);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(180deg,#b98cf5,#8f5fd8);color:#fff;
+  font-size:13px;font-weight:850;letter-spacing:-.01em;
+  box-shadow:0 6px 20px rgba(140,90,220,.42),inset 0 1px 0 rgba(255,255,255,.3);}
+.pre-btn .ic,.pre-btn svg{width:17px;height:17px;}
+.pre-btn:active{transform:scale(.98);}
+.pre-btn.locked{background:linear-gradient(180deg,#3a4249,#2c3339);color:#7c8a92;
+  box-shadow:none;cursor:default;}
+.pre-warn{display:flex;gap:5px;font-size:9px;color:#6f7a74;margin:9px 0 0;text-align:center;
+  justify-content:center;line-height:1.4;}
+.pre-warn .ic,.pre-warn svg{width:11px;height:11px;flex:none;margin-top:1px;}
+
+/* ---------- ИТОГИ НЕДЕЛИ ---------- */
+.wr-hero{border-radius:16px;padding:12px 13px;margin:4px 0 11px;
+  background:linear-gradient(160deg,#1f2a30,#182126);border:1px solid rgba(140,190,255,.12);}
+.wr-hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.wr-week{font:800 8.5px var(--font-ui);letter-spacing:.14em;color:#8fb8d8;}
+.wr-live{font-size:9px;font-weight:700;color:#8fa396;display:flex;align-items:center;gap:4px;}
+.wr-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#8fc45e;
+  box-shadow:0 0 6px rgba(143,196,94,.8);animation:wrPulse 1.8s ease-in-out infinite;}
+@keyframes wrPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.wr-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.wr-kpi{position:relative;display:flex;flex-direction:column;gap:1px;padding:9px 10px;
+  border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);}
+.wr-kpi-ic{position:absolute;top:8px;right:9px;color:#8fa9bd;opacity:.6;}
+.wr-kpi-ic .ic,.wr-kpi-ic svg{width:13px;height:13px;}
+.wr-kpi b{font:850 16px var(--font-display);color:#edf4f8;letter-spacing:-.02em;}
+.wr-kpi small{font-size:9px;color:#8b9fa8;}
+.wr-up{font-size:8.5px;font-weight:800;color:#8fc45e;margin-top:1px;}
+.wr-down{font-size:8.5px;font-weight:800;color:#e08a6a;margin-top:1px;}
+.wr-same{font-size:8.5px;font-weight:800;color:#7c8a92;margin-top:1px;}
+
+.wr-best{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;
+  margin-bottom:13px;background:linear-gradient(160deg,#2a2418,#221d14);
+  border:1px solid rgba(226,193,92,.24);}
+.wr-best-ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;
+  background:rgba(226,193,92,.16);color:#e2c15c;}
+.wr-best-ic .ic,.wr-best-ic svg{width:15px;height:15px;}
+.wr-best b{display:block;font-size:11.5px;font-weight:850;color:#f0e6c8;}
+.wr-best small{display:block;font-size:9.5px;color:#a89b7a;margin-top:1px;}
+
+.wr-hist-list{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.wr-hist{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;
+  background:rgba(255,255,255,.032);border:1px solid rgba(255,255,255,.045);}
+.wr-hist-w{flex:1;font-size:10px;font-weight:700;color:#a8bdb2;}
+.wr-hist-v{display:flex;align-items:center;gap:3px;font:800 10px var(--font-ui);color:#d9e5dc;}
+.wr-hist-v .ic,.wr-hist-v svg{width:11px;height:11px;color:#8fa396;}
+.wr-empty{font-size:10.5px;color:#7f938a;text-align:center;padding:16px;line-height:1.5;}
+
+.wr-banner{width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:11px;
+  border-radius:14px;border:1px solid rgba(226,193,92,.28);
+  background:linear-gradient(160deg,#2e2718,#241f14);cursor:pointer;font-family:var(--font-ui);
+  box-shadow:0 4px 14px rgba(180,140,40,.16);}
+.wr-banner-ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:rgba(226,193,92,.18);color:#e2c15c;}
+.wr-banner-ic .ic,.wr-banner-ic svg{width:16px;height:16px;}
+.wr-banner-copy{flex:1;text-align:left;}
+.wr-banner-copy b{display:block;font-size:11.5px;font-weight:850;color:#f0e6c8;}
+.wr-banner-copy small{display:block;font-size:9.5px;color:#a89b7a;margin-top:1px;}
+.wr-banner-go{color:#e2c15c;flex:none;display:flex;}
+.wr-banner-go .ic,.wr-banner-go svg{width:15px;height:15px;}
+
 /* бейдж-снежинка в HUD */
 .hud-xmas{color:#bfe0ff !important;}
 @media (max-width:360px){
@@ -2654,8 +2764,10 @@ function sellGood(good, qty){
   qty = Math.min(qty, S.goods[good]);
   if (qty <= 0) return 0;
   const {mult} = bestPoint(good);
-  const gain = Math.round(qty * GOODS[good].price * mult);
+  let gain = Math.round(qty * GOODS[good].price * mult);
   S.goods[good] -= qty;
+  // множитель престижа: «новый остров» бустит все доходы
+  if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
   addCoins(gain); S.stats.sold += qty;
   if (typeof DCH_track === 'function'){ DCH_track('sell_coins', Math.round(gain)); }
   if (typeof STAT_migrate === 'function'){ const d=STAT_migrate(); if(d) d.best.earn=Math.max(d.best.earn||0, Math.round(gain)); }
@@ -2723,7 +2835,8 @@ function completeFieldWork(f){
   else if (a==='water'){ f.watered = true; }
   else if (a==='lime'){ f.limed = true; }
   else if (a==='harvest'){
-    const units = fieldYield(f);
+    let units = fieldYield(f);
+    if (typeof PRE_mult === 'function') units = Math.round(units * PRE_mult());
     const got = addGoods(f.crop, units);
     f.manualBonus = b.manualBonus||0;
     f.state='sterna'; f.crop=null; f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false;
@@ -2829,7 +2942,8 @@ function claimContract(id){
     zone:0.22,
     onDone:(hit)=>{
       const bonus = hit ? rand(1.10,1.20) : 1;
-      const gain = Math.round(c.reward * bonus);
+      let gain = Math.round(c.reward * bonus);
+      if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
       addCoins(gain); S.rep = clamp(S.rep+2, 0, 100);
       S.stats.contractsDone++; addXP(15);
       if (typeof DCH_track === 'function') DCH_track('contracts', 1);
@@ -3790,6 +3904,281 @@ function STAT_render(){
     </div>
     <p class="st-note">${ic('info')} Дневник ведётся автоматически и не сбрасывается. Данные — только твои.</p>
   </div>`;
+}
+
+/* ============================================================
+   ПРЕСТИЖ «НОВЫЙ ОСТРОВ» — перерождение с постоянным множителем
+   ============================================================ */
+const PRESTIGE_MIN_LEVEL = 15;
+
+function PRE_migrate(){
+  if (!S) return;
+  if (!S.prestige) S.prestige = { count:0, best:0, lastAt:0, pending:null };
+  if (typeof S.prestige.count !== 'number') S.prestige.count = 0;
+  if (typeof S.prestige.best !== 'number') S.prestige.best = 0;
+  return S.prestige;
+}
+/* Сколько «звёзд острова» дадут за текущий прогресс */
+function PRE_starsFor(stateS){
+  const st = stateS || S;
+  const lvl = st.level||1;
+  const earned = (st.stats?.earned||0);
+  const harvests = (st.stats?.harvests||0);
+  const contracts = (st.stats?.contractsDone||0);
+  const owned = st.fields.filter(f=>f.owned).length;
+  const blds = Object.values(st.buildings||{}).filter(b=>b.owned).length;
+  const score = lvl*1.0 + earned/2500 + harvests/12 + contracts/6 + owned*2 + blds*3;
+  return Math.max(0, Math.floor(score));
+}
+/* Множитель ко всем доходам: +18% за каждую звезду */
+function PRE_mult(){
+  const p = PRE_migrate();
+  return 1 + (p.count||0) * 0.18;
+}
+/* Может ли игрок уйти на новый остров */
+function PRE_canRebirth(){
+  const p = PRE_migrate();
+  return (S.level||1) >= PRESTIGE_MIN_LEVEL && PRE_starsFor() > 0;
+}
+/* Сам обряд: сохраняем мета-прогресс, сбрасываем ферму */
+function PRE_rebirth(){
+  const p = PRE_migrate();
+  if (!PRE_canRebirth()) return false;
+  const stars = PRE_starsFor();
+  const keep = {
+    count: (p.count||0) + stars,
+    best: Math.max(p.best||0, S.level||1),
+    lastAt: Date.now(),
+    pending: { stars, level: S.level, earned: S.stats?.earned||0, harvests: S.stats?.harvests||0 }
+  };
+  // что сохраняем между островами
+  const settings = S.settings;
+  const styleId = S.style;
+  const presetId = S.preset;
+  const pretMeta = keep;
+  const totalPlay = S.stats?.playMs||0;
+  const byCrop = S.stats?.byCrop||{};
+
+  // пересоздаём состояние
+  const fresh = freshState(presetId, styleId);
+  fresh.settings = settings;
+  fresh.prestige = { ...pretMeta, count: pretMeta.count };
+  fresh.stats.playMs = totalPlay;
+  fresh.stats.byCrop = byCrop;
+  fresh.stats.tutorialDone = true;
+  fresh.tutorial = { step:5, done:true };
+  fresh.tut2 = { step:8, done:true, rewarded:{} };
+  S = fresh;
+  save();
+  return { stars, keep: pretMeta };
+}
+/* Применение множителя к доходу */
+function PRE_apply(gain){
+  const m = PRE_mult();
+  return Math.round(gain * m);
+}
+
+/* ---------- ЭКРАН ПРЕСТИЖА ---------- */
+function PRE_render(){
+  const p = PRE_migrate();
+  const stars = PRE_starsFor();
+  const can = PRE_canRebirth();
+  const mult = PRE_mult();
+  const nextMult = 1 + ((p.count||0) + stars) * 0.18;
+  const lvl = S.level||1;
+  const needLvl = Math.max(0, PRESTIGE_MIN_LEVEL - lvl);
+
+  const keepList = [
+    'Монеты и самоцветы для новой фермы — по нулям, всё заново',
+    'Остаются: настройки, оформление, статистика культур',
+    'Растёт множитель ко ВСЕМ доходам',
+  ];
+
+  return `<div class="stats-screen">
+    <div class="page-heading"><div><small>МЕТА-ПРОГРЕСС</small><h2>Новый остров</h2></div>
+      <div class="row"><span class="district-count">${p.count||0} ★</span></div></div>
+
+    <div class="pre-hero">
+      <div class="pre-glow"></div>
+      <div class="pre-stars">
+        <span class="pre-star-big">${ic('star')}</span>
+        <b>${p.count||0}</b>
+        <small>звёзд острова</small>
+      </div>
+      <div class="pre-mult">
+        <small>ТЕКУЩИЙ МНОЖИТЕЛЬ</small>
+        <b>×${mult.toFixed(2)}</b>
+        <span>к урожаю, продажам и заказам</span>
+      </div>
+    </div>
+
+    <div class="pre-gain">
+      <div class="pre-gain-head">
+        <span>${ic('star')} За этот остров дадут</span>
+        <b>+${stars} ★</b>
+      </div>
+      <div class="pre-gain-after">
+        Множитель станет <b>×${nextMult.toFixed(2)}</b>
+        ${stars>0?`<span class="pre-up">+${((nextMult-mult)*100).toFixed(0)}%</span>`:''}
+      </div>
+      <div class="pre-req">
+        ${can
+          ? `<span class="pre-ok">${ic('check')} Можно отправляться</span>`
+          : `<span class="pre-wait">${ic('clock')} Нужен ${PRESTIGE_MIN_LEVEL} уровень · осталось ${needLvl}</span>`}
+      </div>
+    </div>
+
+    <div class="sec-title"><h3>${ic('info')} Как это работает</h3></div>
+    <div class="pre-rules">
+      ${keepList.map((t,i)=>`<div class="pre-rule"><span>${i+1}</span><p>${t}</p></div>`).join('')}
+    </div>
+    <div class="pre-note">${ic('info')} Звёзды считаются по уровню, заработанным монетам,
+      собранному урожаю, заказам, полям и постройкам. Чем богаче остров — тем больше звёзд.</div>
+
+    <button class="pre-btn ${can?'':'locked'}" ${can?'':'disabled'} onclick="App.prestigeConfirm()">
+      ${ic('map')} Отплыть на новый остров
+    </button>
+    <p class="pre-warn">${ic('info')} Это необратимо: ферма начнётся с нуля, но множитель останется навсегда.</p>
+  </div>`;
+}
+
+/* ============================================================
+   ИТОГИ НЕДЕЛИ — еженедельный отчёт с сравнением
+   ============================================================ */
+function WR_migrate(){
+  if (!S) return;
+  if (!S.wr) S.wr = { week:'', snap:null, history:[] };
+  const w = S.wr;
+  if (!w.history) w.history = [];
+  return w;
+}
+/* Снимок счётчиков для сравнения */
+function WR_snapshot(){
+  const st = S.stats||{};
+  return {
+    at: Date.now(),
+    coins: st.earned||0,
+    harvests: st.harvests||0,
+    contracts: st.contractsDone||0,
+    sold: st.sold||0,
+    level: S.level||1,
+    xp: st.xpGained||0,
+    playMs: st.playMs||0
+  };
+}
+function WR_roll(){
+  const w = WR_migrate(); if (!w) return;
+  const cur = LIV_weekStart();
+  if (w.week === cur) return;
+  // первая неделя: ставим снимок и запоминаем
+  if (!w.week){
+    w.week = cur; w.snap = WR_snapshot();
+    return;
+  }
+  // новая неделя: считаем разницу и кладём в отчёт
+  const now = WR_snapshot();
+  const prev = w.snap || now;
+  const rep = {
+    week: w.week,
+    coins: Math.max(0, now.coins - prev.coins),
+    harvests: Math.max(0, now.harvests - prev.harvests),
+    contracts: Math.max(0, now.contracts - prev.contracts),
+    sold: Math.max(0, now.sold - prev.sold),
+    levels: Math.max(0, now.level - prev.level),
+    xp: Math.max(0, now.xp - prev.xp),
+    playMs: Math.max(0, now.playMs - prev.playMs),
+    seen: false
+  };
+  w.history.unshift(rep);
+  if (w.history.length > 12) w.history.length = 12;
+  w.week = cur; w.snap = now;
+  save();
+}
+/* Непросмотренный отчёт — показать баннер */
+function WR_unseen(){
+  const w = WR_migrate(); if (!w) return null;
+  return (w.history||[]).find(r=>!r.seen) || null;
+}
+function WR_markSeen(){
+  const r = WR_unseen(); if (!r) return;
+  r.seen = true; save();
+}
+function WR_render(){
+  const w = WR_migrate();
+  const hist = w.history||[];
+  const cur = WR_snapshot();
+  const prev = w.snap || cur;
+  const nowWeek = {
+    coins: Math.max(0, cur.coins - prev.coins),
+    harvests: Math.max(0, cur.harvests - prev.harvests),
+    contracts: Math.max(0, cur.contracts - prev.contracts),
+    levels: Math.max(0, cur.level - prev.level),
+    xp: Math.max(0, cur.xp - prev.xp)
+  };
+  const lastWeek = hist[0] || null;
+
+  const kpi = (label, val, prevVal, ic2) => {
+    const diff = prevVal != null ? val - prevVal : null;
+    const arrow = diff === null ? '' : diff > 0
+      ? `<span class="wr-up">▲ ${fmt(Math.abs(diff))}</span>`
+      : diff < 0 ? `<span class="wr-down">▼ ${fmt(Math.abs(diff))}</span>`
+      : `<span class="wr-same">=</span>`;
+    return `<div class="wr-kpi"><span class="wr-kpi-ic">${ic(ic2)}</span>
+      <b>${fmt(val)}</b><small>${label}</small>${arrow}</div>`;
+  };
+
+  const history = hist.length
+    ? hist.map(r => {
+        const d = new Date(r.week);
+        const label = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+        return `<div class="wr-hist">
+          <span class="wr-hist-w">неделя ${label}</span>
+          <span class="wr-hist-v">${ic('coin')}${fmt(r.coins)}</span>
+          <span class="wr-hist-v">${ic('wheat')}${fmt(r.harvests)}</span>
+          <span class="wr-hist-v">${ic('star')}+${r.levels}</span>
+        </div>`;
+      }).join('')
+    : `<p class="wr-empty">Первая неделя ещё идёт. Итоги появятся в понедельник.</p>`;
+
+  const best = hist.reduce((a,b)=> (b.coins > (a?.coins||0) ? b : a), null);
+
+  return `<div class="stats-screen">
+    <div class="page-heading"><div><small>ОТЧЁТЫ</small><h2>Итоги недели</h2></div>
+      <div class="row"><span class="district-count">${hist.length} отчётов</span></div></div>
+
+    <div class="wr-hero">
+      <div class="wr-hero-top">
+        <span class="wr-week">ЭТА НЕДЕЛЯ</span>
+        <span class="wr-live">идёт сейчас</span>
+      </div>
+      <div class="wr-grid">
+        ${kpi('монет', nowWeek.coins, lastWeek?.coins, 'coin')}
+        ${kpi('урожаев', nowWeek.harvests, lastWeek?.harvests, 'wheat')}
+        ${kpi('заказов', nowWeek.contracts, lastWeek?.contracts, 'clipboard')}
+        ${kpi('уровней', nowWeek.levels, lastWeek?.levels, 'star')}
+      </div>
+    </div>
+
+    ${best ? `<div class="wr-best">
+      <span class="wr-best-ic">${ic('medal')}</span>
+      <div><b>Лучшая неделя</b><small>${fmt(best.coins)} монет · ${fmt(best.harvests)} урожаев</small></div>
+    </div>` : ''}
+
+    <div class="sec-title"><h3>${ic('calendar')} Прошлые недели</h3><small>последние 12</small></div>
+    <div class="wr-hist-list">${history}</div>
+    <p class="st-note">${ic('info')} Отчёт собирается автоматически в понедельник.
+      Сравнение идёт с предыдущей неделей.</p>
+  </div>`;
+}
+/* Баннер на главной, если есть непросмотренный отчёт */
+function WR_bannerHTML(){
+  const r = WR_unseen(); if (!r) return '';
+  return `<button class="wr-banner" onclick="App.openWeekly(); App.weeklySeen && App.weeklySeen()">
+    <span class="wr-banner-ic">${ic('calendar')}</span>
+    <span class="wr-banner-copy"><b>Готов отчёт за неделю</b>
+      <small>${fmt(r.coins)} монет · ${fmt(r.harvests)} урожаев · ${r.contracts} заказов</small></span>
+    <span class="wr-banner-go">${ic('arrow')}</span>
+  </button>`;
 }
 
 /* ---------- АДВЕНТ-КАЛЕНДАРЬ ---------- */
@@ -5839,6 +6228,8 @@ function RET_migrate(){
   if (!S.stats.buildings) S.stats.buildings = 0;
   if (!S.stats.bestStreak) S.stats.bestStreak = 0;
   if (typeof STAT_migrate === 'function') STAT_migrate();
+  if (typeof PRE_migrate === 'function') PRE_migrate();
+  if (typeof WR_roll === 'function') WR_roll();
   if (typeof STAT_markDay === 'function') STAT_markDay();
   if (!S.contractExpire) S.contractExpire = {};
 }
@@ -6416,6 +6807,8 @@ function RET_renderFarm(){
     ${sw('quests','target','Задания')}
     ${xmasBase}
     ${sw('stats','chart','Дневник')}
+    ${sw('prestige','star','Остров')}
+    ${sw('weekly','calendar','Итоги')}
     ${sw('pass','medal','Пропуск')}
     ${sw('ach','star','Достижения')}
   </div>`;
@@ -6430,6 +6823,7 @@ function RET_renderFarm(){
           <span class="focus-progress"><i style="width:${Math.min(100,S.daily.contracts/3*100)}%"></i></span></span>
         <span class="focus-count">${S.daily.contracts}/3 <small>→</small></span>
       </div>
+      ${typeof WR_bannerHTML==='function'?WR_bannerHTML():''}
       ${typeof DCH_renderCard==='function'?DCH_renderCard():''}
       ${RET_renderFair()}
       ${RET_renderStreak()}
@@ -6675,6 +7069,26 @@ function RET_installHooks(){
   dchClaim(id){ DCH_claim(id); },
   dchBonus(){ DCH_bonusClaim(); },
   openStats(){ sfx.click(); ui.tab='farm'; ui.farmView='stats'; renderScreen(); },
+  openPrestige(){ sfx.click(); ui.tab='farm'; ui.farmView='prestige'; renderScreen(); },
+  openWeekly(){ sfx.click(); ui.tab='farm'; ui.farmView='weekly'; renderScreen(); WR_markSeen(); },
+  prestigeConfirm(){
+    if (!PRE_canRebirth()){ toast(`Нужен ${PRESTIGE_MIN_LEVEL} уровень`, 'bad', 'clock'); sfx.nope(); return; }
+    const stars = PRE_starsFor();
+    openDialog(`<h2>${ic('star')} Отплыть на новый остров?</h2>
+      <p class="muted">Ты получишь <b>+${stars} ★</b>, множитель станет <b>×${(1+((PRE_migrate().count||0)+stars)*0.18).toFixed(2)}</b>.</p>
+      <p class="muted">Ферма начнётся заново: поля, постройки, монеты и уровень обнулятся.
+      Останутся настройки, оформление и общая статистика.</p>
+      <div class="row" style="gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Остаться</button>
+        <button class="btn btn-gold btn-block" onclick="App.prestigeDo()">${ic('map')} Отплыть (+${stars} ★)</button>
+      </div>`);
+  },
+  prestigeDo(){
+    const res = PRE_rebirth();
+    closeModal();
+    if (!res){ toast('Не удалось', 'bad', 'info'); return; }
+    location.reload();
+  },
       tut2Finish(){ TUT2_finish(); },
       welcomeStart(){ const h=$('#overlay-root'); if(h) h.innerHTML=''; S.welcomed = true; save(); TUT2_start(); renderAll(); },
       openXmas(){ ui.tab='farm'; ui.farmView='xmas'; renderScreen(); },
@@ -7663,6 +8077,18 @@ function LIV_extendFarmTabs(){
       positionCoach();
       return;
     }
+    if (view === 'weekly'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('weekly')}</div>
+        ${typeof WR_render==='function'?WR_render():''}`;
+      positionCoach();
+      return;
+    }
+    if (view === 'prestige'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('prestige')}</div>
+        ${typeof PRE_render==='function'?PRE_render():''}`;
+      positionCoach();
+      return;
+    }
     if (view === 'stats'){
       $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('stats')}</div>
         ${typeof STAT_render==='function'?STAT_render():''}`;
@@ -7696,8 +8122,10 @@ function LIV_switchHTML(active){
   const sw = (id, icon, label) => `<button class="${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
   const xmasTab = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
   const statsTab = sw('stats','chart','Дневник');
-  return sw('map','map','Ферма') + sw('quests','target','Задания') + xmasTab + statsTab
-       + sw('pass','medal','Пропуск') + sw('ach','star','Достижения')
+  const preTab = sw('prestige','star','Остров');
+  const wrTab = sw('weekly','calendar','Итоги');
+  return sw('map','map','Ферма') + sw('quests','target','Задания') + xmasTab + statsTab + preTab
+       + wrTab + sw('pass','medal','Пропуск') + sw('ach','star','Достижения')
        + sw('exped','map','Походы') + sw('cards','star','Коллекция');
 }
 
