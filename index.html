@@ -260,6 +260,45 @@ body{
 .contract-card{border-left:6px solid var(--green-500);}
 .contract-card.done{border-left-color:var(--gold-500);background:#fffde7;}
 .machine-card .stat{font-size:11px;color:var(--muted);font-weight:700;}
+
+/* ---------- ГАРАЖ: модели, прочность, продажа ---------- */
+.machine-card{margin-bottom:10px;}
+.mach-stats{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 9px;
+  font-size:11px;font-weight:700;color:#a8bdab;}
+.mach-stats span{display:inline-flex;align-items:center;gap:4px;}
+.mach-stats .ic,.mach-stats svg{width:15px;height:15px;opacity:.85;flex:0 0 auto;}
+.mach-stats svg,.mach-up-row svg,.mach-max svg,.mach-actions svg{stroke-width:2;}
+.mach-level{font-size:11px;font-weight:800;color:#c7d9bd;margin:3px 0 7px;letter-spacing:.04em;}
+.mach-cond{margin-bottom:9px;}
+.mach-cond-bar{height:7px;border-radius:99px;background:#33402f;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4);overflow:hidden;}
+.mach-cond-bar i{display:block;height:100%;border-radius:99px;
+  background:linear-gradient(90deg,#7fc25e,#b8e08a);transition:width .35s;}
+.mach-cond-bar.warn i{background:linear-gradient(90deg,#d9a94e,#f0cf7a);}
+.mach-cond-bar.bad i{background:linear-gradient(90deg,#c9563f,#e88a72);}
+.mach-cond small{display:block;font-size:10px;color:#93a896;margin-top:4px;font-weight:600;}
+.mach-upgrade{background:rgba(90,150,220,.09);border:1px solid rgba(110,170,235,.22);
+  border-radius:11px;padding:8px 10px;margin-bottom:8px;}
+.mach-up-row{display:flex;align-items:center;justify-content:space-between;
+  font-size:11.5px;font-weight:800;color:#bcd8f5;margin-bottom:6px;}
+.mach-up-row span{display:inline-flex;align-items:center;gap:5px;}
+.mach-up-row .ic,.mach-up-row svg{width:15px;height:15px;flex:0 0 auto;}
+.mach-up-row b{color:#e2f0ff;}
+.mach-max{font-size:11px;font-weight:800;color:#e2c15c;background:rgba(226,193,92,.1);
+  border:1px solid rgba(226,193,92,.25);border-radius:10px;padding:7px 10px;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.mach-max .ic,.mach-max svg{width:14px;height:14px;}
+.mach-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.mach-actions .btn{flex:1 1 auto;min-height:42px;gap:5px;}
+.mach-actions .btn .ic,.mach-actions .btn svg{width:15px;height:15px;flex:0 0 auto;}
+.machine-card .row.between>.pill{flex:0 0 auto;white-space:nowrap;}
+.mach-sell{color:#e8b48a !important;border-color:rgba(230,150,110,.28) !important;}
+.mach-sell-note{font-size:9.5px;color:#8b9d8e;margin-top:5px;font-weight:600;}
+/* В гараже машина стоит — колёса не крутим: композитинг давал «осколки» в карточке */
+.mach-static .wheel-spin{animation:none!important;}
+
+.pill.ok{background:rgba(120,190,110,.18);color:#b6e0a2;}
+
 .care-row{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;flex:1;}
 .care-row .bar{height:8px;}
 .care-row .ic{width:16px;height:16px;}
@@ -1082,12 +1121,20 @@ body.fx-front #fx-canvas{z-index:220;}
 /* ---------- ВКЛАДКИ ЭКРАНА ФЕРМЫ ---------- */
 .farm-switch{display:flex;gap:3px;margin-bottom:9px;background:#1a231d;padding:4px;border-radius:13px;
   border:1px solid #2f3c32;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
-  scroll-snap-type:x proximity;}
+  scroll-snap-type:x proximity;
+  /* закреплены сверху: не уезжают при прокрутке длинных экранов.
+     top:-14px компенсирует padding-top у #screen, иначе панель
+     прилипает на 14px ниже верхней кромки и «прыгает». */
+  position:sticky;top:-14px;z-index:8;margin-top:0;
+  box-shadow:0 6px 14px -6px rgba(0,0,0,.75),0 0 0 1px rgba(0,0,0,.35);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
 .farm-switch::-webkit-scrollbar{display:none;}
-.farm-switch button{flex:1 0 auto;min-width:60px;border:0;background:transparent;border-radius:10px;
-  padding:7px 9px 6px;color:#9aa896;font:700 10.5px/1 var(--font-ui);cursor:pointer;
+.farm-switch button{flex:0 0 auto;min-width:60px;border:0;background:transparent;border-radius:10px;
+  padding:7px 10px 6px;color:#9aa896;font:700 10.5px/1 var(--font-ui);cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:4px;scroll-snap-align:center;
-  transition:background .16s,color .16s;}
+  white-space:nowrap;transition:background .16s,color .16s;}
+/* подпись не должна вылезать за кнопку и наезжать на соседнюю */
+.farm-switch button{max-width:none;}
 .farm-switch button .ic{width:15px;height:15px;flex:none;}
 .farm-switch button:active{transform:scale(.97);}
 .farm-switch button.active{background:#2f4532;color:#dcf0c6;
@@ -2698,16 +2745,87 @@ const GOODS = {
   clothes:{name:'Одежда',price:40}, silage:{name:'Силос',price:1},
   biogas:{name:'Биогаз',price:10},
 };
+/* Техника: у каждой машины несколько моделей. Купив базовую, можно продать её
+   и взять более мощную. Улучшение (lvl) отдельно поднимает скорость этой модели.
+   wear — сколько процентов прочности снимает одна операция. */
 const MACHINES = {
-  tractor:   {name:'Трактор',      price:1500, speed:1.0, desc:'Вспашка и культивация'},
-  cultivator:{name:'Культиватор',  price:900,  speed:1.0, desc:'Обработка почвы'},
-  seeder:    {name:'Сеялка',       price:1200, speed:1.0, desc:'Посев культур'},
-  combine:   {name:'Комбайн',     price:3000, speed:1.0, desc:'Уборка урожая'},
-  sprayer:   {name:'Опрыскиватель',price:1800, speed:1.0, desc:'Удобрение и опрыскивание'},
-  mower:     {name:'Косилка',      price:1000, speed:1.0, desc:'Трава и тюки'},
-  baler:     {name:'Пресс тюков',  price:1400, speed:1.0, desc:'Тюки сена'},
-  truck:     {name:'Грузовик',     price:2500, speed:1.0, desc:'Транспорт и поставки'},
+  tractor:   {name:'Трактор',      price:1500, speed:1.0, wear:3, desc:'Вспашка и культивация',
+    tiers:[
+      {id:'t1', name:'МТЗ-82',        price:1500,  speed:1.00},
+      {id:'t2', name:'Кировец К-700', price:5200,  speed:1.55},
+      {id:'t3', name:'John Deere 9R', price:12000, speed:2.20},
+    ]},
+  cultivator:{name:'Культиватор',  price:900,  speed:1.0, wear:3, desc:'Обработка почвы',
+    tiers:[
+      {id:'t1', name:'КПС-4',          price:900,  speed:1.00},
+      {id:'t2', name:'Рубин-6',        price:2800, speed:1.50},
+      {id:'t3', name:'Horsch Tiger',   price:6400, speed:2.10},
+    ]},
+  seeder:    {name:'Сеялка',       price:1200, speed:1.0, wear:3, desc:'Посев культур',
+    tiers:[
+      {id:'t1', name:'СЗ-3.6',         price:1200, speed:1.00},
+      {id:'t2', name:'D9-60',          price:3600, speed:1.45},
+      {id:'t3', name:'Amazone Citan',  price:8200, speed:2.05},
+    ]},
+  combine:   {name:'Комбайн',     price:3000, speed:1.0, wear:4, desc:'Уборка урожая',
+    tiers:[
+      {id:'t1', name:'Нива СК-5',      price:3000,  speed:1.00},
+      {id:'t2', name:'Дон-1500',       price:8500,  speed:1.50},
+      {id:'t3', name:'Claas Lexion',   price:19000, speed:2.15},
+    ]},
+  sprayer:   {name:'Опрыскиватель',price:1800, speed:1.0, wear:2, desc:'Удобрение и опрыскивание',
+    tiers:[
+      {id:'t1', name:'ОП-2000',        price:1800, speed:1.00},
+      {id:'t2', name:'Амазоне UX',     price:5000, speed:1.50},
+      {id:'t3', name:'John Deere 5430',price:11000,speed:2.10},
+    ]},
+  mower:     {name:'Косилка',      price:1000, speed:1.0, wear:2, desc:'Трава и тюки',
+    tiers:[
+      {id:'t1', name:'КРН-2.1',        price:1000, speed:1.00},
+      {id:'t2', name:'Strige ST-330',  price:2900, speed:1.45},
+      {id:'t3', name:'Krone EasyCut',  price:6800, speed:2.00},
+    ]},
+  baler:     {name:'Пресс тюков',  price:1400, speed:1.0, wear:3, desc:'Тюки сена',
+    tiers:[
+      {id:'t1', name:'ПРФ-110',        price:1400, speed:1.00},
+      {id:'t2', name:'Krone Comprima', price:4200, speed:1.45},
+      {id:'t3', name:'Vermeer 504',    price:9500, speed:2.05},
+    ]},
+  truck:     {name:'Грузовик',     price:2500, speed:1.0, wear:2, desc:'Транспорт и поставки',
+    tiers:[
+      {id:'t1', name:'ГАЗ-53',         price:2500, speed:1.00},
+      {id:'t2', name:'КамАЗ-5320',     price:7000, speed:1.45},
+      {id:'t3', name:'Volvo FH16',     price:16000,speed:2.05},
+    ]},
 };
+/* Прочность модели: дешевле — хрупче, дорогая — выносливее */
+const MACHINE_TIER_DUR = [1, 1.35, 1.7];
+/* Ремонт: доля цены модели за каждый процент износа */
+const REPAIR_PER_PCT = 0.0055;
+/* Продажа: доля цены с учётом состояния. Убитую технику отдают за бесценок */
+function machineSellPrice(mid){
+  const m = S.machines[mid]; if (!m || !m.owned) return 0;
+  const def = MACHINES[mid];
+  const tier = (def.tiers||[])[ (m.tier||0) ];
+  const base = tier ? tier.price : def.price;
+  /* продажа всегда дешевле покупки: 25% при нуле прочности, 45% при сотне.
+     Убитая техника уходит почти за бесценок — чинить выгоднее, чем менять. */
+  const condK = 0.25 + 0.20 * (clamp(m.cond,0,100)/100);
+  const total = base * condK;
+  return Math.max(1, Math.round(total));
+}
+function machineTier(mid){
+  const m = S.machines[mid]; if (!m) return null;
+  const def = MACHINES[mid];
+  return (def.tiers||[])[ m.tier||0 ] || null;
+}
+function machineRepairCost(mid){
+  const m = S.machines[mid]; if (!m) return 0;
+  const def = MACHINES[mid];
+  const tier = (def.tiers||[])[ m.tier||0 ];
+  const base = tier ? tier.price : def.price;
+  return Math.max(1, Math.round((100-m.cond) * base * REPAIR_PER_PCT));
+}
 const WORK = {
   prepare:  {name:'Обработать',   machine:'cultivator', time:30, cost:10},
   plow:     {name:'Вспашка',      machine:'tractor',    time:60, cost:15},
@@ -2910,7 +3028,7 @@ function freshState(presetId, styleId){
     f1.state='ready'; f1.crop='wheat'; f1.t0 = Date.now()-1000; f1.t1 = Date.now()-1000;
   }
   const machines = {};
-  for (const id in MACHINES) machines[id] = { owned: p.machines.includes(id), cond:100, lvl:1 };
+  for (const id in MACHINES) machines[id] = { owned: p.machines.includes(id), cond:100, lvl:1, tier:0 };
   const buildings = {};
   for (const id in BUILDINGS) buildings[id] = { owned:false, feed:80, water:80, clean:80, cycleEndsAt:0, stored:0 };
   const productions = {};
@@ -3025,7 +3143,17 @@ function growthFactor(){
 function machineSpeed(mid){
   const m = S.machines[mid];
   if (!m || !m.owned) return 1;
-  return MACHINES[mid].speed * (1 + (m.lvl-1)*0.15);
+  const def = MACHINES[mid];
+  const tier = (def.tiers||[])[ m.tier||0 ];
+  const base = tier ? tier.speed : def.speed;
+  return base * (1 + ((m.lvl||1)-1)*0.12);
+}
+/* Одна операция снимает прочность модели: дешёвая изнашивается быстрее */
+function machineWear(mid){
+  const def = MACHINES[mid]; if (!def) return 0;
+  const m = S.machines[mid];
+  const dur = MACHINE_TIER_DUR[m ? (m.tier||0) : 0] || 1;
+  return (def.wear || 3) / dur;
 }
 function machineStatus(mid){
   if (!mid) return {ok:true, rent:0};
@@ -3036,7 +3164,15 @@ function machineStatus(mid){
 }
 function wearMachine(mid){
   const m = S.machines[mid];
-  if (m && m.owned) m.cond = clamp(m.cond - randi(2,5), 0, 100);
+  if (!m || !m.owned) return;
+  const before = m.cond;
+  m.cond = clamp(m.cond - machineWear(mid), 0, 100);
+  // сломалась прямо сейчас — предупредим игрока
+  if (before > 0 && m.cond <= 0){
+    const def = MACHINES[mid];
+    toast(`${def.name} сломалась — нужен ремонт`, 'bad', 'wrench');
+    sfx.bad();
+  }
 }
 function warehouseUsed(){ return Object.values(S.goods).reduce((a,b)=>a+b,0); }
 function addGoods(good, n){
@@ -5881,27 +6017,76 @@ function openMarket(){
 
 /* ---------- GARAGE ---------- */
 function openGarage(){
-  let html = `<h2>${ic('tractor')} Гараж</h2><p class="muted">Скорость работы, состояние и уровень техники.</p>`;
+  let html = `<h2>${ic('tractor')} Гараж</h2>
+    <p class="muted">Техника изнашивается от работы. Следи за прочностью, чини вовремя и бери модели мощнее.</p>`;
+
   for (const id in MACHINES){
     const def = MACHINES[id], m = S.machines[id];
+    const tiers = def.tiers || [];
+    const curTier = tiers[m.tier||0] || null;
+
+    /* ---------- не куплена ---------- */
     if (!m.owned){
-      html += `<div class="card machine-card row between"><div class="row">${machIcon(id,'ic-lg')}<div><b>${def.name}</b>
-        <div class="small muted">${def.desc}</div></div></div>
-        <button class="btn btn-primary btn-sm" onclick="App.buyMachine('${id}')">Купить · ${fmt(def.price)}</button></div>`;
+      const base = tiers[0] || { name:def.name, price:def.price, speed:def.speed };
+      html += `<div class="card machine-card">
+        <div class="row between">
+          <b class="row">${machIcon(id,'ic-lg mach-static')} ${base.name}</b>
+          <span class="pill">не куплена</span>
+        </div>
+        <div class="small muted" style="margin:2px 0 6px">${def.desc}</div>
+        <div class="mach-stats">
+          <span>${ic('clock')} ×${base.speed.toFixed(2)}</span>
+          <span>${ic('wrench')} прочность ${Math.round((def.wear||3)*20)} операций</span>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="App.buyMachine('${id}',0)">
+          Купить ${base.name} · ${fmt(base.price)}
+        </button>
+      </div>`;
       continue;
     }
-    const repairCost = Math.round((100-m.cond)*def.price/100);
-    const upCost = m.lvl<3 ? Math.round(def.price*0.5*m.lvl) : 0;
+
+    /* ---------- куплена ---------- */
+    const cond = Math.round(m.cond);
+    const broken = m.cond <= 0;
+    const worn = m.cond < 40;
+    const sell = machineSellPrice(id);
+    const repair = machineRepairCost(id);
+    const upCost = (m.lvl||1) < 3 ? Math.round((curTier?curTier.price:def.price) * 0.42 * (m.lvl||1)) : 0;
+
     html += `<div class="card machine-card">
-      <div class="row between"><b class="row">${machIcon(id,'ic-lg')} ${def.name} ${'★'.repeat(m.lvl)}</b>
-      <span class="pill ${m.cond<=0?'bad':m.cond<40?'warn':''}">${m.cond<=0?'Сломана':`Состояние ${Math.round(m.cond)}%`}</span></div>
-      <div class="stat">Скорость работы ×${machineSpeed(id).toFixed(2)}</div>
-      <div class="bar ${m.cond<40?'red':''}" style="margin:4px 0"><i style="width:${m.cond}%"></i></div>
-      <div class="row" style="gap:6px;flex-wrap:wrap">
-        ${m.cond<100?`<button class="btn btn-ghost btn-sm" onclick="App.repairMachine('${id}')">${ic('wrench')} Ремонт ${fmt(repairCost)}</button>`:''}
-        ${m.lvl<3?`<button class="btn btn-blue btn-sm" onclick="App.upgradeMachine('${id}')">Улучшить ${fmt(upCost)}</button>`:''}
-        <button class="btn btn-ghost btn-sm" onclick="App.sellMachine('${id}')">Продать ${fmt(def.price*0.5)}</button>
-      </div></div>`;
+      <div class="row between">
+        <b class="row">${machIcon(id,'ic-lg mach-static')} ${curTier?curTier.name:def.name}</b>
+        <span class="pill ${broken?'bad':worn?'warn':'ok'}">${broken?'Сломана':`${cond}%`}</span>
+      </div>
+      <div class="mach-level">${'★'.repeat(m.lvl||1)}${'☆'.repeat(3-(m.lvl||1))} · скорость ×${machineSpeed(id).toFixed(2)}</div>
+
+      <!-- прочность -->
+      <div class="mach-cond">
+        <div class="mach-cond-bar ${broken?'bad':worn?'warn':''}"><i style="width:${cond}%"></i></div>
+        <small>${broken?'Техника не работает':'Прочность '+cond+'%'}</small>
+      </div>`;
+
+    /* предложение следующей модели */
+    const nextTier = tiers[(m.tier||0)+1];
+    if (nextTier){
+      html += `<div class="mach-upgrade">
+        <div class="mach-up-row"><span>${ic('arrow')} ${nextTier.name}</span>
+          <b>×${nextTier.speed.toFixed(2)}</b></div>
+        <button class="btn btn-blue btn-block btn-sm" onclick="App.buyMachine('${id}',${(m.tier||0)+1})">
+          Купить за ${fmt(nextTier.price)}
+        </button>
+      </div>`;
+    } else {
+      html += `<div class="mach-max">${ic('star')} Лучшая модель в линейке</div>`;
+    }
+
+    html += `<div class="mach-actions">
+        ${m.cond < 100 ? `<button class="btn btn-ghost btn-sm" onclick="App.repairMachine('${id}')">${ic('wrench')} Ремонт ${fmt(repair)}</button>` : ''}
+        ${(m.lvl||1) < 3 ? `<button class="btn btn-ghost btn-sm" onclick="App.upgradeMachine('${id}')">${ic('star')} Улучшить ${fmt(upCost)}</button>` : ''}
+        <button class="btn btn-ghost btn-sm mach-sell" onclick="App.sellMachine('${id}')">Продать ${fmt(sell)}</button>
+      </div>
+      <div class="mach-sell-note">Продажа с учётом износа: ${cond}% прочности</div>
+    </div>`;
   }
   openSheet(html);
 }
@@ -6368,33 +6553,49 @@ const App = {
     save(); renderAll(); if (ui.modal) openMarket();
   },
   openGarage(){ sfx.click(); openGarage(); },
-  buyMachine(id){
+  buyMachine(id, tierIdx=0){
     const def = MACHINES[id];
-    if (S.coins < def.price){ toast('Не хватает монет', 'bad', 'coin'); sfx.nope(); return; }
-    addCoins(-def.price); S.machines[id].owned = true; S.machines[id].cond = 100;
-    toast(`${def.name} куплен!`, 'good', 'tractor'); sfx.good();
+    const tiers = def.tiers || [];
+    const tier = tiers[tierIdx] || { name:def.name, price:def.price, speed:def.speed };
+    const m = S.machines[id];
+    // если техника уже есть — это смена модели: старую сдаём в зачёт по её цене с износом
+    const tradeIn = (m && m.owned) ? machineSellPrice(id) : 0;
+    const total = Math.max(0, tier.price - tradeIn);
+    if (S.coins < total){ toast('Не хватает монет', 'bad', 'coin'); sfx.nope(); return; }
+    addCoins(-total);
+    m.owned = true; m.tier = tierIdx; m.cond = 100;
+    if (!m.lvl) m.lvl = 1;
+    toast(`${tier.name} в гараже!` + (tradeIn?` (старая в зачёт ${fmt(tradeIn)})`:''), 'good', 'tractor');
+    sfx.good();
     setTimeout(()=>FX.confetti(document.querySelector('#modal-root .sheet')), 60);
     save(); openGarage(); renderAll();
   },
   sellMachine(id){
-    const def = MACHINES[id];
-    S.machines[id].owned = false; S.machines[id].cond = 100; S.machines[id].lvl = 1;
-    addCoins(Math.round(def.price*0.5));
-    toast(`Продано за ${fmt(def.price*0.5)} монет`, 'good', 'coin'); sfx.coin(); save(); openGarage(); renderAll();
+    const def = MACHINES[id], m = S.machines[id];
+    if (!m || !m.owned) return;
+    const price = machineSellPrice(id);
+    const cond = Math.round(m.cond);
+    m.owned = false; m.cond = 100; m.lvl = 1; m.tier = 0;
+    addCoins(price);
+    toast(`Продано за ${fmt(price)} (${cond}% прочности)`, 'good', 'coin');
+    sfx.coin(); save(); openGarage(); renderAll();
   },
   repairMachine(id){
     const def = MACHINES[id], m = S.machines[id];
-    const cost = Math.round((100-m.cond)*def.price/100);
+    const cost = machineRepairCost(id);
     if (S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
     addCoins(-cost); m.cond = 100;
     toast('Техника как новая!', 'good', 'wrench'); sfx.pop(); save(); openGarage(); renderAll();
   },
   upgradeMachine(id){
     const def = MACHINES[id], m = S.machines[id];
-    const cost = Math.round(def.price*0.5*m.lvl);
-    if (m.lvl>=3 || S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
-    addCoins(-cost); m.lvl++;
-    toast(`${def.name} — уровень ${m.lvl}! Скорость выше`, 'good', 'star'); sfx.good(); save(); openGarage(); renderAll();
+    const tier = (def.tiers||[])[m.tier||0];
+    const base = tier ? tier.price : def.price;
+    const lvl = m.lvl||1;
+    const cost = Math.round(base * 0.42 * lvl);
+    if (lvl>=3 || S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+    addCoins(-cost); m.lvl = lvl+1;
+    toast(`Улучшено до ★${m.lvl}! Скорость +12%`, 'good', 'star'); sfx.good(); save(); openGarage(); renderAll();
   },
   openSettings(){ sfx.click(); openSettings(); },
   async installPwa(){
@@ -6912,6 +7113,7 @@ function init(){
   const saved = load();
   if (saved){
     S = saved;
+    migrateMachines(S);
     if(!S.loginReward) S.loginReward={lastClaim:'',streak:0};
     applySettings();
     genBoardIfNeeded();
@@ -6939,6 +7141,31 @@ function init(){
     });
     navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
   }
+}
+/* ---------- МИГРАЦИЯ СЕЙВОВ ТЕХНИКИ (v64) ----------
+   До v64 у машин не было cond/lvl/tier. Старые сейвы могут хранить
+   S.machines как МАССИВ id либо как объект без новых полей.
+   Приводим к полной форме: { owned, cond, lvl, tier }. */
+function migrateMachines(state){
+  if (!state) return;
+  const raw = state.machines;
+  const isArr = Array.isArray(raw);
+  const out = {};
+  for (const id in MACHINES){
+    const def = { owned:false, cond:100, lvl:1, tier:0 };
+    if (isArr){ def.owned = raw.includes(id); }
+    else if (raw && typeof raw === 'object' && raw[id] && typeof raw[id] === 'object'){
+      const r = raw[id];
+      def.owned = !!r.owned;
+      if (typeof r.cond === 'number' && isFinite(r.cond)) def.cond = clamp(r.cond, 0, 100);
+      if (typeof r.lvl  === 'number' && isFinite(r.lvl))  def.lvl  = clamp(r.lvl|0, 1, 3);
+      if (typeof r.tier === 'number' && isFinite(r.tier)) def.tier = clamp(r.tier|0, 0, MACHINES[id].tiers.length-1);
+    }
+    out[id] = def;
+  }
+  state.machines = out;
+  // сломанная техника не должна «залипнуть» в брони поля
+  return state;
 }
 function genBoardIfNeeded(){
   if (!S.board || !S.board.length || Date.now()-S.boardAt > durMs(900)) genBoard();
@@ -7664,6 +7891,8 @@ function RET_renderFarm(){
   // --- переключатель вида
   const sw = (id, icon, label) => `<button class="${view===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
   const xmasBase = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
+  /* Один и тот же набор вкладок на ВСЕХ экранах: раньше базовые виды давали 8
+     кнопок, а расширенные — 10, и «Походы»/«Коллекция» пропадали. */
   const switcher = `<div class="farm-switch">
     ${sw('map','map','Ферма')}
     ${sw('quests','target','Задания')}
@@ -7673,6 +7902,8 @@ function RET_renderFarm(){
     ${sw('weekly','calendar','Итоги')}
     ${sw('pass','medal','Пропуск')}
     ${sw('ach','star','Награды')}
+    ${sw('exped','map','Походы')}
+    ${sw('cards','star','Коллекция')}
   </div>`;
 
   let body = '';
@@ -7728,6 +7959,7 @@ function RET_renderFarm(){
 
   $('#screen').innerHTML = `${scene}${switcher}${body}`;
   positionCoach();
+  LIV_scrollActiveTab();
   // погодный слой поверх карты (дождь/засуха/облака)
   if (document.querySelector('.mapv2') && typeof WX_afterMapRender === 'function') WX_afterMapRender();
 }
@@ -7923,6 +8155,7 @@ function RET_installHooks(){
   if (window.App){
     Object.assign(App, {
       farmView(v){ const changed = ui.farmView !== v; ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen();
+        setTimeout(()=>{ try{ if (typeof LIV_scrollActiveTab==='function') LIV_scrollActiveTab(); }catch(e){} }, 30);
         if (changed){ try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} }
         if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
       xmasClaim(id){ XMAS_claim(id); },
@@ -8584,7 +8817,7 @@ const PET_CSS = `
   .pt-tailIn{transform-box:view-box;transform-origin:97px 62px;animation:ptWag 1.6s ease-in-out infinite}
   .pt-body{transform-box:view-box;transform-origin:70px 92px;animation:ptBreathe 3.6s ease-in-out infinite}
   .pt-head{animation:ptBob 3.6s ease-in-out infinite}
-  .pt-ear .pt-earIn{transform-box:view-box;transform-origin:62px 26px;animation:ptEar 2.8s ease-in-out infinite}
+  .pt-ear .pt-earIn{transform-box:view-box;transform-origin:65px 26px;animation:ptEar 2.8s ease-in-out infinite}
   .pt-tongue{transform-box:view-box;transform-origin:25px 48px;animation:ptPant 1.9s ease-in-out infinite}
   .pt-eye{transform-box:view-box;animation:ptBlink 5s ease-in-out infinite}
   .pt-eyeL{transform-origin:38px 32px}
@@ -8753,19 +8986,19 @@ const LIV_PET_SVG_BODY = `<defs>
   <!-- глаза -->
   <g class="pt-eye pt-eyeL">
     <ellipse cx="38" cy="32" rx="6.8" ry="7.6" fill="#1d1108"/>
-    <ellipse cx="37.8" cy="34.2" rx="4.8" ry="4.6" fill="url(#{U}Iris)"/>
-    <ellipse cx="37.8" cy="33.8" rx="2.3" ry="2.5" fill="#110a04"/>
-    <circle cx="35.5" cy="29" r="2.6" fill="#fff"/>
-    <circle cx="40.6" cy="35.6" r="1.05" fill="#fff" opacity=".85"/>
-    <ellipse cx="38" cy="27" rx="6" ry="2.4" fill="url(#{U}Rump)" opacity=".75"/>
+    <ellipse cx="38" cy="32.4" rx="4.8" ry="4.7" fill="url(#{U}Iris)"/>
+    <ellipse cx="38" cy="32.4" rx="2.3" ry="2.5" fill="#110a04"/>
+    <circle cx="35.7" cy="29.6" r="2.5" fill="#fff"/>
+    <circle cx="40.2" cy="35.2" r="1.05" fill="#fff" opacity=".85"/>
+    <ellipse cx="38" cy="26.6" rx="6" ry="2.2" fill="url(#{U}Rump)" opacity=".7"/>
   </g>
   <g class="pt-eye pt-eyeR">
     <ellipse cx="54" cy="30" rx="6.4" ry="7.1" fill="#1d1108"/>
-    <ellipse cx="53.8" cy="32.2" rx="4.4" ry="4.2" fill="url(#{U}Iris)"/>
-    <ellipse cx="53.8" cy="31.8" rx="2.1" ry="2.3" fill="#110a04"/>
-    <circle cx="51.8" cy="27.2" r="2.4" fill="#fff"/>
-    <circle cx="56.4" cy="33.4" r=".95" fill="#fff" opacity=".85"/>
-    <ellipse cx="54" cy="25.2" rx="5.6" ry="2.2" fill="url(#{U}Rump)" opacity=".7"/>
+    <ellipse cx="54" cy="30.4" rx="4.5" ry="4.3" fill="url(#{U}Iris)"/>
+    <ellipse cx="54" cy="30.4" rx="2.2" ry="2.4" fill="#110a04"/>
+    <circle cx="51.9" cy="28" r="2.3" fill="#fff"/>
+    <circle cx="56.2" cy="33.1" r=".95" fill="#fff" opacity=".85"/>
+    <ellipse cx="54" cy="24.9" rx="5.6" ry="2" fill="url(#{U}Rump)" opacity=".68"/>
   </g>
 
   <!-- надбровные дуги -->
@@ -8775,9 +9008,9 @@ const LIV_PET_SVG_BODY = `<defs>
   <!-- ближнее ухо (поверх головы, свисает вдоль щеки) -->
   <g class="pt-ear">
    <g class="pt-earIn">
-    <path d="M61.6 24.4 C68.4 25.6 72.6 32.4 72.2 40.6 C71.8 48 68.4 52.4 63.8 51.6 C59.4 50.8 57.4 45 57.6 38 C57.8 31.8 59.2 26.4 61.6 24.4 Z" fill="url(#{U}Ear)"/>
-    <path d="M64 30.6 C67.6 32.6 68.8 37.6 68 42.6 C67.4 46.6 65.6 48.6 63.4 48 C61 47.4 60.4 43.4 60.8 38.6 C61.2 34.6 62.2 31.4 64 30.6 Z" fill="#7c5128" opacity=".5"/>
-    <path d="M62.4 27 q3.4 2.4 3.4 8.4" stroke="#6b4321" stroke-width="1.5" fill="none" opacity=".3" stroke-linecap="round"/>
+    <path d="M64.8 24.2 C71.4 25.6 75.4 32.6 75 40.8 C74.6 48.2 71.2 52.6 66.6 51.8 C62.2 51 60.4 45.2 60.6 38.2 C60.8 32 62.4 26.2 64.8 24.2 Z" fill="url(#{U}Ear)"/>
+    <path d="M67.2 30.4 C70.8 32.4 72 37.4 71.2 42.4 C70.6 46.4 68.8 48.4 66.6 47.8 C64.2 47.2 63.6 43.2 64 38.4 C64.4 34.4 65.4 31.2 67.2 30.4 Z" fill="#7c5128" opacity=".5"/>
+    <path d="M65.6 26.8 q3.4 2.4 3.4 8.4" stroke="#6b4321" stroke-width="1.5" fill="none" opacity=".3" stroke-linecap="round"/>
    </g>
   </g>
   $EXTRA
@@ -9265,7 +9498,9 @@ function LIV_extendFarmTabs(){
       return;
     }
     if (view === 'xmas'){
-      $('#screen').innerHTML = XMAS_renderScreen();
+      // раньше экран Ёлки подменял всё содержимое и переключатель исчезал —
+      // вернуть его без него было нельзя
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('xmas')}</div>` + XMAS_renderScreen();
       XMAS_snowfall();
       const sc = $('#screen'); if (sc) sc.scrollTop = 0;
       positionCoach();
@@ -9285,6 +9520,19 @@ function LIV_extendFarmTabs(){
     } catch(e){}
     return r;
   };
+}
+
+/* Горизонтальный свитчер уже не влезает на 320px — держим активную вкладку в кадре */
+function LIV_scrollActiveTab(){
+  try{
+    const sw = document.querySelector('.farm-switch');
+    if (!sw) return;
+    const a = sw.querySelector('button.active');
+    if (!a) return;
+    const ar = a.getBoundingClientRect(), sr = sw.getBoundingClientRect();
+    if (ar.left < sr.left + 8) sw.scrollLeft += (ar.left - sr.left) - 8;
+    else if (ar.right > sr.right - 8) sw.scrollLeft += (ar.right - sr.right) + 8;
+  }catch(e){}
 }
 
 function LIV_switchHTML(active){
