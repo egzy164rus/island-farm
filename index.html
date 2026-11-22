@@ -5753,7 +5753,7 @@ function RET_installHooks(){
   /* [HOOK 14] Добавляем новые методы в App */
   if (window.App){
     Object.assign(App, {
-      farmView(v){ ui.farmView = v; sfx.click(); renderScreen(); if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
+      farmView(v){ ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen(); if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
       xmasClaim(id){ XMAS_claim(id); },
       tut2Finish(){ TUT2_finish(); },
       welcomeStart(){ const h=$('#overlay-root'); if(h) h.innerHTML=''; S.welcomed = true; save(); TUT2_start(); renderAll(); },
