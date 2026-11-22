@@ -1799,6 +1799,12 @@ const CROPS = {
   grape:   {name:'Виноград', grow:5400, yield:1300, seed:220, season:'spring'},
   grass:   {name:'Трава',    grow:180,  yield:60,   seed:10,  season:'any'},
 };
+/* Формы для «+N товара» (винительный падеж) */
+const GOODS_ACC = { wheat:'пшеницы', rapeseed:'рапса', corn:'кукурузы', soy:'сои', potato:'картофеля',
+  cotton:'хлопка', grape:'винограда', hay:'сена', eggs:'яиц', wool:'шерсти', milk:'молока', meat:'мяса',
+  honey:'мёда', veggies:'овощей', flour:'муки', bread:'хлеба', cheese:'сыра', fabric:'ткани',
+  clothes:'одежды', silage:'силоса', biogas:'биогаза' };
+function goodsAcc(g){ return GOODS_ACC[g] || GOODS[g]?.name || 'товара'; }
 const GOODS = {
   wheat:{name:'Пшеница',price:1}, rapeseed:{name:'Рапс',price:1},
   corn:{name:'Кукуруза',price:1}, soy:{name:'Соя',price:1},
@@ -1906,27 +1912,90 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt
 function hashStr(s){ let h=0; for (let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return Math.abs(h); }
 
 /* ---------------- AUDIO / VIBRATION ---------------- */
-let AC = null;
-function beep(freq, dur=0.07, type='sine', vol=0.12){
+let AC = null, MASTER = null;
+function ac(){
+  if (!AC){
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return null;
+    AC = new Ctor();
+    MASTER = AC.createGain(); MASTER.gain.value = 0.9; MASTER.connect(AC.destination);
+  }
+  if (AC.state === 'suspended') AC.resume();
+  return AC;
+}
+/* Тон с огибающей: атака-спад, мягкая фильтрация — звучит «дороже» простого бипа */
+function beep(freq, dur=0.07, type='sine', vol=0.12, opt={}){
   if (!S || !S.settings.sound) return;
+  const a = ac(); if (!a) return;
   try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
-    const o = AC.createOscillator(), g = AC.createGain();
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, AC.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime + dur);
-    o.connect(g); g.connect(AC.destination);
-    o.start(); o.stop(AC.currentTime + dur);
+    const t0 = a.currentTime + (opt.delay||0);
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t0);
+    if (opt.slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq*opt.slide), t0 + dur);
+    let node = o;
+    if (opt.lp){
+      const f = a.createBiquadFilter(); f.type='lowpass'; f.frequency.value = opt.lp;
+      o.connect(f); node = f;
+    }
+    const atk = opt.atk==null ? 0.006 : opt.atk;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, vol), t0 + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    node.connect(g); g.connect(MASTER);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }catch(e){}
+}
+/* Шумовой всплеск — «шорох» зерна, трение, шелест */
+function noise(dur=0.12, vol=0.06, f=1800, q=1){
+  if (!S || !S.settings.sound) return;
+  const a = ac(); if (!a) return;
+  try{
+    const n = Math.floor(a.sampleRate * dur);
+    const buf = a.createBuffer(1, n, a.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i=0;i<n;i++) d[i] = (Math.random()*2-1) * (1 - i/n);
+    const src = a.createBufferSource(); src.buffer = buf;
+    const bp = a.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f; bp.Q.value=q;
+    const g = a.createGain();
+    g.gain.setValueAtTime(vol, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + dur);
+    src.connect(bp); bp.connect(g); g.connect(MASTER);
+    src.start();
   }catch(e){}
 }
 const sfx = {
-  click(){ beep(650, .05); },
-  coin(){ beep(1180,.07); setTimeout(()=>beep(1560,.09),60); },
-  good(){ beep(660,.08); setTimeout(()=>beep(880,.08),80); setTimeout(()=>beep(1320,.12),160); },
-  bad(){ beep(220,.15,'sawtooth',.08); },
-  pop(){ beep(880,.05,'triangle',.1); },
+  click(){ beep(660, .045, 'triangle', .07, {lp:2600}); },
+  /* монетки — «дзынь» из двух тонов с блеском */
+  coin(){ beep(1320,.06,'triangle',.09,{lp:5200}); beep(1760,.10,'triangle',.07,{delay:.055,lp:5600}); noise(.05,.02,4200,2); },
+  /* успех — мажорный аккорд */
+  good(){ [523,659,784,1047].forEach((f,i)=>beep(f,.16,'sine',.075,{delay:i*.055,lp:4200,atk:.01})); },
+  bad(){ beep(196,.20,'sawtooth',.07,{slide:.6,lp:900,atk:.01}); },
+  pop(){ beep(880,.05,'triangle',.085,{lp:3600}); },
+  /* ВКУС: урожай — шелест зерна + восходящее арпеджио */
+  harvest(){
+    noise(.16,.055,2400,1.4); noise(.10,.03,5200,2);
+    [659,784,988,1319].forEach((f,i)=>beep(f,.14,'sine',.062,{delay:i*.045,lp:5000,atk:.008}));
+  },
+  /* посадка — короткий «плюх» в землю */
+  plant(){ beep(300,.10,'sine',.08,{slide:.55,lp:1200}); noise(.07,.03,700,.8); },
+  /* техника — низкий рык с вибрацией */
+  engine(){ beep(96,.34,'sawtooth',.055,{lp:420,atk:.02,slide:1.25}); beep(144,.30,'square',.028,{lp:520,delay:.03}); },
+  /* строительство — удар + металлический отзвук */
+  build(){ beep(120,.12,'square',.06,{lp:700}); noise(.2,.05,900,.7); beep(880,.12,'triangle',.05,{delay:.1,lp:4200}); },
+  /* уровень/достижение — фанфара */
+  levelup(){ [523,659,784,1047,1319].forEach((f,i)=>beep(f,.22,'triangle',.07,{delay:i*.075,lp:5200,atk:.012})); noise(.12,.02,3600,2); },
+  /* награда/сундук */
+  reward(){ [784,988,1175].forEach((f,i)=>beep(f,.18,'sine',.07,{delay:i*.07,lp:5400})); noise(.14,.025,3000,1.6); },
+  /* ошибка/блок */
+  nope(){ beep(180,.09,'square',.05,{lp:800}); beep(150,.11,'square',.045,{delay:.07,lp:700}); },
 };
 function buzz(ms=30){ if (S && S.settings.vibrate && navigator.vibrate) try{ navigator.vibrate(ms); }catch(e){} }
+/* Разблокировка аудио на первом тапе (iOS/Safari требует жеста) */
+window.addEventListener('pointerdown', function unlockAudio(){
+  try{ ac(); }catch(e){}
+  window.removeEventListener('pointerdown', unlockAudio);
+}, { once:true, passive:true });
 
 /* ---------------- STATE ---------------- */
 let S = null;
@@ -2016,10 +2085,10 @@ function addXP(n){
   S.xp += n;
   while (S.xp >= xpNeed(S.level)){
     S.xp -= xpNeed(S.level); S.level++;
-    S.gems += 3; sfx.good(); buzz(60);
+    S.gems += 3; sfx.levelup(); buzz([30, 60, 30]);
     setTimeout(()=>{ FX.confetti(); FX.burst(FX.point(document.querySelector('#hud .level-meta'))?.x || innerWidth/2, (FX.point(document.querySelector('#hud .level-meta'))?.y || 120), { n:30, speed:8, sizes:[2,5], ringSize:40 }); }, 120);
     openDialog(`<div style="text-align:center">
-      <div class="big-emoji">⭐</div>
+      <div class="big-emoji">${ic('star','ic-xl')}</div>
       <h2>Уровень ${S.level}!</h2>
       <p class="muted">Награда: +3 самоцвета</p>
       ${S.level===3?'<p>Открыт <b>Бригадир</b> — помощник, который работает за вас!</p>':''}
@@ -2138,7 +2207,8 @@ function startFieldWork(f, action, extra={}){
   f.busy = { action, endsAt: Date.now() + durMs(t), total: durMs(t), crop: extra.crop||null, manualBonus: extra.manualBonus||0 };
   if (w.machine) wearMachine(w.machine);
   addJob({ kind:'field', ref:f.id, durMs: durMs(t) });
-  sfx.pop(); save(); renderAll();
+  if (w.machine) sfx.engine(); else sfx.pop();
+  buzz(28); save(); renderAll();
   return true;
 }
 function FX_FIELD_DONE(fieldId, emoji, color){
@@ -2147,8 +2217,17 @@ function FX_FIELD_DONE(fieldId, emoji, color){
     if (!el) return;
     requestAnimationFrame(()=>{
       const p = FX.point(el);
-      if (p) FX.burst(p.x, p.y, { n:14, speed:4.5, colors:[color,'#fff59d','#ffffff'], size:[1.8,3.6], ringSize:18, type:'dot' });
-      FX.pop(el, emoji, 3);
+      if (!p) return;
+      // мягкий круг пыли и искры — без эмодзи, в стиле игры
+      FX.burst(p.x, p.y, { n:16, speed:4.2, colors:[color,'#fff59d','#ffffff'], size:[1.8,3.6], ringSize:20, type:'dot' });
+      for (let i=0;i<10;i++){
+        const ang = -Math.PI/2 + (Math.random()-0.5)*2.0;
+        window.__spawnJuice && window.__spawnJuice({
+          x:p.x, y:p.y, vx:Math.cos(ang)*(1.5+Math.random()*2.6), vy:Math.sin(ang)*(1.5+Math.random()*2.6)-1,
+          g:0.14, drag:0.98, life:34+Math.random()*18, r:2+Math.random()*1.8,
+          color: color, type:'seed', rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3,
+        });
+      }
     });
   } catch(e){}
 }
@@ -2163,6 +2242,7 @@ function completeFieldWork(f){
     f.crop = b.crop; f.state='growing';
     f.t0 = Date.now(); f.t1 = Date.now() + durMs(c.grow / growthFactor());
     f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false; f.weedsChecked=false; f.manualBonus=0;
+    sfx.plant();
     if (S.tutorial.step===2) tutAdvance('sow');
   }
   else if (a==='fertilize'){ f.fert = Math.min(2, f.fert+1); FX_FIELD_DONE(f.id, '💧', '#a5d6a7'); }
@@ -2178,14 +2258,17 @@ function completeFieldWork(f){
     S.stats.harvests++; addXP(10);
     ui.fieldFx={id:f.id,action:'harvest',at:Date.now()};
     setTimeout(()=>{document.querySelector(`[data-swipe-field="${f.id}"]`)?.classList.remove('field-harvest-pop');if(ui.fieldFx?.id===f.id)ui.fieldFx=null;},1200);
-    toast(`Урожай: +${got} ${GOODS[b.crop]?.name||''}`, 'good', 'check');
-    sfx.coin(); buzz(40);
+    toast(`Урожай: +${got} ${goodsAcc(b.crop)}`, 'good', 'check');
+    sfx.harvest(); buzz([25, 40, 25]);
     // VISUAL JUICE: салют из поля и монеты в кошелёк
     requestAnimationFrame(()=>{
       const el = document.querySelector(`[data-swipe-field="${f.id}"]`);
       if (el){
         const p = FX.point(el);
-        if (p){ FX.floatText(p.x, p.y - 20, '+'+got, '#c5e1a5'); FX.burst(p.x, p.y, { n:26, speed:7, colors:['#ffd54f','#d3a55d','#b0cf7a','#fff59d','#c5e1a5'], size:[2,4.5], ringSize:26 }); FX.pop(el, ({wheat:'🌾',rapeseed:'🌻',corn:'🌽',soy:'🫘',potato:'🥔',cotton:'☁️',grape:'🍇',grass:'🌿'})[b.crop]||'🌾', 3); }
+        if (p){
+          FX.floatText(p.x, p.y - 24, '+'+fmt(got), '#d7f0b0');
+          if (window.JUICE) JUICE.harvest(el, b.crop);
+        }
         FX.coin(el);
       }
       FX.confetti(el);
@@ -2332,8 +2415,8 @@ function collectBuilding(id){
   if (b.stored<=0) return;
   const got = addGoods(def.good, b.stored);
   b.stored -= got;
-  toast(`+${got} ${GOODS[def.good].name}`, 'good', 'check');
-  sfx.coin(); buzz(40); addXP(5); save(); renderAll();
+  toast(`+${got} ${goodsAcc(def.good)}`, 'good', 'check');
+  sfx.reward(); buzz(35); addXP(5); save(); renderAll();
 }
 function startProduction(id){
   const pr = PRODUCTION.find(p=>p.id===id), p = S.productions[id];
@@ -2351,7 +2434,7 @@ function collectProduction(id){
     toast('Продукция на складе!', 'good', 'box'); sfx.coin(); addXP(5);
     requestAnimationFrame(()=>{
       const el = document.querySelector(`[data-prod="${id}"]`) || document.querySelector('.biz-card');
-      if (el) FX.pop(el, '📦', 5);
+      if (el && window.JUICE) JUICE.collect(el);
     });
   }
   save(); renderAll();
@@ -2421,7 +2504,7 @@ function applyOffline(){
   if (lines.length){
     save();
     openDialog(`<div style="text-align:center">
-      <div class="big-emoji">🌅</div><h2>Ферма ждала вас!</h2>
+      <div class="big-emoji">${ic('sun','ic-xl')}</div><h2>Ферма ждала вас!</h2>
       <p class="muted">Прошло ${fmtTime(gameSec)} игрового времени</p>
       ${lines.map(l=>`<p style="font-weight:700">${l}</p>`).join('')}
       <button class="btn btn-primary btn-block" onclick="App.closeModal()">Продолжить</button></div>`);
@@ -2765,6 +2848,83 @@ function flyCoin(fromEl){
     ], {duration:650, easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish = ()=>c.remove();
   }catch(e){}
 }
+
+
+/* ============================================================
+   JUICE+ — многослойные эффекты сбора урожая
+   ============================================================ */
+(function(){
+  const CROP_PAL = {
+    wheat:    { main:['#e8c96a','#d9b24e','#f2dd9a'], leaf:'#a8b95a', seed:'#c9a44a' },
+    rapeseed: { main:['#f2d84a','#e0c02e','#fbe97e'], leaf:'#8faa45', seed:'#d4b52f' },
+    corn:     { main:['#f0cf5c','#d9b23a','#fae79c'], leaf:'#6f9440', seed:'#d4b02f' },
+    soy:      { main:['#a8c46a','#8cae50','#c8dc96'], leaf:'#6f9448', seed:'#8cae50' },
+    potato:   { main:['#c9a06a','#a87f4b','#e0bf94'], leaf:'#6f8c48', seed:'#a87f4b' },
+    cotton:   { main:['#f2f4ec','#dfe4d4','#ffffff'], leaf:'#9aa88a', seed:'#e6e9dd' },
+    grape:    { main:['#9b6ba8','#7d4d8c','#c093cc'], leaf:'#6f8c48', seed:'#7d4d8c' },
+    hay:      { main:['#cfc08a','#b0a068','#e5d9a8'], leaf:'#8a9450', seed:'#b0a068' },
+    default:  { main:['#c8e08a','#a8c46a','#e6f2b8'], leaf:'#7d9c50', seed:'#a8c46a' },
+  };
+
+  function pointOf(el){ if(!el||!el.getBoundingClientRect) return null; const r=el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2, w:r.width, h:r.height}; }
+
+  // Лепестки/зерно разлетаются веером вверх, затем медленно падают
+  function harvest(el, crop){
+    const p = pointOf(el); if(!p) return;
+    const pal = CROP_PAL[crop] || CROP_PAL.default;
+    const cx = p.x, cy = p.y + p.h*0.12;
+
+    // 1) облако «пыли» из-под земли
+    if (window.FX && FX.burst) FX.burst(cx, cy+8, { n:14, speed:2.6, colors:['#8a7a5a','#a8966e','#6f6448'], size:[5,11], type:'dot', ring:false, g:-0.02, lift:0.6 });
+
+    // 2) зерно/лепестки — веером
+    const n = 26;
+    for (let i=0;i<n;i++){
+      const ang = -Math.PI/2 + (Math.random()-0.5)*2.4;
+      const spd = 3.2 + Math.random()*5.2;
+      const col = pal.main[(Math.random()*pal.main.length)|0];
+      const isLeaf = Math.random() < 0.34;
+      window.__spawnJuice && window.__spawnJuice({
+        x: cx + (Math.random()-0.5)*p.w*0.6,
+        y: cy + (Math.random()-0.5)*p.h*0.5,
+        vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd - 1.6,
+        g: 0.19, drag: 0.985, life: 46 + Math.random()*26,
+        r: isLeaf ? 5+Math.random()*4 : 2.4+Math.random()*2.4,
+        color: isLeaf ? pal.leaf : col,
+        type: isLeaf ? 'leaf' : 'seed',
+        rot: Math.random()*6.28, vr: (Math.random()-0.5)*0.34,
+      });
+    }
+    // 3) вспышка-кольцо и искры
+    if (window.FX && FX.burst) FX.burst(cx, cy, { n:10, speed:6, colors:pal.main.concat(['#fff6c8']), size:[2,3.6], type:'spark', ringSize:26, ringColor:'#ffe9a8', lift:1.2 });
+  }
+
+  // Сбор продукции загона/цеха
+  function collect(el, tint){
+    const p = pointOf(el); if(!p) return;
+    const cols = tint || ['#a8d47a','#d6e8a8','#f0f7d8'];
+    for (let i=0;i<18;i++){
+      const ang = -Math.PI/2 + (Math.random()-0.5)*2.0;
+      const spd = 2.6 + Math.random()*4;
+      window.__spawnJuice && window.__spawnJuice({
+        x: p.x+(Math.random()-0.5)*p.w*0.5, y: p.y+(Math.random()-0.5)*p.h*0.3,
+        vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd-1.4, g:0.17, drag:0.986,
+        life: 38+Math.random()*22, r: 2.2+Math.random()*2, color: cols[(Math.random()*cols.length)|0],
+        type:'seed', rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3,
+      });
+    }
+    if (window.FX && FX.burst) FX.burst(p.x, p.y, { n:8, speed:5, colors:cols, size:[2,3], type:'spark', ringSize:20, ringColor:'#d8f0b0' });
+  }
+
+  // «Тап» по карте/зданию — мягкая волна
+  function tap(el){
+    const p = pointOf(el); if(!p) return;
+    window.__spawnJuice && window.__spawnJuice({ x:p.x, y:p.y, vx:0, vy:0, g:0, life:20, maxLife:20, r:14, color:'#cbe6a8', type:'ring', w:2, rot:0 });
+  }
+
+  window.__spawnJuice = function(p){ try{ if (window.FX && FX._spawn) FX._spawn(p); }catch(e){} };
+  window.JUICE = { harvest, collect, tap, CROP_PAL };
+})();
 
 /* ---------------- MINI-GAME (бонус) ---------------- */
 function startMinigame({title, sub, zone=0.22, onDone}){
@@ -3258,7 +3418,7 @@ function tutFinish(){
   $$('.tut-glow').forEach(e=>e.classList.remove('tut-glow'));
   addCoins(150); S.gems += 2;
   openDialog(`<div style="text-align:center">
-    <div class="big-emoji">🎉</div><h2>Ты настоящий фермер!</h2>
+    <div class="big-emoji">${ic('medal','ic-xl')}</div><h2>Ты настоящий фермер!</h2>
     <p>Награда за обучение: <b>+150 монет и +2 самоцвета</b></p>
     <p class="muted">Дальше сама подскажу, когда понадобится</p>
     <button class="btn btn-primary btn-block" onclick="App.closeModal()">К работе!</button></div>`);
@@ -3364,7 +3524,7 @@ const App = {
   openGarage(){ sfx.click(); openGarage(); },
   buyMachine(id){
     const def = MACHINES[id];
-    if (S.coins < def.price){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+    if (S.coins < def.price){ toast('Не хватает монет', 'bad', 'coin'); sfx.nope(); return; }
     addCoins(-def.price); S.machines[id].owned = true; S.machines[id].cond = 100;
     toast(`${def.name} куплен!`, 'good', 'tractor'); sfx.good();
     setTimeout(()=>FX.confetti(document.querySelector('#modal-root .sheet')), 60);
@@ -3433,9 +3593,9 @@ const App = {
   },
   buyBuilding(id){
     const def = BUILDINGS[id];
-    if (S.coins < def.price){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
+    if (S.coins < def.price){ toast('Не хватает монет', 'bad', 'coin'); sfx.nope(); return; }
     addCoins(-def.price); S.buildings[id].owned = true; S.buildings[id].cycleEndsAt = Date.now()+durMs(def.time);
-    toast(`${def.name} построен!`, 'good', BLD_ICON[id]); sfx.good(); save(); renderAll();
+    toast(`${def.name} построен!`, 'good', BLD_ICON[id]); sfx.build(); buzz(50); save(); renderAll();
   },
   care(id, kind){ careBuilding(id, kind); },
   collectBuilding(id){ collectBuilding(id); },
@@ -3551,7 +3711,7 @@ function applySettings(){
 /* ---------------- VISUAL FX ENGINE ---------------- */
 const FX = (()=>{
   const cv = document.getElementById('fx-canvas');
-  if (!cv) return { burst(){}, coin(){}, confetti(){}, shake(){}, pop(){}, ambientUpdate(){}, point(){} };
+  if (!cv) return { burst(){}, coin(){}, confetti(){}, shake(){}, pop(){}, ambientUpdate(){}, point(){}, _spawn(){} };
   const ctx = cv.getContext('2d');
   let W = 0, H = 0, dpr = Math.min(window.devicePixelRatio||1, 2);
   let parts = [], running = false, raf = 0, lastT = 0;
@@ -3625,6 +3785,22 @@ const FX = (()=>{
         ctx.stroke();
         ctx.fillStyle = 'rgba(146,103,26,.5)';
         ctx.beginPath(); ctx.arc(0,0,p.r*0.42,0,Math.PI*2); ctx.fill();
+      } else if (p.type==='leaf'){
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.moveTo(0, -p.r);
+        ctx.quadraticCurveTo(p.r*0.95, -p.r*0.15, 0, p.r);
+        ctx.quadraticCurveTo(-p.r*0.95, -p.r*0.15, 0, -p.r);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = Math.max(0.6, p.r*0.12);
+        ctx.beginPath(); ctx.moveTo(0,-p.r*0.8); ctx.lineTo(0,p.r*0.8); ctx.stroke();
+      } else if (p.type==='seed'){
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.r*0.72, p.r*1.12, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,.35)';
+        ctx.beginPath(); ctx.ellipse(-p.r*0.2, -p.r*0.35, p.r*0.2, p.r*0.34, 0, 0, Math.PI*2); ctx.fill();
       } else if (p.type==='emoji'){
         ctx.font = p.r+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
         ctx.fillText(p.char, 0, 0);
@@ -3759,7 +3935,7 @@ const FX = (()=>{
 
   function ambientUpdate(){}
 
-  return { burst, coin, coinTarget, confetti, shake, pop, point, floatText, ambientUpdate,
+  return { burst, coin, _spawn: spawn, coinTarget, confetti, shake, pop, point, floatText, ambientUpdate,
     setWeather(r){ const a=document.getElementById('ambient'); if(a) a.classList.toggle('rainy', !!r); } };
 })();
 
@@ -4126,7 +4302,7 @@ function RET_touchStreak(){
     setTimeout(()=>{
       FX.confetti();
       openDialog(`<div style="text-align:center">
-        <div class="big-emoji">🔥</div>
+        <div class="big-emoji">${ic('bolt','ic-xl')}</div>
         <h2>${ms.text}</h2>
         <p class="muted">Стрик ${st.count} дней подряд</p>
         <p><b>+${fmt(ms.coins)} монет и +${ms.gems} ${gemWord(ms.gems)}</b></p>
@@ -4473,7 +4649,7 @@ function RET_renderPens(){
       <figure class="pen-art">${BUILDING_ART[id]||''}</figure>
       <div class="pen-head">
         <span class="pen-ic">${ic(BLD_ICON[id]||'barn')}</span>
-        <div><b>${d.name}</b><small>${ready?`${b.stored} ед. ${GOODS[d.good].name} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
+        <div><b>${d.name}</b><small>${ready?`${b.stored} ед. ${goodsAcc(d.good)} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
         <span class="pen-status ${mood.level}">${mood.label}</span>
       </div>
       <div class="pen-care">
@@ -4482,7 +4658,7 @@ function RET_renderPens(){
         <button class="${b.clean<40?'low':''}" onclick="App.cleanPen('${id}')">${ic('wrench')}<span>Чисто <b>${Math.round(b.clean)}%</b></span></button>
       </div>
       <div class="pen-mood">Настроение: <b>${mood.level==='good'?'отличное':mood.level==='warn'?'нормальное':'плохое'}</b> · Доход ×${mood.mult}</div>
-      ${ready ? `<button class="btn btn-gold btn-block btn-sm" style="margin-top:8px" onclick="App.collectPen('${id}')">${ic('box')} Забрать ${b.stored} ${GOODS[d.good].name}</button>` : ''}
+      ${ready ? `<button class="btn btn-gold btn-block btn-sm" style="margin-top:8px" onclick="App.collectPen('${id}')">${ic('box')} Забрать ${b.stored} ${goodsAcc(d.good)}</button>` : ''}
     </div>`;
   }
   return html;
@@ -4842,9 +5018,9 @@ function RET_penCare(id, kind){
 
 function RET_openFair(){
   const f = RET_fair();
-  if (!f){ openDialog(`<div style="text-align:center"><div class="big-emoji">🌤️</div><h2 style="justify-content:center">Сегодня без события</h2><p class="muted">Загляни завтра — на ярмарке бывают особые дни.</p><button class="btn btn-primary btn-block" onclick="App.closeModal()">Ок</button></div>`); return; }
+  if (!f){ openDialog(`<div style="text-align:center"><div class="big-emoji">${ic('sun','ic-xl')}</div><h2 style="justify-content:center">Сегодня без события</h2><p class="muted">Загляни завтра — на ярмарке бывают особые дни.</p><button class="btn btn-primary btn-block" onclick="App.closeModal()">Ок</button></div>`); return; }
   openDialog(`<div style="text-align:center">
-    <div class="big-emoji">🎪</div><h2 style="justify-content:center">${f.name}</h2>
+    <div class="big-emoji">${ic('gift','ic-xl')}</div><h2 style="justify-content:center">${f.name}</h2>
     <p class="muted">${f.desc}</p>
     <p class="muted-small">Событие действует до конца дня и меняет экономику фермы. Не пропусти!</p>
     <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично</button></div>`);
@@ -5194,7 +5370,7 @@ function LIV_stormSafe(){
   toast(`${ev.name} пережит без потерь!`, 'good', 'shield');
   sfx.good(); save(); renderAll();
   openDialog(`<div style="text-align:center">
-    <div class="big-emoji">🛡️</div><h2>Урожай спасён</h2>
+    <div class="big-emoji">${ic('shield','ic-xl')}</div><h2>Урожай спасён</h2>
     <p class="muted">Потрачено ${fmt(ev.safeCost)} монет, но всё осталось целым.</p>
     <button class="btn btn-primary btn-block" onclick="App.closeModal()">Хорошо</button></div>`);
 }
@@ -5208,7 +5384,7 @@ function LIV_stormRisk(){
     sfx.good(); FX.confetti();
     save(); renderAll();
     openDialog(`<div style="text-align:center">
-      <div class="big-emoji">🍀</div><h2>Повезло!</h2>
+      <div class="big-emoji">${ic('leaf','ic-xl')}</div><h2>Повезло!</h2>
       <p class="muted">${ev.name} прошёл мимо. Вы сохранили и деньги, и урожай.</p>
       <button class="btn btn-primary btn-block" onclick="App.closeModal()">Отлично</button></div>`);
   } else {
@@ -5228,7 +5404,7 @@ function LIV_stormRisk(){
     sfx.bad(); FX.shake();
     save(); renderAll();
     openDialog(`<div style="text-align:center">
-      <div class="big-emoji">😖</div><h2>${ev.name} ударил</h2>
+      <div class="big-emoji">${ic('cloud','ic-xl')}</div><h2>${ev.name} ударил</h2>
       <p class="muted">Потеряно ${fmt(lost)} ед. товара${fieldHit ? `, ${fieldHit} полей задержались` : ''}.</p>
       <button class="btn btn-primary btn-block" onclick="App.closeModal()">Переживём</button></div>`);
   }
@@ -5277,7 +5453,7 @@ function LIV_expCollect(){
   sfx.good(); FX.confetti(); buzz(50);
   save(); renderAll();
   openDialog(`<div style="text-align:center">
-    <div class="big-emoji">🧭</div><h2>Экспедиция вернулась</h2>
+    <div class="big-emoji">${ic('map','ic-xl')}</div><h2>Экспедиция вернулась</h2>
     <p class="muted">${def.name}</p>
     <p style="font-weight:800;color:#f0d68f">${gained.join('<br>')}</p>
     <button class="btn btn-primary btn-block" onclick="App.closeModal()">Забрать</button></div>`);
