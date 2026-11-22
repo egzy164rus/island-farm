@@ -1269,6 +1269,22 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   .farm-switch button{min-width:0;flex:1 1 0;padding:6px 1px;font-size:7.6px;gap:1px;letter-spacing:-.02em;}
   .farm-switch button .ic,.farm-switch button svg{width:13px;height:13px;}
 }
+/* совсем узкие экраны: подписи меньше, иконки компактнее — все 8 вкладок в строку */
+@media(max-width:380px){
+  .farm-switch{gap:1px;padding:2px;}
+  .farm-switch button{font-size:6.9px;padding:5px 0;gap:0;border-radius:8px;}
+  .farm-switch button .ic,.farm-switch button svg{width:12px;height:12px;}
+  .page-heading h2{font-size:19px;}
+  .contract-visual.npc{height:56px !important;padding:0 8px !important;}
+  .contract-visual.npc .npc-face{width:38px !important;height:38px !important;}
+  .npc-name-tag b{font-size:9.5px;}
+}
+/* 320px: иконки над подписью, текст мелкий, всё в строку */
+@media(max-width:340px){
+  .farm-switch{gap:0;padding:2px 1px;}
+  .farm-switch button{font-size:6.2px;padding:4px 0;letter-spacing:-.03em;line-height:1.05;}
+  .farm-switch button .ic,.farm-switch button svg{width:11px;height:11px;}
+}
 
 /* питомец в диалоге */
 .liv-pet-hero{text-align:center;padding:4px 0 8px;}
@@ -1792,15 +1808,36 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 @keyframes bulbGlow{0%,100%{opacity:.45;}50%{opacity:1;}}
 
 /* звёзды-искры в небе сцены */
-.xmas-sparkles{position:absolute;inset:0;pointer-events:none;z-index:1;}
-.xmas-sparkles i{position:absolute;border-radius:50%;background:#fff;
-  box-shadow:0 0 6px 1px rgba(190,225,255,.85);animation:sparkTwinkle ease-in-out infinite;}
+.xmas-sparkles{position:absolute;inset:0;pointer-events:none;z-index:1;
+  contain:strict;will-change:opacity;
+  background-image:
+    radial-gradient(circle 1.6px at 8% 12%, rgba(255,255,255,.95), transparent 100%),
+    radial-gradient(circle 1.2px at 22% 32%, rgba(255,255,255,.8), transparent 100%),
+    radial-gradient(circle 2px at 36% 8%, rgba(220,240,255,.9), transparent 100%),
+    radial-gradient(circle 1.4px at 48% 27%, rgba(255,255,255,.75), transparent 100%),
+    radial-gradient(circle 1.8px at 61% 15%, rgba(255,255,255,.9), transparent 100%),
+    radial-gradient(circle 1.2px at 74% 34%, rgba(220,240,255,.8), transparent 100%),
+    radial-gradient(circle 1.6px at 86% 11%, rgba(255,255,255,.85), transparent 100%),
+    radial-gradient(circle 1.3px at 94% 29%, rgba(255,255,255,.7), transparent 100%),
+    radial-gradient(circle 1.5px at 15% 48%, rgba(255,255,255,.6), transparent 100%),
+    radial-gradient(circle 1.1px at 42% 44%, rgba(220,240,255,.65), transparent 100%),
+    radial-gradient(circle 1.7px at 67% 50%, rgba(255,255,255,.6), transparent 100%),
+    radial-gradient(circle 1.2px at 88% 45%, rgba(255,255,255,.55), transparent 100%);
+  animation:sparkTwinkle 3.6s ease-in-out infinite;}
 @keyframes sparkTwinkle{0%,100%{opacity:.15;transform:scale(.7);}50%{opacity:.95;transform:scale(1.15);}}
 
 /* мягкие боке-огоньки */
-.xmas-bokeh{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;}
-.xmas-bokeh i{position:absolute;border-radius:50%;
-  animation:bokehDrift ease-in-out infinite alternate;}
+.xmas-bokeh{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+  contain:strict;will-change:transform;
+  background-image:
+    radial-gradient(circle 42px at 12% 22%, rgba(255,209,102,.13), transparent 70%),
+    radial-gradient(circle 34px at 27% 62%, rgba(255,138,91,.11), transparent 70%),
+    radial-gradient(circle 50px at 43% 30%, rgba(126,224,196,.10), transparent 70%),
+    radial-gradient(circle 30px at 58% 70%, rgba(138,182,255,.12), transparent 70%),
+    radial-gradient(circle 46px at 71% 18%, rgba(255,233,168,.11), transparent 70%),
+    radial-gradient(circle 36px at 84% 54%, rgba(255,209,102,.10), transparent 70%),
+    radial-gradient(circle 28px at 93% 30%, rgba(126,224,196,.12), transparent 70%);
+  animation:bokehDrift 12s ease-in-out infinite alternate;}
 @keyframes bokehDrift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(6px,-10px) scale(1.12);}}
 
 /* зимняя избушка-декор в углу */
@@ -1813,10 +1850,11 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
 .xmas-sky{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 90% 50% at 50% 0%,rgba(120,190,255,.14),rgba(0,0,0,0) 70%);}
 /* снегопад */
-.xmas-snow{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.xmas-snow{position:absolute;inset:0;pointer-events:none;overflow:hidden;
+  contain:strict;}
 .xmas-snow i{position:absolute;top:-10px;border-radius:50%;background:#fff;opacity:.75;
   animation:xmFall linear infinite;}
-@keyframes xmFall{0%{transform:translateY(-12px) translateX(0)}100%{transform:translateY(430px) translateX(18px)}}
+@keyframes xmFall{0%{transform:translate3d(0,-12px,0)}100%{transform:translate3d(18px,430px,0)}}
 .xmas-title{position:relative;z-index:2;text-align:center;}
 .xmas-title small{display:block;font-size:8.5px;letter-spacing:.16em;font-weight:800;color:#9ed0ff;
   text-shadow:0 1px 6px rgba(0,0,0,.8);}
@@ -1873,11 +1911,17 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   .xsnowman,.xsleigh{animation:none;}
 }
 .xmas-tree-wrap svg{width:220px;height:auto;
-  filter:drop-shadow(0 12px 20px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(120,190,255,.16));}
+  /* было два drop-shadow: каждый кадр пересчитывал размытие 220×~230 px —
+     заменили на одну дешёвую тень, свечение даёт отдельный статичный слой */
+  filter:drop-shadow(0 10px 12px rgba(0,0,0,.5));}
+.xmas-tree-wrap{position:relative;}
+.xmas-tree-wrap::after{content:'';position:absolute;left:50%;top:38%;width:190px;height:190px;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle,rgba(120,190,255,.22),rgba(120,190,255,0) 68%);}
 .xmas-count{position:relative;z-index:2;margin-top:auto;align-self:center;
   display:flex;align-items:baseline;gap:5px;margin-bottom:12px;
   background:rgba(8,18,30,.72);border:1px solid rgba(150,200,255,.28);border-radius:12px;
-  padding:6px 14px;backdrop-filter:blur(8px);
+  padding:6px 14px;
   box-shadow:0 4px 14px rgba(0,0,0,.4);}
 .xmas-count b{font-size:20px;font-weight:900;color:#ffd45e;}
 .xmas-count span{font-size:10px;font-weight:700;color:#b9d4ea;}
@@ -4109,6 +4153,15 @@ function PRE_rebirth(){
   const fresh = freshState(presetId, styleId);
   fresh.settings = settings;
   fresh.prestige = { ...pretMeta, count: pretMeta.count };
+  // «новый остров» — чистая экономика: ни монет, ни долга, ни самоцветов
+  // (иначе стартовый капитал пресета обнулял бы смысл перерождения)
+  fresh.coins = 0;
+  fresh.gems = 3;
+  fresh.debt = 0;
+  fresh.level = 1;
+  fresh.xp = 0;
+  fresh.rep = 10;
+  fresh.goods = {}; for (const g in GOODS) fresh.goods[g] = 0;
   fresh.stats.playMs = totalPlay;
   fresh.stats.byCrop = byCrop;
   fresh.stats.tutorialDone = true;
@@ -4641,30 +4694,14 @@ function XMAS_bulbsHTML(){
 }
 
 function XMAS_sparklesHTML(){
-  let html = '';
-  for (let i = 0; i < 16; i++){
-    const size = 1.4 + Math.random()*2.2;
-    const x = Math.random()*100, y = Math.random()*58;
-    const dur = 2.2 + Math.random()*2.6;
-    const delay = Math.random()*3;
-    html += `<i style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;animation-duration:${dur.toFixed(2)}s;animation-delay:${delay.toFixed(2)}s"></i>`;
-  }
-  return `<div class="xmas-sparkles" aria-hidden="true">${html}</div>`;
+  // 16 отдельных DOM-анимаций роняли FPS. Теперь одна градиентная текстура
+  // с мерцанием opacity — визуально те же звёзды, но 0 лишних слоёв.
+  return `<div class="xmas-sparkles" aria-hidden="true"></div>`;
 }
 
 function XMAS_bokehHTML(){
-  let html = '';
-  const cols = ['#ffd166','#ff8a5b','#7ee0c4','#8ab6ff','#ffe9a8'];
-  for (let i = 0; i < 12; i++){
-    const size = 26 + Math.random()*54;
-    const x = Math.random()*100, y = 8 + Math.random()*62;
-    const c = cols[i % cols.length];
-    const dur = 5 + Math.random()*5;
-    const delay = Math.random()*4;
-    const op = 0.08 + Math.random()*0.1;
-    html += `<i style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${size.toFixed(0)}px;height:${size.toFixed(0)}px;background:radial-gradient(circle,${c} 0%,transparent 70%);opacity:${op.toFixed(2)};animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s"></i>`;
-  }
-  return `<div class="xmas-bokeh" aria-hidden="true">${html}</div>`;
+  // 12 боке-огоньков заменены одним слоем с радиальными градиентами
+  return `<div class="xmas-bokeh" aria-hidden="true"></div>`;
 }
 
 function XMAS_cabinHTML(){
@@ -6299,6 +6336,8 @@ const FX = (()=>{
     if (reduce || document.hidden) return;
     // под открытым диалогом атмосферные капли/листья не рисуем — они мешают читать
     if (document.body.classList.contains('wallet-overlay')) return;
+    // на праздничной сцене уже есть снег, искры и боке — амбиент только жрёт кадры
+    if (typeof ui !== 'undefined' && ui && ui.farmView === 'xmas') return;
     if (ambSpawned > 46) return;
     const rainy = weather()==='rainy';
     if (rainy){
