@@ -571,7 +571,7 @@ body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;ba
 .overview-stat,.overview-action{min-width:0;}.overview-action span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .business-card-foot>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .land-info b,.land-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.page-heading>div{min-width:0;}.page-heading h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.page-heading>div{min-width:0;}.page-heading h2{overflow:visible;text-overflow:ellipsis;white-space:nowrap;}
 #screen{overscroll-behavior:contain;}
 @media(max-width:360px){
  #screen{padding-left:9px;padding-right:9px;}
@@ -5802,6 +5802,9 @@ function fieldTileHTML(f){
   const harvestFx=ui.fieldFx?.id===f.id&&ui.fieldFx.action==='harvest'&&Date.now()-ui.fieldFx.at<1200;
   return `<button class="field-tile ${f.state==='ready'&&!busy?'ready-glow':''} ${harvestFx?'field-harvest-pop':''}" data-tut="field-${f.id}" data-swipe-field="${f.id}" onclick="App.openField('${f.id}')" aria-label="${esc(f.name)} — ${stateLabel}">
     <span class="field-photo stage-${stage}">
+      ${(f.state==='growing' && !busy) ? `<span class="field-speedup" role="button" tabindex="0"
+          onclick="event.stopPropagation();App.speedField('${f.id}')"
+          title="Ускорить за самоцветы">${ic('bolt')}${Math.max(1,Math.ceil(((f.t1||0)-Date.now())/60000))}м</span>` : ''}
       <span class="photo-top"><span>${top}</span><i>${ic(actionIcon)}</i></span>
       <span class="photo-bottom"><b class="fname">${esc(f.name)}</b><small class="fstate">${stateLabel}</small>
         ${f.state==='growing'||busy?`<span class="photo-progress"><i data-pb="${f.id}" style="width:0%"></i></span>`:''}
@@ -5910,7 +5913,7 @@ function renderBusiness(){
         <figure class="business-art">${BUILDING_ART[id]||''}</figure>
         <div class="business-card-head"><span class="business-icon">${ic(BLD_ICON[id])}</span><div><b>${d.name}</b><small>${b.owned?`${b.stored} ед. готово`:`${fmt(d.price)} монет`}</small></div></div>
         ${b.owned?`<div class="care-strip">${care('feed',b.feed,'sack')}${care('water',b.water,'droplet')}${care('clean',b.clean,'wrench')}</div>
-          <div class="business-card-foot"><span>${b.stored>0?`Готово ×${b.stored}`:fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}</span>${b.stored>0?`<button class="mini-cta" onclick="App.collectBuilding('${id}')">Собрать</button>`:''}</div>`
+          <div class="business-card-foot"><span>${b.stored>0?`Готово ×${b.stored}`:fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}</span>${b.stored>0?`<button class="mini-cta" onclick="App.collectBuilding('${id}')">Собрать</button>`:`<button class="mini-cta speed" onclick="App.speedBuilding('${id}')" title="Ускорить за самоцветы">${ic('bolt')} Ускорить</button>`}</div>`
           :`<div class="business-desc">${d.desc}</div><button class="mini-cta full" onclick="App.buyBuilding('${id}')">Построить</button>`}
       </article>`;
     }
@@ -6920,9 +6923,65 @@ function PUR_open(){
     </div>`;
 }
 
+/* --- Контекстные премиум-предложения внутри игры --- */
+/* Ускорение за самоцветы: цена зависит от остатка времени */
+function PUR_gemCost(msLeft){
+  const min = Math.max(1, Math.ceil(msLeft/60000));
+  return Math.max(1, Math.ceil(min * 0.6));   // 1 самоцвет ≈ 100 сек
+}
+function PUR_speedUp(label, finishFn, getMsLeft){
+  const ms = Math.max(0, getMsLeft());
+  if (ms <= 0){ finishFn(); return; }
+  const cost = PUR_gemCost(ms);
+  const can = S.gems >= cost;
+  const mins = Math.ceil(ms/60000);
+  openDialog(`
+    <h2>${ic('bolt')} Ускорить</h2>
+    <p class="muted">${label} · осталось ${mins} ${NEXT_plural?NEXT_plural(mins,'минута','минуты','минут'):'мин'}</p>
+    <div class="speedup-box">
+      <div class="speedup-row">
+        <span class="speedup-ico">${ic('gem')}</span>
+        <div><b>Мгновенно за ${cost} ${NEXT_plural?NEXT_plural(cost,'самоцвет','самоцвета','самоцветов'):'самоцветов'}</b>
+        <small>У тебя ${S.gems}</small></div>
+      </div>
+      <button class="btn btn-gold btn-block" ${can?'':'disabled'} onclick="App.purSpeedNow(${cost},'${label.replace(/'/g,"\\'")}')">
+        ${can?`Ускорить · ${cost} ${ic('gem')}`:`Не хватает ${cost-S.gems} ${ic('gem')}`}
+      </button>
+      ${!can?`<button class="btn btn-ghost btn-block" onclick="App.openPremium()">Пополнить самоцветы</button>`:''}
+    </div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Подождать</button>
+  `);
+  ui._speedFinish = finishFn;
+}
+function PUR_speedNow(cost){
+  if (S.gems < cost){ toast('Не хватает самоцветов','bad','gem'); return; }
+  S.gems -= cost;
+  const fn = ui._speedFinish; ui._speedFinish = null;
+  closeModal();
+  if (typeof fn === 'function') fn();
+  toast('Ускорено!','good','bolt');
+  save(); renderAll();
+}
+
 Object.assign(App, {
   openPremium(){ sfx.click(); PUR_open(); },
   premBuy(id){ sfx.click(); PUR_storeBuy(id); },
+  purSpeedUp(label, finishFn, getMsLeft){ PUR_speedUp(label, finishFn, getMsLeft); },
+  purSpeedNow(cost){ PUR_speedNow(cost); },
+  speedField(id){
+    const f = fieldById(id); if (!f) return;
+    sfx.click();
+    PUR_speedUp(`Поле «${f.name}»`, ()=>{
+      f.state='ready'; f.t0=Date.now(); f.t1=Date.now(); save(); renderAll();
+    }, ()=> (f.t1||0) - Date.now());
+  },
+  speedBuilding(id){
+    const b = S.buildings[id]; if (!b) return;
+    sfx.click();
+    PUR_speedUp(`Постройка`, ()=>{
+      b.cycleEndsAt = Date.now(); save(); renderAll();
+    }, ()=> (b.cycleEndsAt||0) - Date.now());
+  },
 });
 window.PUR_open = PUR_open;
 
@@ -9652,6 +9711,112 @@ body.decor-aurora #app::before{
   100%{opacity:1;transform:translateX(2%) scaleY(1.06)}
 }
 @media (prefers-reduced-motion:reduce){ body.decor-aurora #app::before{animation:none;} }
+
+/* ============================================================
+   ПОЛИРОВКА ЭКРАНОВ · v68
+   ============================================================ */
+
+/* --- Заголовки страниц: контраст на фоне пейзажа --- */
+.page-heading{position:relative;z-index:2;}
+.page-heading h2{
+  color:#f7faf3 !important;
+  letter-spacing:-.02em;
+  text-shadow:0 2px 10px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.7);
+}
+.page-heading .kicker,.page-heading small{
+  color:#b9c8b8 !important;
+  text-shadow:0 1px 4px rgba(0,0,0,.6);
+}
+/* кнопка «Гараж» в шапке страницы */
+.page-heading .btn-ghost,.page-heading .icon-btn{
+  background:linear-gradient(180deg,rgba(38,52,43,.94),rgba(26,37,30,.94)) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#eaf0e4 !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+/* --- Сегментные переключатели (Животные / Цеха / Склад, районы поля) --- */
+.biz-tab,.district-tab,.land-tab{
+  color:#9dab9f !important;font-weight:700;
+  transition:color .16s,background .16s,box-shadow .16s;
+  border-radius:10px;
+}
+.biz-tab.active,.district-tab.active,.land-tab.active{
+  color:#fff8e8 !important;
+  background:linear-gradient(180deg,rgba(227,184,114,.26),rgba(227,184,114,.12)) !important;
+  box-shadow:inset 0 0 0 1px rgba(243,217,164,.40),0 2px 10px rgba(0,0,0,.26) !important;
+  font-weight:850;
+}
+/* контейнеры этих переключателей */
+.biz-tabs,.district-tabs,.land-tabs{
+  background:linear-gradient(180deg,rgba(25,36,29,.92),rgba(18,27,22,.94)) !important;
+  border:1px solid rgba(255,255,255,.09) !important;
+  box-shadow:0 4px 16px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+/* --- Карточки построек/животных: аккуратная рамка и цена-пилюля --- */
+.business-card,.barn-card,.animal-card{
+  position:relative;
+  border:1px solid rgba(255,255,255,.10) !important;
+  box-shadow:0 4px 16px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+.business-card .price,.barn-card .price{
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;
+}
+
+/* --- «Построить» / «Купить» — золотой акцент для доступных --- */
+.business-card:not(.locked) .btn-primary,
+.land-card .btn-primary{
+  background:linear-gradient(180deg,#426f53,#2d5040) !important;
+}
+
+/* --- Диалог ускорения --- */
+.speedup-box{
+  background:linear-gradient(180deg,rgba(227,184,114,.10),rgba(227,184,114,.035));
+  border:1px solid rgba(243,217,164,.30);
+  border-radius:14px;padding:12px;margin:12px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.speedup-row{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
+.speedup-ico{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(180deg,#f0d7a2,#c09456);color:#3a2a0c;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 10px rgba(160,110,40,.32);
+}
+.speedup-ico .ic{width:21px;height:21px;}
+.speedup-row b{display:block;font-size:13.5px;color:#fdf5e6;}
+.speedup-row small{font-size:11px;color:#a4b3a6;font-weight:650;}
+
+/* кнопка «ускорить» на карточке поля */
+.field-speedup{
+  position:absolute;top:8px;right:8px;z-index:3;
+  display:inline-flex;align-items:center;gap:3px;
+  padding:5px 8px;border-radius:9px;cursor:pointer;
+  font:850 10px/1 var(--font-ui,inherit);letter-spacing:.02em;
+  color:#2b1e07;background:linear-gradient(180deg,#f3d9a4,#c9a05a);
+  border:1px solid rgba(255,236,198,.5);
+  box-shadow:0 2px 8px rgba(170,120,50,.4),inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .12s,filter .16s;
+}
+.field-speedup .ic{width:11px;height:11px;color:#5d421a;}
+.field-speedup:active{transform:scale(.93);filter:brightness(.94);}
+/* «Ускорить» на карточке постройки */
+.mini-cta.speed{
+  background:linear-gradient(180deg,rgba(243,217,164,.22),rgba(201,160,90,.12)) !important;
+  border:1px solid rgba(243,217,164,.40) !important;
+  color:#ffeecb !important;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.mini-cta.speed .ic{width:12px;height:12px;color:var(--pr-gold-2);}
+
+/* --- Инфо-подписи внизу экранов --- */
+.screen-hint,.map-hint,.biz-hint{
+  color:#8fa094 !important;
+  background:rgba(0,0,0,.22);
+  border-radius:9px;padding:6px 10px;
+  backdrop-filter:blur(4px);
+}
+
 
 /* --- VIP в HUD --- */
 .chip.vip-chip{
