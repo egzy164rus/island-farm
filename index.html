@@ -8539,107 +8539,263 @@ function LIV_weekClaim(){
    ============================================================ */
 
 /* ---------- SVG ПИТОМЦА ---------- */
+const PET_CSS = `
+  .pt-tail{transform-box:view-box;transform-origin:97px 62px;animation:ptWag 1.6s ease-in-out infinite}
+  .pt-body{transform-box:view-box;transform-origin:70px 92px;animation:ptBreathe 3.6s ease-in-out infinite}
+  .pt-head{animation:ptBob 3.6s ease-in-out infinite}
+  .pt-ear .pt-earIn{transform-box:view-box;transform-origin:62px 26px;animation:ptEar 2.8s ease-in-out infinite}
+  .pt-tongue{transform-box:view-box;transform-origin:25px 48px;animation:ptPant 1.9s ease-in-out infinite}
+  .pt-eye{transform-box:view-box;animation:ptBlink 5s ease-in-out infinite}
+  .pt-eyeL{transform-origin:38px 32px}
+  .pt-eyeR{transform-origin:54px 30px;animation-delay:.04s}
+  @keyframes ptWag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}}
+  @keyframes ptBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.008,1.02)}}
+  @keyframes ptBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.1px)}}
+  @keyframes ptEar{0%,100%{transform:rotate(0)}50%{transform:rotate(2.2deg)}}
+  @keyframes ptPant{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.16)}}
+  @keyframes ptBlink{0%,91.5%,100%{transform:scaleY(1)}94%,96.5%{transform:scaleY(.06)}}
+  /* настроение: анимация отключается, поза задаётся статикой */
+  .liv-pet-svg .pt-eye.pt-lid{animation:none;transform:scaleY(var(--eye-lid,1))}
+  .liv-pet-svg .pt-ear.pt-droop{transform:rotate(var(--ear-droop,0deg))}
+  .liv-pet-svg .pt-ear.pt-droop .pt-earIn{animation:none}
+  /* спящий питомец */
+  .liv-pet.sleeping .liv-pet-svg .pt-eye{animation:none;transform:scaleY(.05)}
+  .liv-pet.sleeping .liv-pet-svg .pt-head{animation-duration:4.8s}
+  .liv-pet.sleeping .liv-pet-svg .pt-tail{animation-duration:3.4s;transform:rotate(-6deg)}
+  .liv-pet.sleeping .liv-pet-svg .pt-tongue{display:none}
+  @media (prefers-reduced-motion:reduce){
+    .liv-pet-svg *{animation:none!important}
+    .liv-pet.sleeping .liv-pet-svg .pt-eye{transform:scaleY(.05)}
+    .liv-pet-svg .pt-eye{transform:scaleY(var(--eye-lid,1))!important}
+  }
+`;
+
 let LIV_PET_UID = 0;
+const LIV_PET_SVG_BODY = `<defs>
+  <linearGradient id="{U}Body" x1="20%" y1="0%" x2="86%" y2="100%">
+    <stop offset="0%" stop-color="#fbe7c4"/><stop offset="30%" stop-color="#f0cb97"/>
+    <stop offset="62%" stop-color="#dca76c"/><stop offset="100%" stop-color="#a9713c"/>
+  </linearGradient>
+  <radialGradient id="{U}Head" cx="30%" cy="10%" r="98%">
+    <stop offset="0%" stop-color="#fffaea"/><stop offset="28%" stop-color="#f9d7a9"/>
+    <stop offset="62%" stop-color="#e6b47e"/><stop offset="100%" stop-color="#b58049"/>
+  </radialGradient>
+  <linearGradient id="{U}Ear" x1="14%" y1="0%" x2="40%" y2="100%">
+    <stop offset="0%" stop-color="#dfad73"/><stop offset="44%" stop-color="#a8763f"/><stop offset="100%" stop-color="#6b4321"/>
+  </linearGradient>
+  <linearGradient id="{U}EarB" x1="14%" y1="0%" x2="40%" y2="100%">
+    <stop offset="0%" stop-color="#c89459"/><stop offset="100%" stop-color="#5a3819"/>
+  </linearGradient>
+  <radialGradient id="{U}Hi"><stop offset="0%" stop-color="#fff" stop-opacity=".9"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}Shade"><stop offset="0%" stop-color="#8f6234" stop-opacity=".5"/><stop offset="100%" stop-color="#8f6234" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}Ground"><stop offset="0%" stop-color="#0d1c14" stop-opacity=".58"/><stop offset="100%" stop-color="#0d1c14" stop-opacity="0"/></radialGradient>
+  <linearGradient id="{U}Collar" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#4fba88"/><stop offset="45%" stop-color="#2f7d59"/><stop offset="100%" stop-color="#154a2c"/>
+  </linearGradient>
+  <linearGradient id="{U}Muzz" x1="10%" y1="0%" x2="80%" y2="100%">
+    <stop offset="0%" stop-color="#ffffff"/><stop offset="52%" stop-color="#fdf6ea"/><stop offset="100%" stop-color="#f0dfc6"/>
+  </linearGradient>
+  <radialGradient id="{U}Iris" cx="32%" cy="24%" r="80%">
+    <stop offset="0%" stop-color="#b07c44"/><stop offset="46%" stop-color="#744723"/><stop offset="100%" stop-color="#2c1908"/>
+  </radialGradient>
+  <linearGradient id="{U}Tag" x1="20%" y1="0%" x2="74%" y2="100%">
+    <stop offset="0%" stop-color="#ffe997"/><stop offset="50%" stop-color="#e5be58"/><stop offset="100%" stop-color="#a4791d"/>
+  </linearGradient>
+  <linearGradient id="{U}Nose" x1="24%" y1="8%" x2="76%" y2="96%">
+    <stop offset="0%" stop-color="#5b463a"/><stop offset="50%" stop-color="#38271c"/><stop offset="100%" stop-color="#150d06"/>
+  </linearGradient>
+  <radialGradient id="{U}Belly"><stop offset="0%" stop-color="#fff8ea" stop-opacity=".92"/><stop offset="58%" stop-color="#fff8ea" stop-opacity=".72"/><stop offset="100%" stop-color="#fff8ea" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}Bottom"><stop offset="0%" stop-color="#8f6234" stop-opacity=".42"/><stop offset="62%" stop-color="#8f6234" stop-opacity=".22"/><stop offset="100%" stop-color="#8f6234" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}Rump"><stop offset="0%" stop-color="#8f6234" stop-opacity=".3"/><stop offset="100%" stop-color="#8f6234" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}TopLight"><stop offset="0%" stop-color="#fff" stop-opacity=".28"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="{U}Ankle"><stop offset="0%" stop-color="#cf9f68" stop-opacity=".5"/><stop offset="100%" stop-color="#cf9f68" stop-opacity="0"/></radialGradient>
+  <clipPath id="{U}BodyClip">
+    <path d="M47.6 56 C45 64 44.2 74 44.6 82 C45 90 48.6 94.4 56 94.6 C64 94.8 73 93 82 93.4 C93 94 101.6 88.6 103 76.6 C104.4 64 99.4 53.4 89.4 48.6 C78.6 43.6 66.4 40.6 57.4 43 C50.6 44.8 48.6 50 47.6 56 Z"/>
+  </clipPath>
+  <clipPath id="{U}HeadClip"><ellipse cx="45" cy="36" rx="26" ry="23.5"/></clipPath>
+  <clipPath id="{U}MuzClip"><ellipse cx="30" cy="43.2" rx="15.4" ry="10.8"/></clipPath>
+</defs>
+
+<ellipse cx="67" cy="98.4" rx="41" ry="4.4" fill="url(#{U}Ground)"/>
+
+<!-- ===== ХВОСТ: единая форма с белым кончиком ===== -->
+<g class="pt-tail">
+  <path d="M95 57.6 C104 54.4 112.2 50.6 117 44.4 C119.4 41.4 122.4 43.2 121.4 47.4 C118.4 58 109 65.4 97 68.4 C93.8 69.2 92.4 65.4 95 57.6 Z" fill="url(#{U}Body)"/>
+  <path d="M116.8 44 C119 41.2 122.2 43.2 121.2 47.4 C120.2 51.4 118.4 55 116 58 C118.2 53.4 118.4 48.6 116.8 44 Z" fill="#fdf8ef"/>
+  <ellipse cx="116.6" cy="45.4" rx="3.4" ry="4.4" fill="#fffdf7" opacity=".85" transform="rotate(38 116.6 45.4)"/>
+  <ellipse cx="105" cy="60.6" rx="9" ry="3.2" fill="url(#{U}Rump)" opacity=".5" transform="rotate(-26 105 60.6)"/>
+</g>
+
+<!-- ===== КОРПУС ===== -->
+<g class="pt-body">
+  <!-- бедро (задняя нога) -->
+  <path d="M78.6 78.4 C86 75.4 94.4 78.2 97.4 84.4 C100 90 97.6 95.4 92.4 96.8 C86.8 98.2 81 95.8 79 91 C77.2 86.6 77 81.6 78.6 78.4 Z" fill="#b57f48"/>
+
+  <!-- дальняя передняя лапа -->
+  <path d="M58.4 72 C56.6 78 56 84 56.6 89 C57.2 93.6 60 96 63.6 95.4 C67.4 94.8 69 92 68.8 88 C68.6 83 67.4 77.4 66 72.6 Z" fill="#c9975f"/>
+
+  <!-- основной силуэт -->
+  <path d="M47.6 56 C45 64 44.2 74 44.6 82 C45 90 48.6 94.4 56 94.6 C64 94.8 73 93 82 93.4 C93 94 101.6 88.6 103 76.6 C104.4 64 99.4 53.4 89.4 48.6 C78.6 43.6 66.4 40.6 57.4 43 C50.6 44.8 48.6 50 47.6 56 Z" fill="url(#{U}Body)"/>
+
+  <g clip-path="url(#{U}BodyClip)">
+    <ellipse cx="73" cy="88" rx="30" ry="14" fill="url(#{U}Bottom)"/>
+    <ellipse cx="61" cy="83" rx="24" ry="12" fill="url(#{U}Belly)"/>
+    <ellipse cx="93" cy="76" rx="16" ry="18" fill="url(#{U}Rump)"/>
+    <ellipse cx="60" cy="47" rx="18" ry="11" fill="url(#{U}TopLight)"/>
+  </g>
+
+  <!-- линия бедра: мягкая дуга -->
+  <path d="M79.6 77.6 C78.4 70.4 82 63 89.4 60.6" stroke="#c99b62" stroke-width="3.2" fill="none" opacity=".3" stroke-linecap="round"/>
+  <path d="M86 82 C92 79 97 81 99 86" stroke="#a9713c" stroke-width="2.6" fill="none" opacity=".26" stroke-linecap="round"/>
+
+  <!-- ОШЕЙНИК -->
+  <path d="M38.6 53.4 C48 47.8 58 46.4 68 48.6" stroke="#123f27" stroke-width="7.6" fill="none" stroke-linecap="round" opacity=".38"/>
+  <path d="M38.6 52.8 C48 47.2 58 45.8 68 48" stroke="url(#{U}Collar)" stroke-width="6.2" fill="none" stroke-linecap="round"/>
+  <path d="M39 51.6 C48 46.4 57.6 45.2 67.4 47.2" stroke="#7ed7ab" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".5"/>
+  <path d="M39.4 55.8 C48.6 50.8 58 49.6 67.6 51.4" stroke="#0d3620" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".42"/>
+  <g transform="rotate(-9 42.6 52)">
+    <rect x="41.2" y="49" width="3.4" height="6.4" rx="1.1" fill="#d9d2bd"/>
+    <rect x="41.2" y="49" width="3.4" height="6.4" rx="1.1" fill="none" stroke="#8d8168" stroke-width=".45" opacity=".75"/>
+  </g>
+  <path d="M66.6 50.6 v1.4" stroke="#a8862e" stroke-width="1" opacity=".8"/>
+  <circle cx="67" cy="55.2" r="3.5" fill="url(#{U}Tag)"/>
+  <circle cx="67" cy="55.2" r="3.5" fill="none" stroke="#8a6614" stroke-width=".5" opacity=".6"/>
+  <ellipse cx="65.7" cy="53.8" rx="1.5" ry="1" fill="#fffdf0" opacity=".85"/>
+
+  <!-- ближняя передняя лапа -->
+  <path d="M47.2 66.4 C44.6 73 43.2 80.4 43.4 86.6 C43.6 91.4 45.6 94.6 49.4 95.2 C53.4 95.8 56.6 93.8 57.4 89.6 C58.4 84.4 57.4 77.4 55.6 70.6 C54 67.4 52 65.6 50 65.6 C48.6 65.6 47.8 65.8 47.2 66.4 Z" fill="#f2cb9f"/>
+  <ellipse cx="50.4" cy="77" rx="7" ry="11" fill="url(#{U}TopLight)"/>
+  <!-- пальцы: борозды внутри лапы + лёгкая тень у основания -->
+  <ellipse cx="50.4" cy="92.4" rx="5.2" ry="1.9" fill="#e2b585" opacity=".38"/>
+  <path d="M48.4 90.4 C48 92.8 48.2 94.8 49 95.4" stroke="#d3a26c" stroke-width="1.05" fill="none" opacity=".55" stroke-linecap="round"/>
+  <path d="M52.6 90.6 C52.3 93 52.5 94.9 53.3 95.5" stroke="#d3a26c" stroke-width="1.05" fill="none" opacity=".55" stroke-linecap="round"/>
+</g>
+
+<!-- ===== ГОЛОВА ===== -->
+<g class="pt-head">
+  <!-- череп -->
+  <ellipse cx="45" cy="36" rx="26" ry="23.5" fill="url(#{U}Head)"/>
+  <g clip-path="url(#{U}HeadClip)">
+    <ellipse cx="58" cy="45" rx="17" ry="19" fill="url(#{U}Rump)"/>
+    <ellipse cx="38" cy="20" rx="15" ry="9" fill="url(#{U}TopLight)"/>
+    <ellipse cx="45" cy="58" rx="19" ry="8" fill="url(#{U}Bottom)"/>
+  </g>
+
+  <!-- морда -->
+  <ellipse cx="30" cy="43.2" rx="15.4" ry="10.8" fill="url(#{U}Muzz)"/>
+  <g clip-path="url(#{U}MuzClip)">
+    <ellipse cx="31" cy="52" rx="16" ry="7" fill="url(#{U}Bottom)"/>
+    <ellipse cx="22" cy="36" rx="9" ry="6" fill="url(#{U}TopLight)"/>
+  </g>
+
+  <!-- нос -->
+  <ellipse cx="23.2" cy="38.4" rx="5.6" ry="4.4" fill="url(#{U}Nose)"/>
+  <ellipse cx="21.4" cy="39.3" rx="1.4" ry="1.65" fill="#0c0703" transform="rotate(-11 21.4 39.3)"/>
+  <ellipse cx="25.1" cy="39" rx="1.2" ry="1.45" fill="#0c0703" transform="rotate(9 25.1 39)"/>
+  <ellipse cx="21.6" cy="36.6" rx="2" ry="1.25" fill="#fff" opacity=".75"/>
+  <ellipse cx="26.4" cy="37" rx=".95" ry=".55" fill="#fff" opacity=".3"/>
+  <path d="M23.2 42.8 v2.2" stroke="#4d3728" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+
+  <!-- рот -->
+  $MOUTH
+  $TONGUE
+
+  <!-- усы -->
+  <g stroke="#8a7360" fill="none" opacity=".32" stroke-linecap="round">
+    <path d="M26.8 42 q-5.6 -.2 -10.4 1.2" stroke-width=".6"/>
+    <path d="M27.2 44 q-5.4 1 -9.6 3.2" stroke-width=".55"/>
+    <path d="M27.4 46 q-4.6 1.8 -8 4.6" stroke-width=".5"/>
+  </g>
+
+  <!-- глаза -->
+  <g class="pt-eye pt-eyeL">
+    <ellipse cx="38" cy="32" rx="6.8" ry="7.6" fill="#1d1108"/>
+    <ellipse cx="37.8" cy="34.2" rx="4.8" ry="4.6" fill="url(#{U}Iris)"/>
+    <ellipse cx="37.8" cy="33.8" rx="2.3" ry="2.5" fill="#110a04"/>
+    <circle cx="35.5" cy="29" r="2.6" fill="#fff"/>
+    <circle cx="40.6" cy="35.6" r="1.05" fill="#fff" opacity=".85"/>
+    <ellipse cx="38" cy="27" rx="6" ry="2.4" fill="url(#{U}Rump)" opacity=".75"/>
+  </g>
+  <g class="pt-eye pt-eyeR">
+    <ellipse cx="54" cy="30" rx="6.4" ry="7.1" fill="#1d1108"/>
+    <ellipse cx="53.8" cy="32.2" rx="4.4" ry="4.2" fill="url(#{U}Iris)"/>
+    <ellipse cx="53.8" cy="31.8" rx="2.1" ry="2.3" fill="#110a04"/>
+    <circle cx="51.8" cy="27.2" r="2.4" fill="#fff"/>
+    <circle cx="56.4" cy="33.4" r=".95" fill="#fff" opacity=".85"/>
+    <ellipse cx="54" cy="25.2" rx="5.6" ry="2.2" fill="url(#{U}Rump)" opacity=".7"/>
+  </g>
+
+  <!-- надбровные дуги -->
+  <ellipse cx="37.4" cy="23" rx="8.6" ry="2.8" fill="url(#{U}Rump)" opacity=".8" transform="rotate(-9 37.4 23)"/>
+  <ellipse cx="54.6" cy="21.2" rx="8" ry="2.6" fill="url(#{U}Rump)" opacity=".75" transform="rotate(7 54.6 21.2)"/>
+
+  <!-- ближнее ухо (поверх головы, свисает вдоль щеки) -->
+  <g class="pt-ear">
+   <g class="pt-earIn">
+    <path d="M61.6 24.4 C68.4 25.6 72.6 32.4 72.2 40.6 C71.8 48 68.4 52.4 63.8 51.6 C59.4 50.8 57.4 45 57.6 38 C57.8 31.8 59.2 26.4 61.6 24.4 Z" fill="url(#{U}Ear)"/>
+    <path d="M64 30.6 C67.6 32.6 68.8 37.6 68 42.6 C67.4 46.6 65.6 48.6 63.4 48 C61 47.4 60.4 43.4 60.8 38.6 C61.2 34.6 62.2 31.4 64 30.6 Z" fill="#7c5128" opacity=".5"/>
+    <path d="M62.4 27 q3.4 2.4 3.4 8.4" stroke="#6b4321" stroke-width="1.5" fill="none" opacity=".3" stroke-linecap="round"/>
+   </g>
+  </g>
+  $EXTRA
+</g>`;
 function LIV_petSVG(){
   const stage = LIV_petStage().lvl;
   const mood = LIV_petMood().key;
   const si = Math.min(4, Math.max(0, stage - 1));
-  const u = 'pt' + (++LIV_PET_UID);
-  /* палитры по стадиям: щенок → легенда */
+  const u = 'px' + (++LIV_PET_UID) + '_';
+  /* окрасы по стадиям: щенок → легенда */
   const P = [
-    {a:'#fdeacb',b:'#f0cb9b',c:'#c99a63',h1:'#fff6e3',h2:'#f6d0a0',h3:'#cd9a63',e1:'#dda95f',e2:'#94683c',mz:'#fffcf5',p1:'#f5d0a2',p2:'#e0b483'},
-    {a:'#f9dfb0',b:'#e5b47a',c:'#b07a44',h1:'#ffeecb',h2:'#f0c188',h3:'#bd8750',e1:'#cb9559',e2:'#7a5129',mz:'#fffaf0',p1:'#efc08a',p2:'#dbaa72'},
-    {a:'#f4d09b',b:'#d99f62',c:'#a26d38',h1:'#fde5bb',h2:'#e5ad73',h3:'#aa7342',e1:'#c08748',e2:'#6d4720',mz:'#fdf5e6',p1:'#e5ad76',p2:'#cb955f'},
-    {a:'#e2b278',b:'#bf8348',c:'#8a592c',h1:'#f7d7a2',h2:'#cf9559',h3:'#925e2e',e1:'#a87239',e2:'#5c3b18',mz:'#fcf1dc',p1:'#cd9c65',p2:'#b2804b'},
-    {a:'#cb945a',b:'#9e6533',c:'#6b421c',h1:'#eac088',h2:'#ad7542',h3:'#71451d',e1:'#8b5b29',e2:'#482b11',mz:'#f8ebd2',p1:'#ad7945',p2:'#8d5d2f'}
+    {body:['#fdf1d8','#f6d9ac','#e8bd85','#c08a50'], head:['#fffcf2','#fce0b8','#eec08a','#c08a50'], ear:['#e8bb84','#b8865a','#7d5530'], muzz:'#ffffff',
+     collar:['#5cc796','#369366','#1a5535'], tag:'#ffe9a0'},
+    {body:['#fbe7c4','#f0cb97','#dca76c','#a9713c'], head:['#fffaea','#f9d7a9','#e6b47e','#b58049'], ear:['#dfad73','#a8763f','#6b4321'], muzz:'#fffdf6',
+     collar:['#4fba88','#2f7d59','#154a2c'], tag:'#e5be58'},
+    {body:['#f6dcb2','#e6bd83','#cd9459','#96632f'], head:['#fff7e2','#f4ce9b','#d9a26a','#a06c38'], ear:['#d29d61','#96662f','#5e3c1c'], muzz:'#fdf7ea',
+     collar:['#45ad7d','#2a7452','#124528'], tag:'#dfb44f'},
+    {body:['#e8c294','#d19f62','#b07a44','#7d4d24'], head:['#fbe9cc','#e8bf8c','#c08c54','#8a5c2c'], ear:['#bf8748','#825329','#4d2f14'], muzz:'#fbf2e0',
+     collar:['#dd5b42','#a83420','#6b1d0f'], tag:'#f5d97a'},
+    {body:['#d8ac7c','#bd8a4f','#8f6234','#5e3a18'], head:['#f4dfba','#d9ab77','#a4713c','#744a20'], ear:['#a87539','#6b4320','#3d250f'], muzz:'#f8edd8',
+     collar:['#e06848','#b03a22','#75200e'], tag:'#f7dd85'}
   ][si];
-  const collarOn = stage >= 4;
-  const cg1 = collarOn ? '#dd5b42' : '#3f9d73';
-  const cg2 = collarOn ? '#a83420' : '#2a7252';
-  const cg3 = collarOn ? '#f28066' : '#63c294';
-  const tagC = collarOn ? '#f5d97a' : '#e8c25c';
-  const sc = [0.84, 0.9, 0.95, 1, 1.04][si];
-  const droop = mood === 'bad' ? 9 : mood === 'sad' ? 6 : 0;
-  const lid = mood === 'bad' ? 0.6 : mood === 'sad' ? 0.72 : mood === 'ok' ? 0.86 : 1;
-  const eyeHL = mood === 'happy' ? 1 : 0.8;
-  return `<svg viewBox="0 0 128 104" aria-hidden="true">
-    <defs>
-      <linearGradient id="${u}b" x1="18%" y1="8%" x2="82%" y2="96%">
-        <stop offset="0%" stop-color="${P.a}"/><stop offset="52%" stop-color="${P.b}"/><stop offset="100%" stop-color="${P.c}"/>
-      </linearGradient>
-      <radialGradient id="${u}h" cx="38%" cy="18%" r="88%">
-        <stop offset="0%" stop-color="${P.h1}"/><stop offset="46%" stop-color="${P.h2}"/><stop offset="100%" stop-color="${P.h3}"/>
-      </radialGradient>
-      <linearGradient id="${u}e" x1="0" y1="0" x2=".2" y2="1">
-        <stop offset="0%" stop-color="${P.e1}"/><stop offset="100%" stop-color="${P.e2}"/>
-      </linearGradient>
-      <radialGradient id="${u}s"><stop offset="0%" stop-color="#fff" stop-opacity=".8"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></radialGradient>
-      <linearGradient id="${u}c" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${cg1}"/><stop offset="100%" stop-color="${cg2}"/></linearGradient>
-    </defs>
-    <g transform="translate(64 100) scale(${sc}) translate(-64 -100)">
-    <ellipse cx="66" cy="97.5" rx="39" ry="5" fill="#000" opacity=".26"/>
-    <path d="M97 61 q17 4 19 -12" stroke="${P.c}" stroke-width="9.5" fill="none" stroke-linecap="round"/>
-    <path d="M97 61 q17 4 19 -12" stroke="${P.b}" stroke-width="5.6" fill="none" stroke-linecap="round" opacity=".85"/>
-    <ellipse cx="85" cy="87" rx="9.5" ry="7" fill="${P.c}"/>
-    <ellipse cx="58" cy="88" rx="9.5" ry="7" fill="${P.p2}"/>
-    <ellipse cx="68" cy="63" rx="32" ry="25" fill="url(#${u}b)"/>
-    <ellipse cx="68" cy="77" rx="21" ry="12" fill="${P.c}" opacity=".22"/>
-    <ellipse cx="61" cy="75" rx="19" ry="11" fill="${P.h1}" opacity=".72"/>
-    <ellipse cx="55" cy="47" rx="16" ry="7.5" fill="url(#${u}s)" opacity=".55"/>
-    <path d="M40 52 q14 -7 27 -1" stroke="url(#${u}c)" stroke-width="6.6" fill="none" stroke-linecap="round"/>
-    <path d="M40 51.2 q14 -6.6 27 -1" stroke="${cg3}" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".7"/>
-    <circle cx="66.2" cy="53.4" r="3.1" fill="${tagC}"/>
-    <circle cx="65.3" cy="52.4" r="1.2" fill="#fffaf0" opacity=".75"/>
-    <g transform="rotate(${-droop} 35 20)">
-      <path d="M32 26 q-12 6 -13 22 q-1 14 8 17 q9 1 11 -9 q2 -13 0 -27 z" fill="url(#${u}e)"/>
-      <path d="M34.6 33 q-7.6 6.4 -8 17 q-.4 8.4 3.4 10.6" stroke="#4a3018" stroke-width="2.2" fill="none" opacity=".25"/>
-    </g>
-    <g transform="rotate(${droop} 55 20)">
-      <path d="M54 17 q-8 10 -4.5 28 q2 12 10 7.6 q6.4 -4.4 5 -16 q-1.6 -14 -8 -19.6 z" fill="url(#${u}e)"/>
-      <path d="M56 25 q-4.4 8.6 -2.2 19.6" stroke="#4a3018" stroke-width="2.2" fill="none" opacity=".22"/>
-    </g>
-    <ellipse cx="45" cy="36" rx="26" ry="23.5" fill="url(#${u}h)"/>
-    <ellipse cx="58" cy="41" rx="13" ry="16" fill="${P.h3}" opacity=".17"/>
-    <ellipse cx="40" cy="22" rx="11" ry="5" fill="url(#${u}s)" opacity=".62"/>
-    <ellipse cx="30" cy="43.4" rx="15.6" ry="11" fill="${P.mz}"/>
-    <ellipse cx="20.4" cy="38.2" rx="5.5" ry="4.3" fill="#33241a"/>
-    <ellipse cx="18.9" cy="36.7" rx="2.05" ry="1.35" fill="#fff" opacity=".62"/>
-    <path d="M20.4 42.4 v2.4" stroke="#5b4230" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    ${mood==='sad'||mood==='bad'
-      ? `<path d="M19 48.6 q2.6 -3 ${mood==='bad'?5.6:4.8} 0" stroke="#5b4230" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
-      : `<path d="M20.4 44.8 q-1.6 3 -4 3" stroke="#5b4230" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-         <path d="M20.4 44.8 q1.6 3 4 3" stroke="#5b4230" stroke-width="1.7" fill="none" stroke-linecap="round"/>`}
-    ${mood==='happy'
-      ? `<path d="M21.4 47.6 q2.9 1.5 5 -.8 q.9 3.3 -1.5 4.4 q-2.3 .9 -3.5 -3.6 z" fill="#f2939c"/>
-         <path d="M22.8 49.6 q2 .5 3 -.5" stroke="#cf6874" stroke-width=".8" fill="none"/>`
-      : ''}
-    ${mood==='bad' ? `<path d="M36.6 40.6 q1.6 3.4 -.4 4.6 q-2 1.2 -2.6 -1.2 q-.5 -2.2 3 -3.4 z" fill="#7fb8e0" opacity=".92"/>` : ''}
-    <g transform="translate(0 31.5) scale(1 ${lid}) translate(0 -31.5)">
-      <ellipse cx="37" cy="31.5" rx="7" ry="7.8" fill="#1d1108"/>
-      <ellipse cx="36.8" cy="33.6" rx="4.7" ry="4.5" fill="#6d421c"/>
-      <circle cx="34.4" cy="28.4" r="${(2.7*eyeHL).toFixed(2)}" fill="#fff"/>
-      <circle cx="39.8" cy="35.2" r="${(1.15*eyeHL).toFixed(2)}" fill="#fff" opacity=".8"/>
-    </g>
-    <g transform="translate(0 29.6) scale(1 ${lid}) translate(0 -29.6)">
-      <ellipse cx="55" cy="29.6" rx="6.6" ry="7.3" fill="#1d1108"/>
-      <ellipse cx="54.8" cy="31.6" rx="4.3" ry="4.1" fill="#6d421c"/>
-      <circle cx="52.7" cy="26.7" r="${(2.5*eyeHL).toFixed(2)}" fill="#fff"/>
-      <circle cx="57.6" cy="33" r="${(1.05*eyeHL).toFixed(2)}" fill="#fff" opacity=".8"/>
-    </g>
-    ${mood==='sad'||mood==='bad'
-      ? `<path d="M31 25.2 q6 -1.4 11.2 -3.6" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".55"/>
-         <path d="M49.4 21.6 q6 -2.2 11.2 1.2" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".55"/>`
-      : `<path d="M30.4 23.6 q6 -3.2 11.4 -1" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".62"/>
-         <path d="M49.6 21.6 q6 -2.6 11.2 1.4" stroke="${P.e2}" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".62"/>`}
-    <path d="M46.6 75.4 q-2.6 8.6 -1.6 14.4 q1.4 6.6 10 6.2 q8 -.4 7.6 -7.4 q-.6 -7.4 -2 -13.2 z" fill="${P.p1}"/>
-    <path d="M47.6 87.6 q4.6 2.8 13 2.2" stroke="${P.c}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".45"/>
-    <path d="M68.4 75.6 q-1.4 8.6 -.4 14.2 q1.4 6.6 9.6 6 q7.6 -.6 7.4 -7.4 q-.4 -7 -1.8 -12.8 z" fill="${P.p2}"/>
-    <path d="M70.4 86.8 q4.6 2.8 12 2" stroke="${P.c}" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".45"/>
-    <ellipse cx="53" cy="92.8" rx="2.4" ry="1.6" fill="${P.b}" opacity=".6"/>
-    <ellipse cx="74.6" cy="92" rx="2.4" ry="1.6" fill="${P.c}" opacity=".6"/>
-    </g>
+  const sc = [0.85, 0.91, 0.96, 1, 1.035][si];
+  const droop = mood === 'bad' ? 8 : mood === 'sad' ? 5.5 : 0;
+  const lid = mood === 'bad' ? 0.62 : mood === 'sad' ? 0.74 : mood === 'ok' ? 0.87 : 1;
+  const hi = mood === 'happy' ? 1 : 0.78;
+
+  const MOUTH = (mood === 'sad' || mood === 'bad')
+    ? `<path d="M19.6 49.8 q3.6 -3.6 7.2 0" stroke="#4d3728" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
+    : `<path d="M23.2 45 q-1.7 3.2 -4.2 3.2" stroke="#4d3728" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+       <path d="M23.2 45 q1.7 3.2 4.2 3.2" stroke="#4d3728" stroke-width="1.7" fill="none" stroke-linecap="round"/>`;
+  const TONGUE = mood === 'happy'
+    ? `<g class="pt-tongue"><path d="M24.4 47.8 q3 1.6 5.2 -.9 q.9 3.5 -1.6 4.7 q-2.5 .9 -3.6 -3.8 z" fill="#ef9099"/>
+       <path d="M28.4 51 q-1.4 .6 -2.8 .2" stroke="#c96470" stroke-width=".8" fill="none" opacity=".8"/></g>`
+    : '';
+  const EXTRA = mood === 'bad'
+    ? `<path d="M41.6 40.6 q1.8 3.6 -.4 5 q-2.2 1.3 -2.8 -1.3 q-.5 -2.4 3.2 -3.7 z" fill="#8fc4e8" opacity=".92"/>`
+    : '';
+  const B = LIV_PET_SVG_BODY
+    .replace(/\{U\}/g, u)
+    .replace(/class="pt-eye pt-eyeL"/g, 'class="pt-eye pt-eyeL' + (lid !== 1 ? ' pt-lid' : '') + '"')
+    .replace(/class="pt-eye pt-eyeR"/g, 'class="pt-eye pt-eyeR' + (lid !== 1 ? ' pt-lid' : '') + '"')
+    .replace(/class="pt-ear"/g, 'class="pt-ear' + (droop ? ' pt-droop' : '') + '"')
+    .replace(/\$MOUTH/g, MOUTH)
+    .replace(/\$TONGUE/g, TONGUE)
+    .replace(/\$EXTRA/g, EXTRA)
+    .replace(/url\(#u?Body\)/g, `url(#${u}Body)`)
+    .replace(/#fbe7c4/g, P.body[0]).replace(/#f0cb97/g, P.body[1])
+    .replace(/#dca76c/g, P.body[2]).replace(/#a9713c/g, P.body[3])
+    .replace(/#fffaea/g, P.head[0]).replace(/#f9d7a9/g, P.head[1])
+    .replace(/#e6b47e/g, P.head[2]).replace(/#b58049/g, P.head[3])
+    .replace(/#dfad73/g, P.ear[0]).replace(/#a8763f/g, P.ear[1]).replace(/#6b4321/g, P.ear[2])
+    .replace(/#4fba88/g, P.collar[0]).replace(/#2f7d59/g, P.collar[1]).replace(/#154a2c/g, P.collar[2])
+    .replace(/#e5be58/g, P.tag);
+  return `<svg viewBox="0 0 128 104" aria-hidden="true" class="liv-pet-svg">
+    <style>${PET_CSS}</style>
+    <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
+      (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
   </svg>`;
 }
+
 
 /* ---------- ПИТОМЕЦ В HUD (на главной) ---------- */
 function LIV_renderPetBadge(){
