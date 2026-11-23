@@ -6304,8 +6304,11 @@ function openForeman(){
       </div>
       <div class="fm-energy-bar"><i style="width:${Math.round(FM_energy())}%"></i></div>
       <div class="fm-energy-foot">
-        <span>−${(FM_task_cost('harvest')*FM_costMul()).toFixed(1).replace('.0','')} за уборку · −${(FM_task_cost('sow')*FM_costMul()).toFixed(1).replace('.0','')} за посев${FM_costMul()<1?' · скидка '+Math.round((1-FM_costMul())*100)+'%':''}</span>
-        <button class="fm-energy-btn" onclick="App.fmRest()" ${FM_energy()>=100?'disabled':''}>${ic('gem')} Отдых · ${FM_ENERGY_PRICE}</button>
+        <span class="fm-cost">${ic('bolt')} −${(FM_task_cost('harvest')*FM_costMul()).toFixed(1).replace('.0','')} уборка${FM_costMul()<1?`<i>−${Math.round((1-FM_costMul())*100)}%</i>`:''}</span>
+        <span class="fm-energy-btns">
+          ${(S.pur&&S.pur.energy>0)?`<button class="fm-energy-btn zen" onclick="App.fmUseEnergy()">${ic('bolt')} Выпить · ${S.pur.energy}</button>`:''}
+          <button class="fm-energy-btn" onclick="App.fmRest()" ${FM_energy()>=100?'disabled':''}>${ic('gem')} Отдых · ${FM_ENERGY_PRICE}</button>
+        </span>
       </div>
     </div>
     <div class="fm-switch-row">
@@ -6324,6 +6327,7 @@ function openForeman(){
       <div class="fm-how"><span>${ic('clock')}</span><small>Энергия восстанавливается сама: +10% за реальную минуту. Ночью или в отпуске — полная.</small></div>
       <div class="fm-how"><span>${ic('gem')}</span><small>Ниже 30% бригадир устаёт и замедляется. На 0% уходит спать до 40%.</small></div>
       <div class="fm-how"><span>${ic('star')}</span><small>Выше разряд — ниже расход: Мастер и Прораб работают дольше без отдыха.</small></div>
+      <div class="fm-how"><span>${ic('gem')}</span><small>Энергетик из Премиума: мгновенно 100% энергии в любой момент, когда нужен бригадир.</small></div>
     </div>
     <div class="fm-perks-title">Умения по разрядам</div>
     <div class="fm-perks">${perks}</div>
@@ -6870,6 +6874,16 @@ const App = {
   openGarage(){ sfx.click(); openGarage(); },
   openForeman(){ sfx.click(); openForeman(); },
   fmRest(){ sfx.click(); FM_restNow(); },
+  fmUseEnergy(){
+    const p = (typeof PUR_init==='function') ? PUR_init() : null;
+    if (!p || !p.energy){ toast('Нет энергетика — купи в Премиуме','bad','bolt'); sfx.bad(); return; }
+    if (FM_energy() >= 100){ toast('Бригадир и так полон сил','', 'hand'); return; }
+    p.energy -= 1;
+    S.foreman.energy = 100; S.foreman.resting = false;
+    toast('Энергетик выпит — бригадир в строю!','good','bolt'); sfx.good(); buzz(40);
+    save(); openForeman(); renderAll();
+  },
+  fmBuyEnergy(){ sfx.click(); PUR_open(); },
   fmUpgrade(){
     const cost = FM_upgradeCost();
     if (!cost || S.coins < cost){ toast('Не хватает монет на повышение','bad','coin'); sfx.bad(); return; }
@@ -7042,6 +7056,8 @@ const PUR_ITEMS = [
     desc:'20 премиальных удобрений (+60% урожая)', grant:'fert', qty:20 },
   { id:'pack_repair',kind:'pack', sku:'pack_repair_x3', price:179, name:'Ремкомплект ×3', icon:'wrench',
     desc:'3 полных ремонта любой техники', grant:'repair', qty:3 },
+  { id:'pack_energy',kind:'pack', sku:'pack_energy_x5', price:119, name:'Энергетик ×5',  icon:'bolt',
+    desc:'5 порций: бригадир мгновенно полон сил', grant:'energy', qty:5, badge:'Новое' },
 
   { id:'decor_gold', kind:'decor', sku:'decor_golden_field', price:349, name:'Золотые поля', icon:'star',
     desc:'Золотая текстура полей + свечение полос' },
@@ -7054,6 +7070,7 @@ const PUR_ITEMS = [
 /* --- Состояние игрока (живёт в S.pur) --- */
 function PUR_init(){
   if (!S.pur) S.pur = { owned:[], vipUntil:0, boost:0, fert:0, repair:0, decor:[], noads:false, spent:0 };
+  if (typeof S.pur.energy !== 'number') S.pur.energy = 0;
   if (!Array.isArray(S.pur.owned)) S.pur.owned = [];
   if (!Array.isArray(S.pur.decor)) S.pur.decor = [];
   return S.pur;
@@ -7092,6 +7109,7 @@ function PUR_grant(item){
     if (item.grant==='fert')   p.fert   += (item.qty||1);
     if (item.grant==='repair') p.repair += (item.qty||1);
     if (item.grant==='boost')  p.boost  += (item.qty||1);
+    if (item.grant==='energy') p.energy = (p.energy||0) + (item.qty||1);
   }
   if (item.kind==='decor' && !p.decor.includes(item.id)) p.decor.push(item.id);
   if (item.kind==='perk' && item.id==='perk_noads') p.noads = true;
@@ -7158,7 +7176,7 @@ function PUR_open(){
   const days = PUR_vipDaysLeft();
 
   const card = (it)=>{
-    const owned = PUR_owns(it.id) && it.kind!=='sub';
+    const owned = PUR_owns(it.id) && it.kind!=='sub' && it.kind!=='pack';
     const badge = it.badge ? `<span class="prem-flag">${it.badge}</span>` : '';
     const per = it.kind==='sub' ? ` · ${Math.round(it.price/it.days)} ₽/день` : '';
     return `<button class="prem-item ${owned?'is-owned':''} ${it.badge?'is-hot':''}"
@@ -7193,7 +7211,7 @@ function PUR_open(){
 
     ${sec('VIP-статус', 'выгоднее всего на длинный срок', ['vip_week','vip_month','vip_year'])}
     ${sec('Самоцветы', 'мгновенное пополнение', ['gems_s','gems_m','gems_l','gems_xl'])}
-    ${sec('Наборы', 'разовые усиления', ['pack_boost','pack_fert','pack_repair'])}
+    ${sec('Наборы', 'разовые усиления', ['pack_energy','pack_boost','pack_fert','pack_repair'])}
     ${sec('Оформление', 'меняет вид фермы', ['decor_gold','decor_sky'])}
     ${sec('Навсегда', 'один платёж', ['perk_noads'])}
 
@@ -10419,6 +10437,19 @@ body.decor-aurora #app::before{
   background:rgba(243,217,164,.10);color:#f3d9a4;}
 .fm-how>span .ic,.fm-how>span svg{width:13px;height:13px;}
 .fm-how small{font-size:10.5px;color:#a5b1a1;line-height:1.45;}
+
+.fm-energy-btns{display:flex;gap:6px;flex:0 0 auto;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+.fm-energy-btn.zen{
+  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.16));
+  border-color:rgba(243,217,164,.48);color:#fdf0d6;
+}
+
+.fm-energy-foot{flex-wrap:wrap;}
+.fm-cost{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#a5b1a1;font-weight:600;}
+.fm-cost .ic,.fm-cost svg{width:11px;height:11px;color:#f3d9a4;}
+.fm-cost i{font-style:normal;font-size:9px;font-weight:900;color:#8fd08a;
+  background:rgba(111,191,115,.14);border:1px solid rgba(111,191,115,.28);
+  border-radius:6px;padding:1px 4px;letter-spacing:.2px;}
 </style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
