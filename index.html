@@ -3057,7 +3057,7 @@ function freshState(presetId, styleId){
     fields, machines, buildings, productions, goods,
     warehouseCap:5000, autoSell:false,
     board:[], boardAt:0, market:{mult:{}, at:0},
-    jobs:[], foreman:{unlocked:false, on:false},
+    jobs:[], foreman:{unlocked:false, on:false, lvl:1, xp:0, mode:'auto', tasks:0},
     settings:{ sound:true, music:true, vibrate:true, timeScale:5, textScale:100, colorblind:false, fixedSummer: st.fixedSummer },
     tutorial:{ step:0, done:false },
     daily:{ date:todayStr(), contracts:0, speedups:0, goal:false },
@@ -3362,7 +3362,7 @@ function tickJobs(){
   S.jobs = S.jobs.filter(j => {
     if (now >= j.endsAt){
       changed = true;
-      if (j.kind==='field'){ const f = fieldById(j.ref); if (f) completeFieldWork(f); }
+      if (j.kind==='field'){ const f = fieldById(j.ref); if (f) completeFieldWork(f); if (j.byForeman) FM_awardXP(j.action || 'work'); }
       else if (j.kind==='contract'){ const c = S.board.find(x=>x.id===j.ref); if (c && c.state==='active'){ c.state='done'; toast(`Заказ «${contractType(c).name}» готов — забери награду!`, 'good', 'clipboard'); sfx.good(); if (S.tutorial.step===4) tutAdvance('ready'); } }
       return false;
     }
@@ -3526,29 +3526,100 @@ function collectProduction(id){
   save(); renderAll();
 }
 
-/* ---------------- FOREMAN ---------------- */
+/* ---------------- FOREMAN (v70: уровни, умения, опыт) ---------------- */
+const FM_MAX = 5;
+/* что даёт каждый уровень */
+const FM_LEVELS = [
+  { lvl:1, title:'Помощник',   gen:'Помощника',   speed:1.00, fee:20, unlock:'Базовые работы: уборка, обработка, посев' },
+  { lvl:2, title:'Бригадир',   gen:'Бригадира',   speed:1.15, fee:18, unlock:'Уход за полем: полив и прополка' },
+  { lvl:3, title:'Мастер',     gen:'Мастера',     speed:1.30, fee:15, unlock:'Собирает животноводство' },
+  { lvl:4, title:'Прораб',     gen:'Прораба',     speed:1.45, fee:12, unlock:'Продаёт продукцию сам' },
+  { lvl:5, title:'Управляющий',gen:'Управляющего',speed:1.60, fee:0,  unlock:'Работает без комиссии' },
+];
+/* сколько опыта до следующего уровня */
+const FM_XP_NEED = [0, 40, 90, 160, 260];
+function FM_level(){ return clamp((S.foreman && S.foreman.lvl) || 1, 1, FM_MAX); }
+function FM_def(){ return FM_LEVELS[FM_level()-1]; }
+function FM_next(){ return FM_level() < FM_MAX ? FM_LEVELS[FM_level()] : null; }
+function FM_xpNeed(){ return FM_XP_NEED[FM_level()] || 0; }
+function FM_xpPct(){ const n = FM_xpNeed(); return n ? clamp(Math.round((S.foreman.xp||0)/n*100), 0, 100) : 100; }
+function FM_can(what){
+  const l = FM_level();
+  if (what === 'care')  return l >= 2;
+  if (what === 'live')  return l >= 3;
+  if (what === 'sell')  return l >= 4;
+  if (what === 'free')  return l >= 5;
+  return true;
+}
+/* опыт за действие: сколько очков даёт тип работы */
+function FM_awardXP(action){
+  const fm = S.foreman; if (!fm || !fm.unlocked) return;
+  const gain = action==='harvest' ? 3 : action==='sow' ? 2 : 2;
+  fm.xp = (fm.xp||0) + gain;
+  fm.tasks = (fm.tasks||0) + 1;
+  const need = FM_xpNeed();
+  if (FM_level() < FM_MAX && need && fm.xp >= need){
+    fm.xp = 0; fm.lvl = FM_level() + 1;
+    toast(`Бригадир повысил разряд: ${FM_def().title}!`, 'good', 'star');
+    sfx.good(); buzz(60);
+  }
+  save();
+}
+/* стоимость прокачки в монетах */
+function FM_upgradeCost(){ const n = FM_next(); return n ? 600 * FM_level() : 0; }
+
 function tickForeman(){
   const fm = S.foreman;
   if (!fm.unlocked || !fm.on) return;
   if (S.jobs.some(j=>j.kind==='foreman')) return;
+  const def = FM_def();
   const owned = S.fields.filter(f=>f.owned && !f.busy);
+
+  /* 1. уборка готового */
   let target = owned.find(f=>f.state==='ready');
   let action = 'harvest';
+  /* 2. обработка стерни */
   if (!target){ target = owned.find(f=>f.state==='sterna'); action='prepare'; }
+  /* 3. посев */
   if (!target){ target = owned.find(f=>f.state==='prepared'); action='sow'; }
-  if (!target) return;
-  const fee = 20;
+  /* 4. уход (с 2 уровня) — полив растущего поля */
+  if (!target && FM_can('care')){ target = owned.find(f=>f.state==='growing' && !f.watered); if (target) action='water'; }
+
+  if (!target){
+    /* 5. животноводство (с 3 уровня) */
+    if (FM_can('live')) tickForemanBarn();
+    return;
+  }
+
+  const fee = def.fee;
   if (S.coins < fee) return;
   const w = WORK[action];
+  if (!w) return;
   const st = machineStatus(w.machine);
   if (!st.ok) return;
   addCoins(-fee);
-  let t = w.time/(st.speed||1);
+  const t = (w.time/(st.speed||1)) / def.speed;
   const extra = action==='sow' ? {crop:'wheat', seedCost:CROPS.wheat.seed} : {};
   target.busy = { action, endsAt: Date.now()+durMs(t), total: durMs(t), crop: extra.crop||null, manualBonus:0 };
   if (w.machine) wearMachine(w.machine);
-  addJob({ kind:'field', ref:target.id, durMs: durMs(t) });
+  addJob({ kind:'field', ref:target.id, durMs: durMs(t), byForeman:true, action });
   save();
+}
+/* бригадир собирает готовую продукцию с построек */
+function tickForemanBarn(){
+  for (const id in S.buildings){
+    const b = S.buildings[id]; if (!b.owned) continue;
+    const def = BUILDINGS[id]; if (!def) continue;
+    if ((b.stored||0) >= def.units){
+      const got = b.stored;
+      b.stored = 0;
+      S.goods[def.good] = (S.goods[def.good]||0) + got;
+      FM_awardXP('harvest');
+      toast(`Бригадир собрал: ${GOODS[def.good].name} ×${got}`, '', 'barn');
+      save();
+      return;
+    }
+  }
 }
 
 /* ---------------- OFFLINE ---------------- */
@@ -5877,7 +5948,17 @@ function renderFarm(){
       </span>
       <button class="login-claim" ${loginClaimed?'disabled':''} onclick="App.claimDailyReward()">${loginClaimed?'Получено':'Забрать'}</button>
     </div>
-    <div class="foreman-row"><span class="foreman-mark">${ic('hand')}</span><span class="foreman-copy"><b>Бригадир</b><small>${S.foreman.unlocked?(S.foreman.on?'Автоматизация включена':'Автоматизация на паузе'):'Помощник открывается с 3 уровня'}</small></span>${S.foreman.unlocked?`<button class="mini-cta" onclick="App.toggleForeman()">${S.foreman.on?'Пауза':'Включить'}</button>`:`<button class="mini-cta" onclick="App.unlockForeman()">Нанять · 800</button>`}</div>
+    <div class="foreman-row ${S.foreman.unlocked?'active':''}" onclick="App.openForeman()" role="button" tabindex="0">
+      <span class="foreman-mark">${ic('hand')}</span>
+      <span class="foreman-copy">
+        <b>Бригадир${S.foreman.unlocked?` · ${FM_def().title}`:''}</b>
+        <small>${S.foreman.unlocked ? (S.foreman.on?'Работает · '+S.foreman.tasks+' задач':'На паузе') : 'Помощник для автоматизации'}</small>
+        ${S.foreman.unlocked?`<span class="fm-mini-bar"><i style="width:${FM_xpPct()}%"></i></span>`:''}
+      </span>
+      ${S.foreman.unlocked
+        ? `<button class="mini-cta" onclick="event.stopPropagation();App.toggleForeman()">${S.foreman.on?'Пауза':'Включить'}</button><span class="fm-go">${ic('arrow')}</span>`
+        : `<button class="mini-cta" onclick="event.stopPropagation();App.openForeman()">Нанять</button>`}
+    </div>
     <div class="overview-footer"><span>${busy?`${busy} работ выполняется`:'Техника работает по таймеру'}</span><span>${seasonInfo().name} · ${weatherInfo().name}</span></div>
   `;
 }
@@ -6060,6 +6141,88 @@ function openMarket(){
   hint('market');
 }
 
+/* ---------- КАРТОЧКА БРИГАДИРА НА ФЕРМЕ (v70) ---------- */
+function FM_cardHTML(){
+  const fm = S.foreman;
+  if (!fm.unlocked){
+    return `<div class="fm-card locked" onclick="App.openForeman()" role="button" tabindex="0">
+      <span class="fm-card-ico">${ic('hand')}</span>
+      <span class="fm-card-copy"><b>Бригадир</b><small>Найми помощника — он уберёт и засеет сам</small></span>
+      <span class="fm-card-cta">Нанять</span>
+    </div>`;
+  }
+  const def = FM_def();
+  return `<div class="fm-card ${fm.on?'working':''}" onclick="App.openForeman()" role="button" tabindex="0">
+    <span class="fm-card-ico">${ic('hand')}</span>
+    <span class="fm-card-copy">
+      <b>${def.title} · ${FM_level()} ур.</b>
+      <small>${fm.on?`Работает · ${fm.tasks} задач`:'На паузе · нажми, чтобы включить'}</small>
+      <span class="fm-mini-bar"><i style="width:${FM_xpPct()}%"></i></span>
+    </span>
+    <button class="fm-card-btn ${fm.on?'on':''}" onclick="event.stopPropagation();App.toggleForeman()">${fm.on?'Пауза':'Включить'}</button>
+    <span class="fm-go">${ic('arrow')}</span>
+  </div>`;
+}
+
+/* ---------- FOREMAN SCREEN (v70) ---------- */
+function openForeman(){
+  const fm = S.foreman;
+  if (!fm.unlocked){
+    const okMoney = S.coins >= 800, okLvl = S.level >= 3;
+    openSheet(`<h2>${ic('hand')} Бригадир</h2>
+      <p class="muted">Помощник берёт рутину на себя: убирает урожай, готовит почву и сеет — пока ты занят другим.</p>
+      <div class="fm-hero locked">
+        <div class="fm-avatar">${ic('hand')}</div>
+        <div class="fm-hero-copy"><b>Помощник не нанят</b><small>Сейчас все работы только вручную</small></div>
+      </div>
+      <div class="fm-buy">
+        <div class="row between"><b>Нанять бригадира</b><span class="fm-price">${okLvl?`${ic('check')} доступно`:`${ic('coin')} 800`}</span></div>
+        <small>${okLvl?'Ты уже дошёл до 3 уровня — помощник бесплатный':'Откроется сам на 3 уровне или сразу за монеты'}</small>
+        <button class="btn btn-gold btn-block" ${okMoney||okLvl?'':'disabled'} onclick="App.unlockForeman()">${ic('hand')} Нанять · ${okLvl?'бесплатно': '800 монет'}</button>
+      </div>
+      <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Позже</button>`);
+    return;
+  }
+  const def = FM_def(), next = FM_next(), pct = FM_xpPct();
+  const cost = FM_upgradeCost();
+  const perks = FM_LEVELS.map(l=>{
+    const on = FM_level() >= l.lvl;
+    return `<div class="fm-perk ${on?'on':''}">
+      <span class="fm-perk-lvl">${on?ic('check'):l.lvl}</span>
+      <div class="fm-perk-copy"><b>${l.title}</b><small>${l.unlock}</small></div>
+      <span class="fm-perk-val">×${l.speed.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+  const workNow = S.foreman.on ? 'Работает' : 'На паузе';
+  openSheet(`<h2>${ic('hand')} Бригадир</h2>
+    <div class="fm-hero">
+      <div class="fm-avatar">${ic('hand')}</div>
+      <div class="fm-hero-copy">
+        <b>${def.title} · ${FM_level()} разряд</b>
+        <small>${workNow} · задач выполнено: ${fm.tasks}</small>
+        <div class="fm-bar"><i style="width:${pct}%"></i></div>
+        <span class="fm-bar-txt">${next?`${fm.xp} / ${FM_xpNeed()} опыта до «${next.title}»`:'Максимальный разряд'}</span>
+      </div>
+    </div>
+    <div class="fm-stats">
+      <div><b>×${def.speed.toFixed(2)}</b><small>скорость работ</small></div>
+      <div><b>${def.fee}</b><small>комиссия за задачу</small></div>
+      <div><b>${fm.tasks}</b><small>сделано</small></div>
+    </div>
+    <div class="fm-switch-row">
+      <span><b>Автоматизация</b><small>${fm.on?'Бригадир работает сам':'Включи, чтобы делегировать'}</small></span>
+      <button class="fm-toggle ${fm.on?'on':''}" onclick="App.toggleForeman()" aria-label="Переключить автоматизацию"><i></i></button>
+    </div>
+    ${next?`<div class="fm-upgrade">
+      <div class="row between"><b>Повысить разряд</b><span class="fm-price">${ic('coin')} ${fmt(cost)}</span></div>
+      <small>До «${next.title}» · скорость ×${next.speed.toFixed(2)} · ${next.unlock.toLowerCase()}</small>
+      <button class="btn btn-gold btn-block" ${S.coins>=cost?'':'disabled'} onclick="App.fmUpgrade()">${ic('star')} Повысить до ${next.gen}</button>
+      <small class="fm-or">или набирай опыт: работает сам</small>
+    </div>`:`<div class="fm-max">${ic('star')} Высший разряд — Управляющий. Комиссия не взимается.</div>`}
+    <div class="fm-perks-title">Умения по разрядам</div>
+    <div class="fm-perks">${perks}</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
+}
 /* ---------- GARAGE ---------- */
 function openGarage(){
   let html = `<h2>${ic('tractor')} Гараж</h2>
@@ -6599,6 +6762,14 @@ const App = {
     save(); renderAll(); if (ui.modal) openMarket();
   },
   openGarage(){ sfx.click(); openGarage(); },
+  openForeman(){ sfx.click(); openForeman(); },
+  fmUpgrade(){
+    const cost = FM_upgradeCost();
+    if (!cost || S.coins < cost){ toast('Не хватает монет на повышение','bad','coin'); sfx.bad(); return; }
+    addCoins(-cost); S.foreman.lvl = FM_level()+1; S.foreman.xp = 0;
+    toast(`Бригадир повышен: ${FM_def().title}!`, 'good', 'star'); sfx.good(); buzz(50);
+    save(); openForeman(); renderAll();
+  },
   buyMachine(id, tierIdx=0){
     const def = MACHINES[id];
     const tiers = def.tiers || [];
@@ -7423,6 +7594,7 @@ function init(){
   if (saved){
     S = saved;
     migrateMachines(S);
+    migrateForeman(S);
     if (typeof PUR_init === 'function') PUR_init();
     if(!S.loginReward) S.loginReward={lastClaim:'',streak:0};
     applySettings();
@@ -7476,6 +7648,19 @@ function migrateMachines(state){
   state.machines = out;
   // сломанная техника не должна «залипнуть» в брони поля
   return state;
+}
+/* ---------- МИГРАЦИЯ ПРОКАЧКИ БРИГАДИРА (v70) ---------- */
+function migrateForeman(state){
+  if (!state) return;
+  const f = state.foreman || {};
+  state.foreman = {
+    unlocked: !!f.unlocked,
+    on:       !!f.on,
+    lvl:      clamp((f.lvl|0) || 1, 1, 5),
+    xp:       Math.max(0, (f.xp|0) || 0),
+    mode:     f.mode === 'manual' ? 'manual' : 'auto',
+    tasks:    Math.max(0, (f.tasks|0) || 0),
+  };
 }
 function genBoardIfNeeded(){
   if (!S.board || !S.board.length || Date.now()-S.boardAt > durMs(900)) genBoard();
@@ -8238,6 +8423,7 @@ function RET_renderFarm(){
         <button class="overview-action" onclick="App.openPens()">${ic('cow')}<span>Загоны</span></button>
         <button class="overview-action" ${S.tutorial.step===1?'data-tut="sell"':''} onclick="App.openMarket()">${ic('coin')}<span>Рынок</span></button>
       </div>
+      ${FM_cardHTML()}
       ${RET_renderDailyQuests()}
       <div class="login-reward ${loginClaimed?'claimed':''}">
         <button class="login-stamp" type="button" ${loginClaimed?'disabled':''} onclick="App.claimDailyReward()" aria-label="${loginClaimed?'Награда уже получена':'Забрать ежедневную награду'}">${ic(loginClaimed?'check':'gift')}</button>
@@ -9935,6 +10121,134 @@ body.decor-aurora #app::before{
 @keyframes pr-boost-pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,200,90,.30)}50%{box-shadow:0 0 0 6px rgba(240,200,90,0)}}
 @media (prefers-reduced-motion:reduce){ .chip.boost-chip{animation:none;} }
 
+
+/* ===== ЭКРАН БРИГАДИРА · v70 ===== */
+.fm-hero{
+  display:flex;gap:12px;align-items:center;padding:14px;border-radius:18px;margin:10px 0 12px;
+  background:linear-gradient(180deg,rgba(243,217,164,.11),rgba(201,160,90,.05));
+  border:1px solid rgba(243,217,164,.24);position:relative;overflow:hidden;
+}
+.fm-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 15% -20%,rgba(243,217,164,.18),transparent 62%);}
+.fm-hero.locked{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  border-color:rgba(255,255,255,.10);}
+.fm-avatar{
+  width:52px;height:52px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;
+  box-shadow:0 6px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.5);position:relative;z-index:1;
+}
+.fm-avatar .ic,.fm-avatar svg{width:26px;height:26px;}
+.fm-hero.locked .fm-avatar{background:#33402f;color:#9fae9c;box-shadow:none;}
+.fm-hero-copy{min-width:0;flex:1;position:relative;z-index:1;}
+.fm-hero-copy>b{display:block;font-size:15px;color:#fff6e6;letter-spacing:.2px;}
+.fm-hero-copy>small{display:block;font-size:11.5px;color:#b3c0ae;margin-top:2px;}
+.fm-bar{height:7px;border-radius:6px;background:rgba(0,0,0,.32);margin-top:9px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);}
+.fm-bar i{display:block;height:100%;border-radius:6px;
+  background:linear-gradient(90deg,#c9a05a,#f3d9a4);transition:width .4s;}
+.fm-bar-txt{display:block;font-size:10.5px;color:#a9b6a4;margin-top:5px;font-weight:600;}
+.fm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.fm-stats>div{
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  border-radius:13px;padding:9px 6px;text-align:center;
+}
+.fm-stats b{display:block;font-size:16px;color:#f3e7cf;letter-spacing:.3px;}
+.fm-stats small{display:block;font-size:9.5px;color:#9aa898;margin-top:3px;line-height:1.2;}
+.fm-switch-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  border-radius:15px;padding:11px 13px;margin-bottom:12px;
+}
+.fm-switch-row b{display:block;font-size:13px;color:#eef3e9;}
+.fm-switch-row small{display:block;font-size:10.5px;color:#9aa898;margin-top:2px;}
+.fm-toggle{
+  width:52px;height:30px;border-radius:16px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.34);position:relative;flex:0 0 auto;cursor:pointer;transition:.22s;
+}
+.fm-toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:#8d9b8b;transition:.22s;}
+.fm-toggle.on{background:linear-gradient(180deg,rgba(243,217,164,.30),rgba(201,160,90,.20));
+  border-color:rgba(243,217,164,.5);}
+.fm-toggle.on i{left:26px;background:linear-gradient(180deg,#f3d9a4,#d6b273);box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.fm-upgrade{
+  background:linear-gradient(180deg,rgba(243,217,164,.09),rgba(201,160,90,.04));
+  border:1px solid rgba(243,217,164,.22);border-radius:16px;padding:12px;margin-bottom:12px;
+}
+.fm-upgrade b{font-size:13px;color:#f6ecd9;}
+.fm-upgrade small{display:block;font-size:10.5px;color:#a9b6a4;margin:4px 0 9px;line-height:1.35;}
+.fm-upgrade .fm-or{text-align:center;margin:8px 0 0;font-size:10px;color:#8e9b8c;}
+.fm-price{font-size:12px;font-weight:800;color:#f3d9a4;display:inline-flex;align-items:center;gap:4px;}
+.fm-price .ic,.fm-price svg{width:13px;height:13px;}
+.fm-max{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;color:#f3d9a4;
+  background:rgba(243,217,164,.10);border:1px solid rgba(243,217,164,.26);
+  border-radius:14px;padding:11px 13px;margin-bottom:12px;}
+.fm-max .ic,.fm-max svg{width:15px;height:15px;flex:0 0 auto;}
+.fm-perks-title{font-size:10px;letter-spacing:1.1px;color:#93a291;font-weight:800;
+  text-transform:uppercase;margin:2px 0 8px 2px;}
+.fm-perks{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.fm-perk{
+  display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:13px;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);opacity:.55;
+}
+.fm-perk.on{opacity:1;background:rgba(243,217,164,.07);border-color:rgba(243,217,164,.20);}
+.fm-perk-lvl{
+  width:22px;height:22px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
+  font-size:10.5px;font-weight:900;background:rgba(255,255,255,.07);color:#b9c5b5;
+}
+.fm-perk.on .fm-perk-lvl{background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;}
+.fm-perk-lvl .ic,.fm-perk-lvl svg{width:12px;height:12px;}
+.fm-perk-copy{flex:1;min-width:0;}
+.fm-perk-copy b{display:block;font-size:12px;color:#e8eee2;}
+.fm-perk-copy small{display:block;font-size:10px;color:#95a393;margin-top:1px;line-height:1.3;}
+.fm-perk-val{font-size:11px;font-weight:800;color:#c9d3c4;flex:0 0 auto;}
+.fm-perk.on .fm-perk-val{color:#f3d9a4;}
+.fm-buy{background:rgba(255,255,255,.035);border:1px solid rgba(243,217,164,.18);
+  border-radius:16px;padding:13px;margin:0 0 10px;}
+.fm-buy b{font-size:14px;color:#f6ecd9;}
+.fm-buy small{display:block;font-size:10.5px;color:#a9b6a4;margin:4px 0 10px;}
+/* компактная карточка на Ферме */
+.foreman-row{cursor:pointer;}
+.foreman-row.active{border-color:rgba(243,217,164,.22);}
+.foreman-row:active{transform:scale(.995);}
+.fm-mini-bar{display:block;height:3px;border-radius:3px;background:rgba(0,0,0,.35);
+  margin-top:4px;overflow:hidden;max-width:120px;}
+.fm-mini-bar i{display:block;height:100%;background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
+.fm-go{display:inline-flex;align-items:center;color:#8e9b8c;flex:0 0 auto;}
+.fm-go .ic,.fm-go svg{width:15px;height:15px;}
+
+/* карточка бригадира на Ферме */
+.fm-card{
+  display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 12px;
+  border-radius:16px;cursor:pointer;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,rgba(243,217,164,.075),rgba(201,160,90,.03));
+  border:1px solid rgba(243,217,164,.18);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.fm-card.working{border-color:rgba(243,217,164,.34);}
+.fm-card.working::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(90% 120% at 8% -30%,rgba(243,217,164,.16),transparent 62%);}
+.fm-card.locked{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.09);}
+.fm-card:active{transform:scale(.995);}
+.fm-card-ico{
+  width:38px;height:38px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;position:relative;z-index:1;
+}
+.fm-card.locked .fm-card-ico{background:#33402f;color:#9fae9c;}
+.fm-card-ico .ic,.fm-card-ico svg{width:19px;height:19px;}
+.fm-card-copy{flex:1;min-width:0;position:relative;z-index:1;}
+.fm-card-copy b{display:block;font-size:13px;color:#f7efdd;letter-spacing:.15px;}
+.fm-card-copy small{display:block;font-size:10.5px;color:#a8b5a3;margin-top:2px;}
+.fm-card-btn{
+  flex:0 0 auto;padding:7px 12px;border-radius:11px;font-size:11px;font-weight:800;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#dfe8da;
+  position:relative;z-index:1;
+}
+.fm-card-btn.on{background:rgba(243,217,164,.16);border-color:rgba(243,217,164,.34);color:#f6e6c8;}
+.fm-card-cta{
+  flex:0 0 auto;padding:8px 13px;border-radius:12px;font-size:11.5px;font-weight:900;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;letter-spacing:.2px;
+  box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.5);position:relative;z-index:1;
+}
 </style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>

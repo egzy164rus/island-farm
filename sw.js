@@ -1,5 +1,5 @@
 // Offline-first application shell for the installable PWA.
-const CACHE = 'island-farm-pwa-v69';
+const CACHE = 'island-farm-pwa-v70';
 const SCOPE_URL = new URL(self.registration.scope);
 const INDEX_URL = new URL('index.html', SCOPE_URL).href;
 const SHELL = [
