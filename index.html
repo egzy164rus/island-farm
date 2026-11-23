@@ -3057,7 +3057,7 @@ function freshState(presetId, styleId){
     fields, machines, buildings, productions, goods,
     warehouseCap:5000, autoSell:false,
     board:[], boardAt:0, market:{mult:{}, at:0},
-    jobs:[], foreman:{unlocked:false, on:false, lvl:1, xp:0, mode:'auto', tasks:0},
+    jobs:[], foreman:{unlocked:false, on:false, lvl:1, xp:0, mode:'auto', tasks:0, energy:100, since:0, resting:false},
     settings:{ sound:true, music:true, vibrate:true, timeScale:5, textScale:100, colorblind:false, fixedSummer: st.fixedSummer },
     tutorial:{ step:0, done:false },
     daily:{ date:todayStr(), contracts:0, speedups:0, goal:false },
@@ -3568,11 +3568,89 @@ function FM_awardXP(action){
 /* стоимость прокачки в монетах */
 function FM_upgradeCost(){ const n = FM_next(); return n ? 600 * FM_level() : 0; }
 
+/* ---------- УСТАЛОСТЬ БРИГАДИРА (v71) ----------
+   energy 0..100. Тратится за дело, восстанавливается во времени.
+   Низкая энергия замедляет работу; 0 — бригадир уходит спать. */
+const FM_ENERGY_REGEN   = 100 / (10 * 60);   /* 100% за 10 реальных минут (0.167/сек) */
+const FM_TASK_COST      = { harvest:9, sow:7, prepare:8, water:4, weed:5, fertilize:5, spray:4, plow:8, lime:5, barn:4 };
+const FM_REST_MIN       = 30;                /* ниже — «устал» */
+const FM_WAKE_AT        = 40;                /* отдыхает, пока не наберёт 40% */
+const FM_ENERGY_PRICE   = 3;                 /* самоцветов за полный отдых */
+
+function FM_energy(){ return clamp((S.foreman && typeof S.foreman.energy === 'number') ? S.foreman.energy : 100, 0, 100); }
+/* доля скорости от энергии: 100% → ×1, 50% → ×0.85, 20% → ×0.6, 0% → стоп */
+function FM_energySpeed(){ const e = FM_energy(); if (e <= 0) return 0; return 0.55 + 0.45 * (e / 100); }
+function FM_energyState(){
+  const e = FM_energy();
+  if (S.foreman && S.foreman.resting) return 'sleep';   /* ушёл отдыхать до FM_WAKE_AT */
+  if (e < FM_REST_MIN) return 'tired';
+  if (e < 60) return 'ok';
+  return 'fresh';
+}
+/* отдых с гистерезисом: уснул на нуле — встаёт только с 40% */
+function FM_updateRest(){
+  const fm = S.foreman; if (!fm) return;
+  const e = FM_energy();
+  if (!fm.resting && e <= 1) fm.resting = true;
+  else if (fm.resting && e >= FM_WAKE_AT) fm.resting = false;
+}
+function FM_energyLabel(){
+  const st = FM_energyState();
+  if (st === 'sleep') return 'Спит — нужен отдых';
+  if (st === 'tired') return 'Устал — работает медленнее';
+  if (st === 'ok')    return 'Работает';
+  return 'Полон сил';
+}
+/* восстановление по времени (вызывается из tick) */
+function FM_regen(seconds){
+  const fm = S.foreman;
+  if (!fm || !fm.unlocked) return;
+  const e = FM_energy();
+  if (e >= 100){ if (fm.resting) fm.resting = false; return; }
+  fm.energy = clamp(e + FM_ENERGY_REGEN * seconds, 0, 100);
+  FM_updateRest();
+}
+function FM_task_cost(action){ return FM_TASK_COST[action] || 6; }
+/* скидка на расход энергии по разряду: 1.00 / .92 / .84 / .76 / .68 */
+function FM_costMul(){ return 1 - (FM_level()-1) * 0.08; }
+function FM_spend(action){
+  const fm = S.foreman;
+  const cost = (FM_TASK_COST[action] || 6) * FM_costMul();
+  fm.energy = clamp(FM_energy() - cost, 0, 100);
+  return cost;
+}
+/* сколько минут до полного восстановления */
+function FM_restMinutes(){
+  const e = FM_energy();
+  if (e >= 100) return 0;
+  const perSec = FM_ENERGY_REGEN;
+  if (perSec <= 0) return 0;
+  return Math.max(1, Math.ceil((100 - e) / perSec / 60));
+}
+/* быстрый отдых за самоцветы */
+function FM_restNow(){
+  const cost = FM_ENERGY_PRICE;
+  if (FM_energy() >= 100){ toast('Бригадир и так полон сил','', 'hand'); return; }
+  if (S.gems < cost){ toast('Не хватает самоцветов','bad','gem'); sfx.bad(); return; }
+  S.gems -= cost;
+  S.foreman.energy = 100;
+  S.foreman.resting = false;
+  toast('Бригадир отдохнул и снова в строю','good','bolt');
+  sfx.good(); buzz(40);
+  save(); openForeman(); renderAll();
+}
+
 function tickForeman(){
   const fm = S.foreman;
   if (!fm.unlocked || !fm.on) return;
   if (S.jobs.some(j=>j.kind==='foreman')) return;
   const def = FM_def();
+  /* устал в ноль — отдыхает, не берёт работу */
+  if (FM_energyState() === 'sleep'){
+    if (!fm._sleepWarned){ fm._sleepWarned = true; toast('Бригадир вымотан и отдыхает','bad','hand'); }
+    return;
+  }
+  fm._sleepWarned = false;
   const owned = S.fields.filter(f=>f.owned && !f.busy);
 
   /* 1. уборка готового */
@@ -3598,7 +3676,9 @@ function tickForeman(){
   const st = machineStatus(w.machine);
   if (!st.ok) return;
   addCoins(-fee);
-  const t = (w.time/(st.speed||1)) / def.speed;
+  const es = FM_energySpeed();
+  const t = (w.time/(st.speed||1)) / def.speed / Math.max(0.35, es);
+  FM_spend(action);
   const extra = action==='sow' ? {crop:'wheat', seedCost:CROPS.wheat.seed} : {};
   target.busy = { action, endsAt: Date.now()+durMs(t), total: durMs(t), crop: extra.crop||null, manualBonus:0 };
   if (w.machine) wearMachine(w.machine);
@@ -3614,6 +3694,7 @@ function tickForemanBarn(){
       const got = b.stored;
       b.stored = 0;
       S.goods[def.good] = (S.goods[def.good]||0) + got;
+      FM_spend('barn');
       FM_awardXP('harvest');
       toast(`Бригадир собрал: ${GOODS[def.good].name} ×${got}`, '', 'barn');
       save();
@@ -3753,6 +3834,7 @@ const I = {
   grape:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="11" r="2"/><circle cx="14.4" cy="10.2" r="2"/><circle cx="7.2" cy="15.4" r="2"/><circle cx="11.8" cy="14.8" r="2"/><circle cx="16.4" cy="14.6" r="2"/><circle cx="9.6" cy="19" r="2"/><circle cx="14.6" cy="18.6" r="2"/><path d="M12 8.4V4.6M12 4.6c1.6-.6 3-.4 4 .6-1.2 1-2.6 1.2-4 .4z"/></svg>',
   flame:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c3.4 0 6-2.4 6-5.6 0-4-3.4-6.2-4.6-9.4-.3-.9-1.6-.9-1.9 0-.7 2.2-2 3.4-2.6 4.6-.4-1-.7-2.1-.7-3.1 0-1-1.4-1.4-1.9-.5C5 10 6 13 6 15.4 6 18.6 8.6 21 12 21z"/><path d="M12 21c-1.5 0-2.6-1.1-2.6-2.5 0-1.7 1.4-2.6 2-4 .2-.5.9-.6 1.2 0 .7 1.4 2 2.3 2 4 0 1.4-1.1 2.5-2.6 2.5z"/></svg>',
   cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.4 1.4A3.3 3.3 0 0 0 7 18z"/></svg>',
+  sleep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.2 8.2 0 1 1 9.5 4a6.6 6.6 0 0 0 10.5 10.5Z"/><path d="M15.5 4.6h3.2l-3.2 3.4h3.2" stroke-width="1.6"/></svg>',
 };
 function ic(name, cls){ return `<span class="ic ${cls||''}">${I[name]||''}</span>`; }
 
@@ -6156,8 +6238,11 @@ function FM_cardHTML(){
     <span class="fm-card-ico">${ic('hand')}</span>
     <span class="fm-card-copy">
       <b>${def.title} · ${FM_level()} ур.</b>
-      <small>${fm.on?`Работает · ${fm.tasks} задач`:'На паузе · нажми, чтобы включить'}</small>
-      <span class="fm-mini-bar"><i style="width:${FM_xpPct()}%"></i></span>
+      <small>${fm.on?FM_energyLabel():'На паузе · нажми, чтобы включить'}</small>
+      <span class="fm-duo">
+        <span class="fm-mini-bar xp"><i style="width:${FM_xpPct()}%"></i></span>
+        <span class="fm-energy-mini ${FM_energyState()}" title="Энергия ${Math.round(FM_energy())}%"><i style="width:${Math.round(FM_energy())}%"></i></span>
+      </span>
     </span>
     <button class="fm-card-btn ${fm.on?'on':''}" onclick="event.stopPropagation();App.toggleForeman()">${fm.on?'Пауза':'Включить'}</button>
     <span class="fm-go">${ic('arrow')}</span>
@@ -6209,6 +6294,20 @@ function openForeman(){
       <div><b>${def.fee}</b><small>комиссия за задачу</small></div>
       <div><b>${fm.tasks}</b><small>сделано</small></div>
     </div>
+    <div class="fm-energy ${FM_energyState()}">
+      <div class="fm-energy-top">
+        <span class="fm-energy-ico">${ic(FM_energyState()==='sleep'?'sleep':'bolt')}</span>
+        <span class="fm-energy-copy"><b>Энергия · ${Math.round(FM_energy())}%</b>
+          <small>${FM_energyState()==='sleep'?'Спит. Восстановится через '+FM_restMinutes()+' мин или сразу за самоцветы'
+                 :FM_energyState()==='tired'?'Устал — скорость снижена до '+Math.round(FM_energySpeed()*100)+'%'
+                 :'Скорость работы '+Math.round(FM_energySpeed()*100)+'% · полный отдых через '+FM_restMinutes()+' мин'}</small></span>
+      </div>
+      <div class="fm-energy-bar"><i style="width:${Math.round(FM_energy())}%"></i></div>
+      <div class="fm-energy-foot">
+        <span>−${(FM_task_cost('harvest')*FM_costMul()).toFixed(1).replace('.0','')} за уборку · −${(FM_task_cost('sow')*FM_costMul()).toFixed(1).replace('.0','')} за посев${FM_costMul()<1?' · скидка '+Math.round((1-FM_costMul())*100)+'%':''}</span>
+        <button class="fm-energy-btn" onclick="App.fmRest()" ${FM_energy()>=100?'disabled':''}>${ic('gem')} Отдых · ${FM_ENERGY_PRICE}</button>
+      </div>
+    </div>
     <div class="fm-switch-row">
       <span><b>Автоматизация</b><small>${fm.on?'Бригадир работает сам':'Включи, чтобы делегировать'}</small></span>
       <button class="fm-toggle ${fm.on?'on':''}" onclick="App.toggleForeman()" aria-label="Переключить автоматизацию"><i></i></button>
@@ -6219,6 +6318,13 @@ function openForeman(){
       <button class="btn btn-gold btn-block" ${S.coins>=cost?'':'disabled'} onclick="App.fmUpgrade()">${ic('star')} Повысить до ${next.gen}</button>
       <small class="fm-or">или набирай опыт: работает сам</small>
     </div>`:`<div class="fm-max">${ic('star')} Высший разряд — Управляющий. Комиссия не взимается.</div>`}
+    <div class="fm-perks-title">Как это работает</div>
+    <div class="fm-howto">
+      <div class="fm-how"><span>${ic('bolt')}</span><small>Каждое дело тратит энергию: уборка −9, посев −7, полив −4.</small></div>
+      <div class="fm-how"><span>${ic('clock')}</span><small>Энергия восстанавливается сама: +10% за реальную минуту. Ночью или в отпуске — полная.</small></div>
+      <div class="fm-how"><span>${ic('gem')}</span><small>Ниже 30% бригадир устаёт и замедляется. На 0% уходит спать до 40%.</small></div>
+      <div class="fm-how"><span>${ic('star')}</span><small>Выше разряд — ниже расход: Мастер и Прораб работают дольше без отдыха.</small></div>
+    </div>
     <div class="fm-perks-title">Умения по разрядам</div>
     <div class="fm-perks">${perks}</div>
     <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
@@ -6763,6 +6869,7 @@ const App = {
   },
   openGarage(){ sfx.click(); openGarage(); },
   openForeman(){ sfx.click(); openForeman(); },
+  fmRest(){ sfx.click(); FM_restNow(); },
   fmUpgrade(){
     const cost = FM_upgradeCost();
     if (!cost || S.coins < cost){ toast('Не хватает монет на повышение','bad','coin'); sfx.bad(); return; }
@@ -7172,6 +7279,7 @@ function tick(){
   if (S.daily.date !== todayStr()){ S.daily = {date:todayStr(), contracts:0, speedups:0, goal:false}; }
   tickJobs();
   tickBuildings();
+  FM_regen(1);
   tickForeman();
   if (Date.now() - S.boardAt > durMs(900)){ genBoard(); renderAll(); }
   refreshMarket(false);
@@ -7660,6 +7768,9 @@ function migrateForeman(state){
     xp:       Math.max(0, (f.xp|0) || 0),
     mode:     f.mode === 'manual' ? 'manual' : 'auto',
     tasks:    Math.max(0, (f.tasks|0) || 0),
+    energy:   (typeof f.energy === 'number' && isFinite(f.energy)) ? clamp(f.energy, 0, 100) : 100,
+    resting:  !!f.resting,
+    since:    (typeof f.since === 'number' && isFinite(f.since)) ? f.since : 0,
   };
 }
 function genBoardIfNeeded(){
@@ -10249,6 +10360,65 @@ body.decor-aurora #app::before{
   background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;letter-spacing:.2px;
   box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.5);position:relative;z-index:1;
 }
+
+/* ===== ЭНЕРГИЯ БРИГАДИРА · v71 ===== */
+.fm-duo{display:flex;flex-direction:column;gap:4px;margin-top:5px;max-width:130px;}
+.fm-mini-bar.xp{max-width:100%;}
+.fm-energy-mini{display:block;height:3px;border-radius:3px;background:rgba(0,0,0,.35);overflow:hidden;}
+.fm-energy-mini i{display:block;height:100%;border-radius:3px;transition:width .4s;
+  background:linear-gradient(90deg,#6fbf73,#a6e08a);}
+.fm-energy-mini.ok i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
+.fm-energy-mini.tired i{background:linear-gradient(90deg,#c9563f,#e88a72);}
+.fm-energy-mini.sleep i{background:#6b6b6b;}
+
+.fm-energy{
+  border-radius:16px;padding:12px;margin-bottom:12px;
+  background:linear-gradient(180deg,rgba(111,191,115,.10),rgba(111,191,115,.03));
+  border:1px solid rgba(111,191,115,.24);
+}
+.fm-energy.ok{background:linear-gradient(180deg,rgba(243,217,164,.10),rgba(201,160,90,.035));
+  border-color:rgba(243,217,164,.24);}
+.fm-energy.tired{background:linear-gradient(180deg,rgba(201,86,63,.13),rgba(201,86,63,.04));
+  border-color:rgba(232,138,114,.34);}
+.fm-energy.sleep{background:linear-gradient(180deg,rgba(90,100,95,.18),rgba(90,100,95,.06));
+  border-color:rgba(150,160,150,.20);}
+.fm-energy-top{display:flex;align-items:center;gap:9px;}
+.fm-energy-ico{
+  width:32px;height:32px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
+  background:rgba(255,255,255,.07);color:#a6e08a;
+}
+.fm-energy.ok .fm-energy-ico{color:#f3d9a4;}
+.fm-energy.tired .fm-energy-ico{color:#e88a72;}
+.fm-energy.sleep .fm-energy-ico{color:#9aa69a;}
+.fm-energy-ico .ic,.fm-energy-ico svg{width:17px;height:17px;}
+.fm-energy-copy{min-width:0;flex:1;}
+.fm-energy-copy b{display:block;font-size:12.5px;color:#eef3e9;}
+.fm-energy-copy small{display:block;font-size:10.5px;color:#9fae9c;margin-top:2px;line-height:1.3;}
+.fm-energy-bar{height:8px;border-radius:6px;background:rgba(0,0,0,.34);overflow:hidden;margin-top:10px;
+  border:1px solid rgba(255,255,255,.06);}
+.fm-energy-bar i{display:block;height:100%;border-radius:6px;transition:width .45s;
+  background:linear-gradient(90deg,#5aa862,#a6e08a);}
+.fm-energy.ok .fm-energy-bar i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
+.fm-energy.tired .fm-energy-bar i{background:linear-gradient(90deg,#b04a35,#e88a72);}
+.fm-energy.sleep .fm-energy-bar i{background:#6b6b6b;}
+.fm-energy-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;}
+.fm-energy-foot>span{font-size:9.5px;color:#8e9b8c;line-height:1.3;}
+.fm-energy-btn{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
+  padding:7px 11px;border-radius:11px;font-size:11px;font-weight:800;
+  background:linear-gradient(180deg,rgba(126,87,194,.30),rgba(103,58,183,.22));
+  border:1px solid rgba(179,157,219,.42);color:#e7ddff;
+}
+.fm-energy-btn:disabled{opacity:.42;}
+.fm-energy-btn .ic,.fm-energy-btn svg{width:12px;height:12px;}
+
+.fm-howto{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.fm-how{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:12px;
+  background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.06);}
+.fm-how>span{width:24px;height:24px;flex:0 0 auto;border-radius:8px;display:grid;place-items:center;
+  background:rgba(243,217,164,.10);color:#f3d9a4;}
+.fm-how>span .ic,.fm-how>span svg{width:13px;height:13px;}
+.fm-how small{font-size:10.5px;color:#a5b1a1;line-height:1.45;}
 </style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
