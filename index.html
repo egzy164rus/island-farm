@@ -3038,6 +3038,7 @@ function freshState(presetId, styleId){
       state:'sterna', crop:null, t0:0, t1:0,
       fert:0, watered:false, weeded:false, limed:false, sprayed:false,
       weeds:false, weedsChecked:false, busy:null, manualBonus:0,
+      soil:100, quality:0,
     });
   }
   if (p.fields > 0){
@@ -3062,7 +3063,7 @@ function freshState(presetId, styleId){
     tutorial:{ step:0, done:false },
     daily:{ date:todayStr(), contracts:0, speedups:0, goal:false },
     loginReward:{ lastClaim:'', streak:0 },
-    stats:{ earned:0, contractsDone:0, harvests:0, sold:0 },
+    grade:{}, stats:{ earned:0, contractsDone:0, harvests:0, sold:0 },
     createdAt:Date.now(), lastSeen:Date.now(),
     hints:{},
   };
@@ -3207,6 +3208,54 @@ function wearMachine(mid){
   }
 }
 function warehouseUsed(){ return Object.values(S.goods).reduce((a,b)=>a+b,0); }
+/* ---------------- ПЛОДОРОДИЕ И КАЧЕСТВО (v73) ----------------
+   soil 0..100 — истощается урожаем, восстанавливается па́ром и известью.
+   grade — среднее качество партии товара: 0..100 → цена ×0.7..×1.8 */
+const SOIL_DRAIN   = 14;    /* сколько снимает одна уборка */
+const SOIL_REGEN   = 2.2;   /* восстановление за игровую минуту парования */
+const GRADE_MIN    = 0.70;
+const GRADE_MAX    = 1.80;
+const GRADE_TIERS = [
+  { min: 85, name:'Отборное',  stars:3, mul:1.80, color:'#ffd76a' },
+  { min: 62, name:'Хорошее',   stars:2, mul:1.35, color:'#cfe08a' },
+  { min: 35, name:'Обычное',   stars:1, mul:1.00, color:'#b9c4b0' },
+  { min: 0,  name:'Простое',   stars:0, mul:0.70, color:'#8e9b8c' },
+];
+function soilOf(f){ return clamp(typeof f.soil === 'number' ? f.soil : 100, 0, 100); }
+function soilState(f){ const v = soilOf(f); return v>=70?'rich':v>=40?'ok':v>=15?'worn':'poor'; }
+function soilLabel(f){
+  const st = soilState(f);
+  return st==='rich'?'Плодородная':st==='ok'?'В норме':st==='worn'?'Истощена':'Выработана';
+}
+function soilMul(f){ return 0.75 + 0.25 * (soilOf(f)/100); }   /* 100% → 1.0, 0% → 0.75 */
+
+function gradeOf(good){ return clamp(S.grade && typeof S.grade[good] === 'number' ? S.grade[good] : 50, 0, 100); }
+function gradeTier(val){
+  for (const t of GRADE_TIERS) if (val >= t.min) return t;
+  return GRADE_TIERS[GRADE_TIERS.length-1];
+}
+function gradeMul(good){ return gradeTier(gradeOf(good)).mul; }
+/* смешиваем новую партию со средней: чем больше партия, тем сильнее влияние */
+function gradeAdd(good, addQty, addQuality){
+  if (!S.grade) S.grade = {};
+  const oldQty = Math.max(0, S.goods[good] - addQty);
+  const oldQ = gradeOf(good);
+  const total = oldQty + addQty;
+  S.grade[good] = total > 0 ? clamp((oldQ * oldQty + addQuality * addQty) / total, 0, 100) : addQuality;
+}
+/* качество урожая этого поля */
+function fieldQuality(f){
+  const c = CROPS[f.crop] || {};
+  let q = 50;
+  q += f.fert * 16;                          /* удобрение +16 за дозу */
+  q += (soilOf(f) - 50) * 0.30;              /* почва двигает качество */
+  if (f.watered) q += 6;
+  if (f.weeded || !f.weeds) q += 5;
+  if (f.sprayed) q += 4;
+  if (f.limed) q += 5;
+  q += (f.manualBonus || 0) * 100;           /* ручная уборка даёт +10% урожая — и качества */
+  return clamp(Math.round(q), 0, 100);
+}
 function addGoods(good, n){
   const room = S.warehouseCap - warehouseUsed();
   const add = clamp(n, 0, Math.max(0, room));
@@ -3221,6 +3270,7 @@ function fieldYield(f){
   mult *= seasonMult(f.crop);
   if (weatherInfo().id==='rain') mult *= 0.85;
   if (f.weeds && !f.weeded) mult *= 0.85;
+  mult *= soilMul(f);                         /* плодородие почвы */
   return Math.round(c.yield * mult);
 }
 
@@ -3247,7 +3297,7 @@ function sellGood(good, qty){
   qty = Math.min(qty, S.goods[good]);
   if (qty <= 0) return 0;
   const {mult} = bestPoint(good);
-  let gain = Math.round(qty * GOODS[good].price * mult);
+  let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good));
   S.goods[good] -= qty;
   // множитель престижа: «новый остров» бустит все доходы
   if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
@@ -3321,13 +3371,16 @@ function completeFieldWork(f){
   else if (a==='spray'){ f.sprayed = true; }
   else if (a==='weed'){ f.weeded = true; f.weeds = false; }
   else if (a==='water'){ f.watered = true; }
-  else if (a==='lime'){ f.limed = true; }
+  else if (a==='lime'){ f.limed = true; f.soil = clamp(soilOf(f) + 25, 0, 100); }
   else if (a==='harvest'){
     const cropId = f.crop, fieldId = f.id;   // запоминаем ДО сброса поля
+    const quality = fieldQuality(f);
     let units = fieldYield(f);
     if (typeof PRE_mult === 'function') units = Math.round(units * PRE_mult());
-    const got = addGoods(cropId, units);
     f.manualBonus = b.manualBonus||0;
+    const got = addGoods(cropId, units);
+    gradeAdd(cropId, got, quality);
+    f.soil = clamp(soilOf(f) - SOIL_DRAIN, 0, 100);
     f.state='sterna'; f.crop=null; f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false;
     S.stats.harvests++; addXP(10);
     if (typeof STAT_harvest === 'function') STAT_harvest(cropId, got, fieldId);
@@ -3335,7 +3388,8 @@ function completeFieldWork(f){
     if (typeof XMAS_track==='function') XMAS_track('gifts', 1);
     ui.fieldFx={id:f.id,action:'harvest',at:Date.now()};
     setTimeout(()=>{document.querySelector(`[data-swipe-field="${f.id}"]`)?.classList.remove('field-harvest-pop');if(ui.fieldFx?.id===f.id)ui.fieldFx=null;},1200);
-    toast(`Урожай: +${got} ${goodsAcc(b.crop)}`, 'good', 'check');
+    const gt = gradeTier(quality);
+    toast(`Урожай: +${got} ${goodsAcc(b.crop)} · ${gt.name}`, 'good', 'check');
     sfx.harvest(); buzz([25, 40, 25]);
     // VISUAL JUICE: салют из поля и монеты в кошелёк
     requestAnimationFrame(()=>{
@@ -3369,6 +3423,10 @@ function tickJobs(){
     return true;
   });
   for (const f of S.fields){
+    /* почва отдыхает на стерне и готовой земле */
+    if (f.owned && !f.busy && (f.state==='sterna' || f.state==='prepared') && soilOf(f) < 100){
+      f.soil = clamp(soilOf(f) + SOIL_REGEN * 1, 0, 100);
+    }
     if (f.owned && f.state==='growing' && !f.busy && now >= f.t1){
       f.state='ready'; changed = true;
       toast(`${f.name}: ${CROPS[f.crop].name} готово к уборке!`, 'good', 'check'); sfx.good(); buzz(50);
@@ -5963,6 +6021,7 @@ function fieldTileHTML(f){
           onclick="event.stopPropagation();App.speedField('${f.id}')"
           title="Ускорить за самоцветы">${ic('bolt')}${Math.max(1,Math.ceil(((f.t1||0)-Date.now())/60000))}м</span>` : ''}
       <span class="photo-top"><span>${top}</span><i>${ic(actionIcon)}</i></span>
+      <span class="soil-pill ${soilState(f)}" title="Плодородие ${Math.round(soilOf(f))}%">${ic('leaf')}<i style="width:${Math.round(soilOf(f))}%"></i><b>${Math.round(soilOf(f))}</b></span>
       <span class="photo-bottom"><b class="fname">${esc(f.name)}</b><small class="fstate">${stateLabel}</small>
         ${f.state==='growing'||busy?`<span class="photo-progress"><i data-pb="${f.id}" style="width:0%"></i></span>`:''}
         <small class="photo-meta">${micro}</small>
@@ -6180,7 +6239,18 @@ function openField(id){
   } else if (f.state==='growing'){
     const c = CROPS[f.crop];
     const y = fieldYield(f);
-    html += `<p class="muted">${c.name} растёт. Ожидаемый урожай: <b>${y}</b> ед. ${f.weeds&&!f.weeded?'<br>Сорняки снижают урожай!':''}</p>
+    const q = fieldQuality(f), gt = gradeTier(q);
+    html += `<div class="soil-card ${soilState(f)}">
+      <div class="soil-card-top"><span>${ic('leaf')} Почва · ${soilLabel(f)}</span><b>${Math.round(soilOf(f))}%</b></div>
+      <div class="soil-card-bar"><i style="width:${Math.round(soilOf(f))}%"></i></div>
+      <small>${soilOf(f)>=70?'Урожай и качество в плюсе':soilOf(f)>=40?'Обычная отдача':'Истощена — дай земле отдохнуть или внеси известь'}</small>
+    </div>
+    <div class="grade-card">
+      <span class="grade-ico">${ic('star')}</span>
+      <span class="grade-copy"><b>${gt.name}</b><small>Прогноз качества ${q}/100 · к цене ×${gt.mul.toFixed(2)}</small></span>
+      <span class="grade-stars">${'★'.repeat(gt.stars)}${'☆'.repeat(3-gt.stars)}</span>
+    </div>
+    <p class="muted">${c.name} растёт. Ожидаемый урожай: <b>${y}</b> ед. ${f.weeds&&!f.weeded?'<br>Сорняки снижают урожай!':''}</p>
     <div class="action-list">`;
     if (f.weeds && !f.weeded) html += actBtn('weed','Прополоть (+15%)');
     if (!f.watered) html += actBtn('water','Полить (+5%)');
@@ -6211,14 +6281,23 @@ function openMarket(){
   let html = `<h2>${ic('coin')} Рынок</h2><p class="muted">Цены обновляются каждые 10 игровых минут. Лучшая цена подсвечена.</p>`;
   for (const g of goodsList){
     const {point, mult} = bestPoint(g);
-    const price = Math.round(GOODS[g].price*mult);
+    const price = Math.round(GOODS[g].price*mult*gradeMul(g));
     html += `<div class="card" style="margin-bottom:8px">
       <div class="row between"><b class="row">${goodsIcon(g)} ${GOODS[g].name} ×${fmt(S.goods[g])}</b>
       <span class="pill">${mult.toFixed(2)}× · ${point.name} — лучшее</span></div>
+      ${(()=>{const q=gradeOf(g), gt=gradeTier(q);
+        return `<div class="market-grade"><span class="mg-stars" style="color:${gt.color}">${'★'.repeat(gt.stars)}${'☆'.repeat(3-gt.stars)}</span>
+        <span class="mg-name" style="color:${gt.color}">${gt.name}</span>
+        <span class="mg-mul">качество ×${gt.mul.toFixed(2)}</span></div>`;})()}
       <div class="small muted">${POINTS.map(p=>`${p.name}: ${(S.market.mult[p.id][g]).toFixed(2)}×`).join(' · ')}</div>
       <button class="btn btn-gold btn-block btn-sm" data-tut="sell" style="margin-top:6px" onclick="App.sell('${g}')">Продать всё за ≈ ${fmt(S.goods[g]*price)} монет</button></div>`;
   }
-  if (goodsList.length) html += `<button class="btn btn-primary btn-block" data-tut="sell" onclick="App.sellAll()">Продать всё сразу</button>`;
+  if (goodsList.length){
+    const avgQ = goodsList.reduce((a,g)=>a+gradeOf(g)*S.goods[g],0) / Math.max(1, goodsList.reduce((a,g)=>a+S.goods[g],0));
+    const at = gradeTier(avgQ);
+    html += `<div class="market-avg"><span>Среднее качество склада</span><b style="color:${at.color}">${at.name} · ${Math.round(avgQ)}/100</b></div>`;
+    html += `<button class="btn btn-primary btn-block" data-tut="sell" onclick="App.sellAll()">Продать всё сразу</button>`;
+  }
   openSheet(html);
   hint('market');
 }
@@ -7721,6 +7800,7 @@ function init(){
     S = saved;
     migrateMachines(S);
     migrateForeman(S);
+    migrateFields(S);
     if (typeof PUR_init === 'function') PUR_init();
     if(!S.loginReward) S.loginReward={lastClaim:'',streak:0};
     applySettings();
@@ -7776,6 +7856,15 @@ function migrateMachines(state){
   return state;
 }
 /* ---------- МИГРАЦИЯ ПРОКАЧКИ БРИГАДИРА (v70) ---------- */
+/* миграция полей: soil/quality появились в v73 */
+function migrateFields(state){
+  if (!state || !Array.isArray(state.fields)) return;
+  for (const f of state.fields){
+    if (typeof f.soil !== 'number' || !isFinite(f.soil)) f.soil = 100;
+    else f.soil = clamp(f.soil, 0, 100);
+  }
+  if (!state.grade || typeof state.grade !== 'object') state.grade = {};
+}
 function migrateForeman(state){
   if (!state) return;
   const f = state.foreman || {};
@@ -10450,6 +10539,72 @@ body.decor-aurora #app::before{
 .fm-cost i{font-style:normal;font-size:9px;font-weight:900;color:#8fd08a;
   background:rgba(111,191,115,.14);border:1px solid rgba(111,191,115,.28);
   border-radius:6px;padding:1px 4px;letter-spacing:.2px;}
+
+/* ===== ПЛОДОРОДИЕ И КАЧЕСТВО · v73 ===== */
+.soil-pill{
+  position:absolute;right:8px;top:34px;z-index:3;
+  display:flex;align-items:center;gap:3px;height:18px;padding:0 6px;border-radius:9px;
+  background:rgba(12,18,14,.80);border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.soil-pill b{font-size:9px;font-weight:900;color:#cfe0c6;letter-spacing:.2px;}
+.soil-pill .ic,.soil-pill svg{width:9px;height:9px;flex:0 0 auto;color:#8fd08a;}
+.soil-pill i{display:block;height:3px;border-radius:2px;background:#8fd08a;max-width:26px;
+  min-width:3px;transition:width .3s;}
+.soil-pill.ok .ic,.soil-pill.ok svg{color:#e0c86a;} .soil-pill.ok i{background:#e0c86a;}
+.soil-pill.worn .ic,.soil-pill.worn svg{color:#e0a05a;} .soil-pill.worn i{background:#e0a05a;}
+.soil-pill.poor .ic,.soil-pill.poor svg{color:#e88a72;} .soil-pill.poor i{background:#e88a72;}
+
+.soil-card{
+  border-radius:15px;padding:11px 13px;margin:10px 0;
+  background:linear-gradient(180deg,rgba(111,191,115,.11),rgba(111,191,115,.03));
+  border:1px solid rgba(111,191,115,.24);
+}
+.soil-card.ok{background:linear-gradient(180deg,rgba(224,200,106,.10),rgba(224,200,106,.03));
+  border-color:rgba(224,200,106,.22);}
+.soil-card.worn{background:linear-gradient(180deg,rgba(224,160,90,.11),rgba(224,160,90,.03));
+  border-color:rgba(224,160,90,.26);}
+.soil-card.poor{background:linear-gradient(180deg,rgba(201,86,63,.12),rgba(201,86,63,.04));
+  border-color:rgba(232,138,114,.30);}
+.soil-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.soil-card-top span{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#eef3e9;}
+.soil-card-top .ic,.soil-card-top svg{width:14px;height:14px;color:#8fd08a;}
+.soil-card.ok .soil-card-top .ic,.soil-card.ok .soil-card-top svg{color:#e0c86a;}
+.soil-card.worn .soil-card-top .ic,.soil-card.worn .soil-card-top svg{color:#e0a05a;}
+.soil-card.poor .soil-card-top .ic,.soil-card.poor .soil-card-top svg{color:#e88a72;}
+.soil-card-top b{font-size:13px;color:#f3e7cf;}
+.soil-card-bar{height:7px;border-radius:5px;background:rgba(0,0,0,.34);overflow:hidden;margin:8px 0 6px;
+  border:1px solid rgba(255,255,255,.06);}
+.soil-card-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#5aa862,#a6e08a);
+  transition:width .4s;}
+.soil-card.ok .soil-card-bar i{background:linear-gradient(90deg,#b09a4e,#e0c86a);}
+.soil-card.worn .soil-card-bar i{background:linear-gradient(90deg,#b07a3e,#e0a05a);}
+.soil-card.poor .soil-card-bar i{background:linear-gradient(90deg,#a04a35,#e88a72);}
+.soil-card small{font-size:10.5px;color:#a5b1a1;line-height:1.35;display:block;}
+
+.grade-card{
+  display:flex;align-items:center;gap:10px;border-radius:15px;padding:10px 12px;margin:0 0 10px;
+  background:linear-gradient(180deg,rgba(243,217,164,.11),rgba(201,160,90,.03));
+  border:1px solid rgba(243,217,164,.24);
+}
+.grade-ico{width:32px;height:32px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;}
+.grade-ico .ic,.grade-ico svg{width:16px;height:16px;}
+.grade-copy{flex:1;min-width:0;}
+.grade-copy b{display:block;font-size:12.5px;color:#f6ecd9;}
+.grade-copy small{display:block;font-size:10.5px;color:#a9b6a4;margin-top:2px;}
+.grade-stars{font-size:15px;letter-spacing:1px;color:#f0d9a4;flex:0 0 auto;}
+
+.market-grade{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:10.5px;font-weight:700;}
+.mg-stars{font-size:12px;letter-spacing:.5px;}
+.mg-name{font-weight:800;}
+.mg-mul{margin-left:auto;font-size:9.5px;color:#9aa898;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:2px 6px;}
+.market-avg{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 12px;margin:8px 0;border-radius:13px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(243,217,164,.16);}
+.market-avg span{font-size:11px;color:#a5b1a1;font-weight:600;}
+.market-avg b{font-size:11.5px;font-weight:800;}
 </style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
