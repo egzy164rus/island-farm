@@ -12509,7 +12509,7 @@ function SEASON_statsHTML(){
       <div class="ss-empty" style="flex-direction:column;align-items:flex-start;gap:10px;padding:18px">
         <span style="display:flex;gap:8px;align-items:center">${ic('info')} Ты играешь в казуальном режиме: всегда лето, смены сезонов нет.</span>
         <span style="font-size:10px;color:#7f8d7a;line-height:1.45">Включи сезоны — появятся весна, лето, осень и зима, свой набор культур для каждого, а здесь будет статистика урожая и сравнение с прошлым сезоном.</span>
-        <button class="btn btn-gold btn-block btn-sm" onclick="App.setSetting('fixedSummer', false)">${ic('flower')} Включить сезоны</button>
+        <button class="btn btn-gold btn-block btn-sm" onclick="App.seasonEnable()">${ic('flower')} Включить сезоны</button>
       </div>
       <div class="ss-note">${ic('info')} Настройку можно вернуть в любой момент: Ещё → Настройки.</div>`;
   }
@@ -12772,6 +12772,16 @@ function LIV_installHooks(){
     auctOpen(){ sfx.click(); AUCT_open(); },
     auctBid(){ AUCT_bid(); },
     seasonStats(){ sfx.click(); ui.farmView='seasonstats'; ui.tab='farm'; renderScreen(); },
+    seasonEnable(){
+      S.settings.fixedSummer = false;
+      if (typeof XMAS_applyBodyClass === 'function') XMAS_applyBodyClass();
+      if (typeof MUS_setWinter === 'function'){
+        try{ MUS_setWinter(typeof XMAS_active === 'function' ? XMAS_active() : XMAS_inWindow()); }catch(e){}
+      }
+      save(); applySettings();
+      ui.farmView='seasonstats'; ui.tab='farm'; renderAll();
+      toast('Сезоны включены — весна, лето, осень, зима', 'good', 'flower');
+    },
     animalRename(id){ sfx.click(); ANIM_rename(id); },
     animalSaveName(id){ ANIM_saveName(id); },
     stockOpen(){ sfx.click(); ui.farmView='stock'; ui.tab='farm'; renderScreen(); },
