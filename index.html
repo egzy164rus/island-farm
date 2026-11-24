@@ -9535,8 +9535,18 @@ function fxTick(){
   if (w !== __fxWeather){ __fxWeather = w; FX.setWeather(w === 'rain'); }
   FX.ambientUpdate(dt);
 }
+let __hudSig = '';
 function updateDynamicUI(){
   const now = Date.now();
+  /* шапка содержит сезон/погоду/время суток — обновляем её, когда они сменились
+     (игра может быть открыта через полночь или через границу сезона) */
+  try {
+    const sig = seasonInfo().id + '|' + weatherInfo().id + '|' + (LIV_todPhase()||{}).id + '|' + SEASON_daysLeft();
+    if (sig !== __hudSig){
+      __hudSig = sig;
+      if (__hudSig.split('|').slice(0,3).every(Boolean) && document.querySelector('.season-meta')) renderHUD();
+    }
+  } catch(e){}
   $$('[data-coins]').forEach(el=>el.textContent=fmt(S.coins));
   $$('[data-gems]').forEach(el=>el.textContent=S.gems);
   $$('[data-pb]').forEach(el=>{
