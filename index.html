@@ -3013,6 +3013,64 @@ h1.start-title.sv2{
 .log-bar{display:block;height:5px;border-radius:4px;background:rgba(0,0,0,.32);overflow:hidden;margin:5px 0 4px;}
 .log-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#c9a05a,#f3d9a4);transition:width .4s;}
 .log-row small{display:block;font-size:9.5px;color:#94a391;}
+
+/* ===== ЗОЛОТЫЕ КАРТОЧКИ КУЛЬТУР · v77 ===== */
+.gold-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:6px;}
+.gold-card{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 4px 9px;border-radius:14px;cursor:pointer;font:inherit;color:inherit;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  transition:transform .12s, border-color .2s, background .2s;overflow:hidden;min-width:0;
+}
+.gold-card:active{transform:scale(.96);}
+.gold-card.on{
+  background:linear-gradient(165deg,rgba(243,217,164,.20),rgba(201,160,90,.06));
+  border-color:rgba(243,217,164,.48);
+  box-shadow:0 0 0 1px rgba(243,217,164,.12) inset, 0 5px 16px rgba(201,160,90,.18);
+}
+.gold-card.on::after{
+  content:'';position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,241,204,.22) 50%,transparent 65%);
+}
+.gold-art{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;
+  background:rgba(0,0,0,.22);overflow:hidden;flex:none;}
+.gold-art svg{width:21px;height:21px;}
+.gold-card.on .gold-art{background:rgba(243,217,164,.18);}
+.gold-card:not(.on) .gold-art{filter:grayscale(.85) opacity(.55);}
+.gold-name{font-size:9px;font-weight:700;color:#c9d4c3;text-align:center;line-height:1.15;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;}
+.gold-card.on .gold-name{color:#f6ecd9;}
+.gold-pct{font-size:8px;font-weight:800;letter-spacing:.03em;color:#7d8b79;}
+.gold-card.on .gold-pct{color:#f3d9a4;}
+.gold-bar{display:block;width:100%;height:3px;border-radius:3px;background:rgba(0,0,0,.34);overflow:hidden;}
+.gold-bar i{display:block;height:100%;background:linear-gradient(90deg,#8a6d3b,#c9a05a);}
+@media (max-width:360px){.gold-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+
+/* ===== ГРАФИК ДОХОДА · v77 ===== */
+.day-chart-block{
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:12px 13px 10px;margin-bottom:12px;
+}
+.day-chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.day-chart-head b{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#dfe8d8;font-weight:800;}
+.day-chart-head b .ic,.day-chart-head b svg{width:14px;height:14px;color:#f3d9a4;}
+.day-chart-head span{font-size:15px;font-weight:900;color:#f3d9a4;letter-spacing:.2px;}
+.day-chart{display:flex;align-items:flex-end;gap:3px;height:76px;padding-bottom:13px;position:relative;}
+.day-bar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative;}
+.day-fill{
+  display:block;width:100%;border-radius:4px 4px 2px 2px;
+  background:linear-gradient(180deg,#7fb86a,#3f6b3d);
+  transition:height .45s cubic-bezier(.2,.8,.3,1);min-height:3px;
+}
+.day-bar.today .day-fill{background:linear-gradient(180deg,#f3d9a4,#c9a05a);box-shadow:0 0 10px rgba(243,217,164,.35);}
+.day-bar.zero .day-fill{background:rgba(255,255,255,.09);}
+.day-lbl{position:absolute;left:0;right:0;bottom:-13px;text-align:center;font-size:8px;
+  color:#7d8b79;font-weight:700;}
+.day-bar.today .day-lbl{color:#f3d9a4;}
+.day-chart-foot{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:#8d9c88;}
+.day-chart.empty{display:grid;place-items:center;height:70px;border-radius:12px;background:rgba(255,255,255,.02);}
+.day-empty{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;color:#7d8b79;}
+.day-empty .ic,.day-empty svg{width:15px;height:15px;}
 </style>
 </head>
 <body>
@@ -3449,6 +3507,7 @@ function addCoins(n){
     }catch(e){}
   }
   S.coins += n; if (n>0) S.stats.earned += n;
+  if (n > 0) DAY_logEarn(n);
 }
 function seasonInfo(){
   if (S.settings.fixedSummer) return {name:'Лето (фикс.)', icon:'sun', id:'summer'};
@@ -5041,6 +5100,60 @@ function STAT_markDay(){
   if (!d[key]){ d[key] = true; d.days = (d.days||0) + 1; }
 }
 
+/* ---------- ДОХОД ПО ДНЯМ (v77) ----------
+   Храним последние 14 дней: сколько монет пришло за день.
+   Нужно для графика в Дневнике. Старое вытесняется. */
+const DAY_KEEP = 14;
+function DAY_logEarn(n){
+  try{
+    if (!S.dayEarn) S.dayEarn = {};
+    const k = todayStr();
+    S.dayEarn[k] = (S.dayEarn[k]||0) + n;
+    const keys = Object.keys(S.dayEarn).sort();
+    if (keys.length > DAY_KEEP*2){
+      for (const old of keys.slice(0, keys.length-DAY_KEEP)) delete S.dayEarn[old];
+    }
+  }catch(e){}
+}
+function DAY_series(){
+  const out = [];
+  const now = Date.now();
+  for (let i=DAY_KEEP-1; i>=0; i--){
+    const d = new Date(now - i*86400000);
+    const k = todayStr(d);
+    out.push({ key:k, date:d, val:(S.dayEarn||{})[k] || 0 });
+  }
+  return out;
+}
+function DAY_chartHTML(){
+  const S_ = DAY_series();
+  const max = Math.max(1, ...S_.map(x=>x.val));
+  const total = S_.reduce((a,b)=>a+b.val,0);
+  const active = S_.filter(x=>x.val>0).length;
+  if (!total) return `<div class="day-chart empty">
+      <div class="day-empty">${ic('chart')} График появится, когда пойдут первые монеты</div></div>`;
+  const bars = S_.map((x,i)=>{
+    const h = Math.max(3, Math.round(x.val/max*100));
+    const isToday = i === S_.length-1;
+    const lbl = x.date.getDate();
+    return `<div class="day-bar ${isToday?'today':''} ${x.val?'':'zero'}" title="${x.key}: ${fmt(x.val)}">
+      <span class="day-fill" style="height:${h}%"></span>
+      <span class="day-lbl">${lbl}</span>
+    </div>`;
+  }).join('');
+  return `<div class="day-chart-block">
+      <div class="day-chart-head">
+        <b>${ic('coin')} Доход за 14 дней</b>
+        <span>${fmt(total)}</span>
+      </div>
+      <div class="day-chart">${bars}</div>
+      <div class="day-chart-foot">
+        <span>В среднем ${fmt(Math.round(total/Math.max(1,active)))} в день</span>
+        <span>Пик ${fmt(max)}</span>
+      </div>
+    </div>`;
+}
+
 /* ---------- ЭКРАН «ДНЕВНИК ФЕРМЕРА» ---------- */
 function STAT_render(){
   const d = STAT_migrate();
@@ -5084,6 +5197,8 @@ function STAT_render(){
     <div class="page-heading"><div><small>ПРОФИЛЬ</small><h2>Дневник фермера</h2></div>
       <div class="row" style="gap:6px"><span class="district-count">ур. ${lvl}</span>
         <button class="share-btn" onclick="App.shareStats()" title="Поделиться">${ic('gift')}</button></div></div>
+
+    ${DAY_chartHTML()}
 
     <div class="st-hero">
       <div class="st-lvl">
@@ -8572,7 +8687,16 @@ const DAILY_QUESTS = [
   { id:'care',    icon:'heart',  text:'Позаботься о животных {n} раз', targets:[4,8,12], reward:{coins:[80,130,190]} },
   { id:'repair',  icon:'wrench', text:'Почини технику {n} раз',        targets:[1,1,2], reward:{coins:[120,120,200]} },
   { id:'age',     icon:'clock',  text:'Выдержи {n} партий на выдержке', targets:[1,1,2], reward:{coins:[200,200,340], gems:[0,1,1]} },
+  { id:'grade',   icon:'trophy', text:'Собери {n} урожая ранга «Хорошее» и выше', targets:[2,4,7], reward:{coins:[160,240,360], gems:[0,1,1]} },
+  { id:'gradeTop',icon:'medal',  text:'Собери {n} урожая ранга «Отборное»',      targets:[1,2,3], reward:{coins:[220,340,520], gems:[0,1,2]} },
 ];
+
+/* --- вспомогательное: считаем ранг партии при уборке (v77) --- */
+function LOG_trackGrade(qty, quality, cropId){
+  const g = gradeTier(quality);
+  if (g.mul >= GRADE_TIERS.find(t=>t.name==='Хорошее').mul) RET_track('grade', 1);
+  if (g.mul >= GRADE_TIERS[0].mul) RET_track('gradeTop', 1);
+}
 
 /* Стрик: награда растёт, на 7/14/30 — особые */
 const STREAK_MILESTONES = {
@@ -9425,7 +9549,15 @@ function RET_installHooks(){
       if (hadCrop){
         let delta = 0;
         for (const g in S.goods){ delta += Math.max(0, S.goods[g] - (before[g]||0)); }
-        if (delta > 0) RET_track('harvest', delta);
+        if (delta > 0){
+          RET_track('harvest', delta);
+          // ранг собранной партии — для заданий на качество
+          try {
+            const q = (typeof gradeOf === 'function') ? gradeOf(hadCrop) : 50;
+            LOG_trackGrade(delta, q, hadCrop);
+            if (typeof GOLD_check === 'function') GOLD_check(hadCrop);
+          } catch(e){}
+        }
       }
       return result;
     };
@@ -11444,6 +11576,40 @@ function LIV_renderExpeditions(){
   return html;
 }
 
+/* ---------- ЗОЛОТЫЕ КАРТОЧКИ КУЛЬТУР (v77) ----------
+   Культура получает «золотую» карточку, когда её собрали LOG_GOLD=60 раз.
+   Это долгая цель: мимо неё нельзя пройти случайно. */
+const LOG_GOLD = 60;
+function GOLD_of(cropId){ return LOG_of(cropId) >= LOG_GOLD; }
+function GOLD_all(){ return Object.keys(CROPS).filter(GOLD_of); }
+function GOLD_check(cropId){
+  if (!S.goldSeen) S.goldSeen = [];
+  if (!GOLD_of(cropId) || S.goldSeen.includes(cropId)) return;
+  S.goldSeen.push(cropId);
+  const c = CROPS[cropId];
+  setTimeout(()=>{
+    toast(`Золотая карточка: ${c.name}!`, 'good', 'medal');
+    FX.confetti(); sfx.good(); buzz(80);
+  }, 500);
+}
+function GOLD_render(){
+  const crops = Object.keys(CROPS);
+  const got = GOLD_all().length;
+  const cards = crops.map(id=>{
+    const c = CROPS[id], n = LOG_of(id), gold = GOLD_of(id);
+    const pct = clamp(Math.round(n/LOG_GOLD*100), 0, 100);
+    return `<button class="gold-card ${gold?'on':''}" onclick="App.logOpen()">
+      <span class="gold-art">${goodsIcon(id)}</span>
+      <span class="gold-name">${c.name}</span>
+      <span class="gold-pct">${gold ? '★ золото' : `${pct}%`}</span>
+      ${gold?'':`<span class="gold-bar"><i style="width:${pct}%"></i></span>`}
+    </button>`;
+  }).join('');
+  return `<div class="sec-title"><h3>${ic('medal')} Золотые культуры</h3><small>${got} / ${crops.length}</small></div>
+    <div class="muted-small" style="margin:-4px 0 9px">Собери культуру ${LOG_GOLD} раз — откроется золотая карточка</div>
+    <div class="gold-grid">${cards}</div>`;
+}
+
 /* ---------- КОЛЛЕКЦИЯ ---------- */
 function LIV_renderCollection(){
   const owned = S.liv.cards.owned;
@@ -11453,7 +11619,8 @@ function LIV_renderCollection(){
     rare: CARD_SET.filter(c=>c.r==='rare').length,
     epic: CARD_SET.filter(c=>c.r==='epic').length,
   };
-  let html = `<div class="sec-title"><h3>${ic('star')} Коллекция</h3><small>${owned.length} / ${total}</small></div>`;
+  let html = GOLD_render();
+  html += `<div class="sec-title" style="margin-top:16px"><h3>${ic('star')} Коллекция</h3><small>${owned.length} / ${total}</small></div>`;
   html += `<div class="liv-cards">`;
   for (const c of CARD_SET){
     const has = owned.includes(c.id);
@@ -11754,15 +11921,14 @@ function LIV_scrollActiveTab(){
   }catch(e){}
 }
 
+/* Двухуровневая навигация для внутренних экранов (v76).
+   10 кнопок в ряд не влезали — оставляем 3: Ферма · Задания · Ещё. */
 function LIV_switchHTML(active){
-  const sw = (id, icon, label) => `<button class="${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
-  const xmasTab = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
-  const statsTab = sw('stats','chart','Дневник');
-  const preTab = sw('prestige','star','Остров');
-  const wrTab = sw('weekly','calendar','Итоги');
-  return sw('map','map','Ферма') + sw('quests','target','Задания') + xmasTab + statsTab + preTab
-       + wrTab + sw('pass','medal','Пропуск') + sw('ach','star','Награды')
-       + sw('exped','map','Походы') + sw('cards','star','Коллекция');
+  const sw = (id, icon, label) => `<button class="fs-item ${active===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}<span>${label}</span></button>`;
+  const HIDDEN = ['stats','prestige','weekly','pass','ach','exped','cards','xmas'];
+  const moreActive = HIDDEN.includes(active);
+  return sw('map','map','Ферма') + sw('quests','target','Задания')
+    + `<button class="fs-item ${moreActive?'active':''}" onclick="App.openMoreMenu()">${ic('grid')}<span>Ещё</span>${moreActive?'<i class="fs-dot"></i>':''}</button>`;
 }
 
 /* ---------- Периодическое обновление (раз в минуту) ---------- */
