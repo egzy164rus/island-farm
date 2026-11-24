@@ -3577,6 +3577,65 @@ ${PET_CSS}
 .ss-note{display:flex;gap:7px;align-items:flex-start;font-size:9.5px;line-height:1.45;
   color:#8d9c88;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.025);}
 .ss-note .ic,.ss-note svg{width:13px;height:13px;flex:none;margin-top:1px;}
+
+/* ============================================================
+   ПРЕМИУМ-МАГАЗИН · v84
+   Стили отсутствовали с момента появления магазина (v66) —
+   витрина рисовалась голым HTML. Восстанавливаем.
+   ============================================================ */
+.prem-dialog{width:min(94vw,430px);max-height:88vh;overflow-y:auto;padding:16px 14px 14px;
+  border-radius:20px;background:linear-gradient(180deg,#26342a,#1b2620);
+  border:1px solid rgba(255,255,255,.09);box-shadow:0 24px 60px rgba(0,0,0,.55);}
+.prem-head h2{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:19px;color:#f2f6ee;}
+.prem-head h2 svg{width:20px;height:20px;color:#8fd08a;}
+.prem-head .muted{margin:0 0 10px;font-size:10.5px;line-height:1.5;color:#93a08d;}
+.prem-vip-badge{display:flex;align-items:center;gap:7px;padding:8px 11px;border-radius:12px;margin-bottom:10px;
+  font-size:10.5px;font-weight:800;color:#f3d9a4;
+  background:linear-gradient(135deg,rgba(243,217,164,.16),rgba(243,217,164,.05));
+  border:1px solid rgba(243,217,164,.28);}
+.prem-vip-badge svg{width:14px;height:14px;}
+.prem-balance{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;}
+.prem-balance .chip{flex:1;justify-content:center;min-width:0;}
+
+/* секции */
+.prem-sec{margin-bottom:13px;}
+.prem-sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 2px 7px;}
+.prem-sec-head b{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:#a9d8ae;}
+.prem-sec-head small{font-size:9px;color:#7f8d7a;}
+
+/* карточка товара */
+.prem-item{position:relative;display:flex;align-items:center;gap:9px;width:100%;
+  padding:9px 10px;margin-bottom:6px;border-radius:13px;cursor:pointer;text-align:left;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  color:#eaf2e4;font:inherit;transition:transform .14s ease,background .18s,border-color .18s;}
+.prem-item:active{transform:scale(.985);}
+.prem-item.is-hot{border-color:rgba(243,217,164,.32);background:rgba(243,217,164,.07);}
+.prem-item.is-owned{opacity:.55;cursor:default;}
+.prem-item.is-loading{opacity:.6;pointer-events:none;}
+.prem-item.is-loading .prem-price::after{content:' …';}
+@media (hover:hover){ .prem-item:not(.is-owned):hover{background:rgba(255,255,255,.06);border-color:rgba(143,208,138,.3);} }
+
+.prem-ico{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.06);}
+.prem-ico svg{width:18px;height:18px;color:#a9d8ae;}
+.prem-ico.gems svg{color:#7fb8e0;}
+.prem-ico.sub{background:linear-gradient(135deg,rgba(243,217,164,.20),rgba(243,217,164,.06));}
+.prem-ico.sub svg{color:#f3d9a4;}
+.prem-ico.decor svg{color:#e0b870;}
+.prem-ico.perk svg{color:#8fd08a;}
+
+.prem-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.prem-name{display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  font-size:11.5px;font-weight:800;color:#f2f6ee;}
+.prem-desc{font-size:9.5px;line-height:1.4;color:#93a08d;}
+.prem-flag{font-size:8px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;
+  padding:2px 5px;border-radius:5px;color:#1d2a20;
+  background:linear-gradient(135deg,#f3d9a4,#e0b870);}
+.prem-price{flex:none;font-size:12px;font-weight:900;color:#f3d9a4;white-space:nowrap;}
+.prem-per{position:absolute;right:10px;bottom:3px;font-size:7.5px;color:#7f8d7a;}
+.prem-item.is-owned .prem-price{color:#93a08d;font-weight:700;font-size:10px;}
+
+.prem-legal{margin:12px 2px 10px;font-size:9px;line-height:1.5;color:#7f8d7a;text-align:center;}
 </style>
 </head>
 <body>
@@ -3601,6 +3660,7 @@ ${PET_CSS}
 <div id="toast-root"></div>
 <div id="coach-root"></div>
 
+<script src="modules/yandex-sdk.js"></script>
 <script>
 /* Ранний снапшот прошлого визита — ДО любого save() */
 try{var __rps=localStorage.getItem('islandFarmSaveV1');if(__rps){var __rpd=JSON.parse(__rps);window.__retPrevSeen=__rpd&&__rpd.lastSeen||null;}}catch(e){}
@@ -9000,6 +9060,8 @@ const App = {
     S = freshState(ui.selPreset, ui.selStyle);
     if (typeof PUR_init === 'function') PUR_init();
     genBoard(); refreshMarket(true);
+    /* v84: теперь сейв существует — можно выдать покупки, отложенные на старте */
+    if (typeof YA_flushPending === 'function') YA_flushPending().catch(()=>{});
     if (!S.tut2) S.tut2 = { step:0, done:false, rewarded:{} };
     save(); renderAll();
     try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){}
@@ -9399,14 +9461,17 @@ function PUR_open(){
     const owned = PUR_owns(it.id) && it.kind!=='sub' && it.kind!=='pack';
     const badge = it.badge ? `<span class="prem-flag">${it.badge}</span>` : '';
     const per = it.kind==='sub' ? ` · ${Math.round(it.price/it.days)} ₽/день` : '';
+    const sku = (typeof YA_skuOf === 'function') ? YA_skuOf(it.id) : '';
     return `<button class="prem-item ${owned?'is-owned':''} ${it.badge?'is-hot':''}"
+              data-prem-buy="${it.id}" data-sku="${sku}"
               onclick="App.premBuy('${it.id}')" ${owned?'disabled':''}>
       <span class="prem-ico ${it.kind}">${ic(it.icon)}</span>
       <span class="prem-txt">
         <span class="prem-name">${it.name} ${badge}</span>
         <span class="prem-desc">${it.desc}</span>
       </span>
-      <span class="prem-price">${owned ? 'Куплено' : `${fmt(it.price)} ₽`}</span>
+      <span class="prem-price">${owned ? 'Куплено'
+        : (typeof YA_priceOf === 'function' && YA.on ? YA_priceOf(it) : `${fmt(it.price)} ₽`)}</span>
       ${it.kind==='sub' ? `<span class="prem-per">${per.trim()}</span>` : ''}
     </button>`;
   };
@@ -9435,7 +9500,9 @@ function PUR_open(){
     ${sec('Оформление', 'меняет вид фермы', ['decor_gold','decor_sky'])}
     ${sec('Навсегда', 'один платёж', ['perk_noads'])}
 
-    <p class="prem-legal">Демо-режим: платежи не проводятся. В релизе здесь подключается App Store / Google Play.</p>
+    <p class="prem-legal">${(typeof YA!=='undefined' && YA.on)
+      ? 'Оплата проходит через Яндекс. Покупка привязывается к твоему аккаунту и не потеряется при смене устройства.'
+      : 'Демо-режим: платежи не проводятся. Игра работает без аккаунта, прогресс хранится в этом браузере.'}</p>
     <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>
   `;
 
@@ -10019,6 +10086,8 @@ function BOOT_show(){
 function init(){
   if (typeof XMAS_applyBodyClass === 'function') XMAS_applyBodyClass();
   try { BOOT_show(); } catch(e){}
+  /* --- v84: Яндекс Игры. Запускаем параллельно, игру не ждём --- */
+  YA_boot().catch(()=>{});
   window.addEventListener('beforeinstallprompt', event=>{
     event.preventDefault();
     deferredInstallPrompt=event;
@@ -10042,6 +10111,7 @@ function init(){
     applyOffline();
     if (S.tut2 && !S.tut2.done) TUT2_show();
     else if (!S.tutorial.done) tutShow();
+    if (typeof YA_flushPending === 'function') YA_flushPending().catch(()=>{});
     try { BOOT_run(); } catch(e){}
   } else {
     renderStart();
@@ -10064,6 +10134,61 @@ function init(){
     navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{});
   }
 }
+/* ---------- YANDEX BOOT (v84) ----------
+   Порядок важен:
+     1) поднять SDK;
+     2) авторизовать игрока и сравнить локальный сейв с облачным;
+     3) сообщить платформе, что игра готова (иначе не уберёт сплэш);
+     4) выдать покупки, которые не успели дойти в прошлый раз.
+   Ошибка на любом шаге не должна ломать игру. */
+async function YA_boot(){
+  if (typeof YA === 'undefined' || typeof YA_init !== 'function') return;
+  await YA_init();
+  if (!YA.on) return;
+
+  try {
+    await YA_initPlayer();
+    if (YA_authorized()){
+      const cloud = await YA_cloudLoad();
+      const local = load();
+      const picked = YA_pickSave(local, cloud);
+
+      if (picked.source === 'cloud'){
+        /* Облако новее — берём его. Игрок продолжит с того же места на любом устройстве. */
+        S = picked.save;
+        if (typeof PUR_init === 'function') PUR_init();
+        try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch(e){}
+        applySettings();
+        genBoardIfNeeded();
+        refreshMarket(false);
+        renderAll();
+        applyOffline();
+        toast('Прогресс загружен из облака', 'good', 'check');
+        console.log('[YA] взят облачный сейв');
+      } else {
+        /* Локальный новее или облака нет — отправляем наш наверх */
+        await YA_cloudSave(true);
+        console.log('[YA] сейв отправлен в облако');
+      }
+    }
+  } catch(e){ console.warn('[YA] синхронизация:', e); }
+
+  /* Платформа должна узнать, что загрузка закончилась */
+  YA_gameReady();
+  YA_gameplayStart();
+
+  /* Недоставленные покупки — сразу после готовности магазина */
+  try { await YA_deliverPending(); } catch(e){}
+
+  /* Дальше — фоновые сохранения в облако: раз в минуту, если что-то изменилось */
+  let lastSent = JSON.stringify(S).length;
+  setInterval(async ()=>{
+    if (!YA.on || !YA_authorized() || document.hidden) return;
+    const now = JSON.stringify(S).length;
+    if (Math.abs(now - lastSent) > 80){ lastSent = now; await YA_cloudSave(false); }
+  }, 60000);
+}
+
 /* ---------- МИГРАЦИЯ СЕЙВОВ ТЕХНИКИ (v64) ----------
    До v64 у машин не было cond/lvl/tier. Старые сейвы могут хранить
    S.machines как МАССИВ id либо как объект без новых полей.
