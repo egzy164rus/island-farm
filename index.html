@@ -7674,7 +7674,7 @@ function renderHUD(){
     <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span>${(typeof PUR_isVip==='function' && PUR_isVip()) ? `<span class="hud-flag vip">${ic('medal')} VIP ${PUR_vipDaysLeft()}д</span>` : ''}${(typeof PUR_boostActive==='function' && PUR_boostActive()) ? `<span class="hud-flag boost">${ic('bolt')} ${purBoostLeft()}</span>` : ''}<span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span>
       <button class="season-meta" onclick="App.seasonOpen()" title="Сезоны">
         ${ic(seas.icon)} ${seas.name}<em>${S.settings.fixedSummer?'':`· ${SEASON_daysLeft()} дн.`}</em>
-        <span class="season-prog"><i style="width:${S.settings.fixedSummer?100:Math.round((SEASON_LEN-SEASON_daysLeft())/SEASON_LEN*100)}%"></i></span>
+        <span class="season-prog"><i style="width:${S.settings.fixedSummer?100:Math.round(SEASON_dayIn()/SEASON_LEN*100)}%"></i></span>
       </button>
       <button class="weather-meta" onclick="App.wxOpen()" title="Погода">${ic(wea.icon)} ${wea.name}</button></div>
     <div class="xpbar"><i style="width:${xpPct}%"></i></div>`;
