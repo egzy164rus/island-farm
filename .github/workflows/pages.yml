@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -22,24 +22,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
-      # Собираем только то, что реально нужно сайту.
-      # Раньше сюда попадали .git и .github — из-за этого публикация падала.
+
+      # Публикуем только файлы сайта: .git и .github в артефакт не нужны.
       - name: Stage site files
         run: |
           mkdir -p _site
           cp index.html sw.js manifest.webmanifest .nojekyll _site/
           cp -r art modules _site/
           cp icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png _site/ 2>/dev/null || true
-          echo "--- содержимое артефакта ---"
           ls -la _site
           du -sh _site
+
       - name: Upload site files
+        id: upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+          retention-days: 1
+
+      # GitHub иногда не успевает зарегистрировать артефакт — даём время
+      - name: Wait for artifact
+        run: sleep 8
+
       - name: Publish to GitHub Pages
         id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: Retry publish once
+        if: steps.deployment.outcome == 'failure'
+        run: |
+          echo "Первый деплой не удался — ждём и пробуем ещё раз"
+          sleep 20
+
+      - name: Publish to GitHub Pages (retry)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
