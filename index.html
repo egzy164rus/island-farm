@@ -3169,6 +3169,47 @@ ${PET_CSS}
 .liv-pet.walking svg{animation:petWalkBounce .5s ease-in-out 4;}
 @keyframes petWalkBounce{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(-4deg)}}
 @media (prefers-reduced-motion:reduce){.liv-pet.walking svg{animation:none}}
+
+/* ===== ЖИВОЙ РЫНОК · v79 ===== */
+.mkt-pres{display:flex;align-items:center;gap:8px;margin:7px 0 3px;}
+.mkt-pres-bar{flex:1;height:5px;border-radius:4px;background:rgba(0,0,0,.34);overflow:hidden;}
+.mkt-pres-bar i{display:block;height:100%;border-radius:4px;transition:width .4s;}
+.mkt-pres.good .mkt-pres-bar i{background:linear-gradient(90deg,#4f9d63,#8fd08a);}
+.mkt-pres.mid  .mkt-pres-bar i{background:linear-gradient(90deg,#b8912f,#e5c25a);}
+.mkt-pres.bad  .mkt-pres-bar i{background:linear-gradient(90deg,#a8452f,#e08363);}
+.mkt-pres-txt{font-size:9px;font-weight:800;letter-spacing:.02em;white-space:nowrap;}
+.mkt-pres.good .mkt-pres-txt{color:#9fd48a;}
+.mkt-pres.mid  .mkt-pres-txt{color:#e3c778;}
+.mkt-pres.bad  .mkt-pres-txt{color:#e8a58e;}
+
+/* ===== ТОВАРНЫЕ ЗАКАЗЫ · v79 ===== */
+.gorder{padding:12px 13px;}
+.board-card.gorder{display:flex;flex-direction:column;}
+.board-card.gorder .contract-visual.npc{border-radius:14px 14px 0 0;margin:-12px -13px 10px;}
+.go-main{min-width:0;}
+.go-head{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.go-ic{width:36px;height:36px;flex:none;border-radius:11px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);overflow:hidden;}
+.go-ic svg{width:24px;height:24px;}
+.go-title{flex:1;min-width:0;}
+.go-title b{display:block;font-size:12px;color:#eef4e8;font-weight:800;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.go-title small{display:block;font-size:10px;color:#93a48e;margin-top:1px;}
+.go-req{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:10px;
+  padding:7px 9px;border-radius:10px;margin-bottom:6px;font-weight:700;}
+.go-req.ok{background:rgba(122,200,140,.10);border:1px solid rgba(122,200,140,.22);color:#a9d8ae;}
+.go-req.no{background:rgba(226,140,110,.09);border:1px solid rgba(226,140,110,.20);color:#e8b09c;}
+.go-req em{font-style:normal;opacity:.75;font-size:9px;margin-left:auto;}
+.go-stars{color:#f0c95e;letter-spacing:1px;font-size:11px;}
+.go-stock{display:flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;margin-bottom:8px;}
+.go-stock .ic,.go-stock svg{width:13px;height:13px;flex:none;}
+.go-stock.ok{color:#8fb98b;}
+.go-stock.no{color:#c99588;}
+.go-warn{display:flex;gap:7px;align-items:flex-start;font-size:10px;line-height:1.4;
+  padding:9px 11px;border-radius:11px;background:rgba(226,140,110,.10);
+  border:1px solid rgba(226,140,110,.20);color:#e8b09c;}
+.go-warn .ic,.go-warn svg{width:13px;height:13px;flex:none;margin-top:1px;}
+.muted-card{opacity:.72;}
 </style>
 </head>
 <body>
@@ -3812,6 +3853,97 @@ function fieldYield(f){
   return Math.max(1, Math.round(c.yield * mult));
 }
 
+/* ============================================================
+   ЖИВОЙ РЫНОК · v79
+   Цена реагирует на спрос и предложение, а не просто на случайность.
+   · Продал много за раз → цена проседает (насыщение рынка)
+   · Не продавал день → цена восстанавливается (дефицит)
+   · Хранишь товар на складе → идёт «порча», но склад можно расширить
+   Это создаёт настоящий выбор: продать сейчас дёшево или ждать.
+   ============================================================ */
+
+/* Сколько товара рынок «съедает» без просадки цены, по товарам */
+const MKT_DEPTH = {
+  wheat:900, rapeseed:700, corn:600, soy:500, potato:450, cotton:350, grape:280, hay:700,
+  eggs:180, wool:120, milk:160, meat:110, honey:70, veggies:200,
+  flour:260, bread:150, cheese:90, fabric:110, clothes:60, silage:400, biogas:120,
+};
+function MKT_depth(g){ return MKT_DEPTH[g] || 300; }
+
+function MKT_state(){
+  if (!S.market) S.market = {};
+  if (!S.market.pressure) S.market.pressure = {};
+  if (!S.market.at) S.market.at = Date.now();
+  return S.market;
+}
+
+/* Насыщение рынка: 1.0 — свежо, ниже — цена задавлена.
+   Восстанавливается примерно за сутки. */
+/* Восстановление: храним «давление» и время последней продажи.
+   Между вызовами домножаем на долю восстановления — так значение
+   не «застревает» и честно тает со временем. */
+function MKT_tick(g){
+  const st = MKT_state();
+  if (!st.pressure) st.pressure = {};
+  if (!st.soldAt) st.soldAt = {};
+  const last = st.soldAt[g];
+  let p = st.pressure[g] || 0;
+  if (p > 0 && last){
+    const hours = (Date.now() - last) / 3600000;
+    const recover = clamp(hours / 20, 0, 1);   // за 20 ч давление обнуляется
+    if (recover > 0){
+      p = p * (1 - recover);
+      st.pressure[g] = p;
+      st.soldAt[g] = Date.now();
+    }
+  }
+  return p;
+}
+function MKT_pressure(g){
+  const p = MKT_tick(g);
+  const depth = MKT_depth(g);
+  // первые 35% глубины не давят; дальше цена плавно проседает до 55%
+  const over = Math.max(0, p);
+  const soft = depth * 0.35;
+  const eff = Math.max(0, over - soft) / depth;
+  return Math.max(0.55, 1 - Math.min(0.45, eff * 0.45));
+}
+
+/* Итоговый множитель цены: точка продажи × событие × насыщение */
+function MKT_priceMul(g){
+  const st = MKT_state();
+  const base = bestPoint(g).mult;
+  const pres = MKT_pressure(g);
+  const ev = EV_mods().price || 1;
+  return { mul: base * pres * ev, base, pres, ev };
+}
+
+/* Учёт проданного: давит на цену в зависимости от объёма */
+function MKT_registerSale(g, qty){
+  const st = MKT_state();
+  MKT_tick(g);                                  // сначала списать восстановление
+  const cur = st.pressure[g] || 0;
+  const cap = MKT_depth(g) * 1.6;               // предел давления
+  st.pressure[g] = Math.min(cap, cur + qty);
+  st.soldAt[g] = Date.now();
+  clearTimeout(MKT_timer);
+  MKT_timer = setTimeout(()=>{ try{ save(); }catch(e){} }, 1200);
+}
+let MKT_timer = null;
+
+/* Что выгодно продавать прямо сейчас — для подсказки в UI */
+function MKT_bestDeal(){
+  const rows = [];
+  for (const g in S.goods){
+    if (!S.goods[g] || !GOODS[g]) continue;
+    const pr = MKT_priceMul(g);
+    const unit = GOODS[g].price * pr.mul * gradeMul(g);
+    rows.push({ good:g, price:Math.round(unit), mult:pr.mul, pres:pr.pres,
+                total:Math.round(S.goods[g]*unit), qty:S.goods[g] });
+  }
+  return rows.sort((a,b)=>b.total-a.total);
+}
+
 /* ---------------- MARKET ---------------- */
 function refreshMarket(force){
   const now = Date.now();
@@ -3834,9 +3966,10 @@ function bestPoint(good){
 function sellGood(good, qty){
   qty = Math.min(qty, S.goods[good]);
   if (qty <= 0) return 0;
-  const {mult} = bestPoint(good);
-  let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good) * (EV_mods().price || 1));
+  const {mul:mult} = MKT_priceMul(good);
+  let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good));
   S.goods[good] -= qty;
+  MKT_registerSale(good, qty);
   // множитель престижа: «новый остров» бустит все доходы
   if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
   addCoins(gain); S.stats.sold += qty;
@@ -4097,6 +4230,79 @@ function tickJobs(){
 
 /* ---------------- CONTRACTS ---------------- */
 function contractType(c){ return CONTRACT_TYPES.find(t=>t.id===c.type); }
+
+/* ============================================================
+   ТОВАРНЫЕ ЗАКАЗЫ · v79
+   Сосед просит конкретный товар и платит за качество.
+   Это связывает почву/уход с деньгами напрямую.
+   ============================================================ */
+const GORDER_GOODS = ['wheat','corn','potato','milk','honey','eggs','bread','cheese','wool','veggies','grape','soy'];
+const GORDER_ASK = [
+  { min:35, name:'Обычное',   mul:1.00, star:1 },
+  { min:62, name:'Хорошее',   mul:1.35, star:2 },
+  { min:85, name:'Отборное',  mul:1.80, star:3 },
+];
+function GORDER_make(opts){
+  opts = opts || {};
+  const good = opts.good || pick(GORDER_GOODS);
+  const base = GOODS[good]?.price || 1;
+  // количество зависит от цены товара: дорогие берут меньше
+  const qtyRaw = Math.round(900 / Math.max(1, base) * rand(0.7, 1.4));
+  const qty = clamp(qtyRaw, 8, 260);
+  // требование качества: чем выше уровень игрока, тем чаще просят хорошее
+  const roll = Math.random() * (1 + Math.min(0.5, (S.level||1) * 0.02));
+  const tier = roll > 1.25 ? GORDER_ASK[2] : roll > 0.72 ? GORDER_ASK[1] : GORDER_ASK[0];
+  const pay = Math.round(qty * base * tier.mul * rand(1.55, 2.1) * (1 + (S.rep||0)/260));
+  return {
+    id: uid(), kind:'goods', good, qty, tier, reward: pay,
+    fieldName: pick(NPC_NAMES), state:'board', createdAt: Date.now(),
+    hours: 12,
+  };
+}
+function GORDER_have(good){ return Math.max(0, S.goods[good] || 0); }
+function GORDER_canFill(o){
+  if (GORDER_have(o.good) < o.qty) return false;
+  return gradeOf(o.good) >= o.tier.min;
+}
+function GORDER_take(id){
+  const o = (S.board||[]).find(x=>x.id===id);
+  if (!o || o.state!=='board') return;
+  if (activeContracts().length >= 3){ toast('Все 3 слота заняты!', 'bad', 'clipboard'); sfx.bad(); return; }
+  if (!GORDER_canFill(o)){
+    const hv = GORDER_have(o.good), q = gradeOf(o.good);
+    if (hv < o.qty) toast(`Нужно ${fmt(o.qty)} ${GOODS[o.good].name}, есть ${fmt(hv)}`, 'bad', 'box');
+    else toast(`Нужно качество «${o.tier.name}», у склада ${gradeTier(q).name}`, 'bad', 'star');
+    sfx.bad(); return;
+  }
+  o.state = 'active'; o.startedAt = Date.now();
+  o.endsAt = Date.now() + durMs(15);       // сдача за 15 игровых минут
+  o.total = durMs(15);
+  addJob({ kind:'gorder', ref:o.id, durMs:o.total });
+  sfx.pop(); save(); renderAll();
+  toast(`Заказ принят: ${GOODS[o.good].name} ×${fmt(o.qty)}`, 'good', 'clipboard');
+}
+function GORDER_claim(id){
+  const o = (S.board||[]).find(x=>x.id===id);
+  if (!o) return;
+  if (o.state === 'active' && Date.now() < o.endsAt){ toast('Ещё готовится к отгрузке', '', 'clock'); return; }
+  if (!GORDER_canFill(o)){
+    if (GORDER_have(o.good) < o.qty) toast('Товара не хватает — вернись, когда соберёшь', 'bad', 'box');
+    else toast(`Качество упало ниже «${o.tier.name}»`, 'bad', 'star');
+    return;
+  }
+  // списываем товар и пересчитываем среднее качество партии
+  const q = gradeOf(o.good);
+  S.goods[o.good] -= o.qty;
+  addCoins(o.reward);
+  S.rep = clamp((S.rep||0) + 3, 0, 100);
+  S.stats.contractsDone = (S.stats.contractsDone||0) + 1;
+  addXP(20);
+  S.board = S.board.filter(x=>x.id !== o.id);
+  if (typeof DCH_track === 'function'){ DCH_track('contracts', 1); DCH_track('xp', 20); }
+  toast(`Заказ сдан: +${fmt(o.reward)} монет, +3 репутации`, 'good', 'gift');
+  sfx.coin(); FX.confetti();
+  save(); renderAll();
+}
 function genContract(tutorial=false){
   const t = tutorial ? CONTRACT_TYPES[0] : pick(CONTRACT_TYPES);
   const reward = Math.round(rand(t.pay[0], t.pay[1]) * style().pay * (1 + S.rep/200));
@@ -4108,7 +4314,10 @@ function genContract(tutorial=false){
 }
 function genBoard(){
   S.board = [];
-  for (let i=0;i<6;i++) S.board.push(genContract());
+  for (let i=0;i<6;i++){
+    // каждый второй заказ — товарный: платит за качество
+    S.board.push(i % 2 === 1 ? GORDER_make() : genContract());
+  }
   const cheap = S.board.filter(c=>c.reward<500).length;
   if (cheap < 2){ S.board[0] = genContract(); S.board[1] = genContract(); }
   S.boardAt = Date.now();
@@ -6889,6 +7098,64 @@ function renderBusiness(){
   $('#screen').innerHTML=`<div class="page-heading"><div><small>РАЗВИТИЕ</small><h2>Хозяйство</h2></div><button class="garage-shortcut" onclick="App.openGarage()">${ic('tractor')} Гараж</button></div><div class="biz-tabs">${tabs}</div>${body}`;
 }
 
+/* ---------- ТОВАРНЫЕ ЗАКАЗЫ: рендер ---------- */
+function GORDER_stars(tier){
+  return `<span class="go-stars">${'★'.repeat(tier.star)}${'☆'.repeat(3-tier.star)}</span>`;
+}
+function GORDER_boardHTML(o, actLen){
+  const have = GORDER_have(o.good);
+  const q = gradeOf(o.good);
+  const enoughQty = have >= o.qty;
+  const enoughQ = q >= o.tier.min;
+  const ok = enoughQty && enoughQ;
+  const need = Math.max(0, o.qty - have);
+  const slots = actLen < 3;
+  const cls = ok && slots ? '' : 'muted-card';
+  return `<article class="board-card gorder ${cls}">
+    <div class="contract-visual npc">${NPC_portrait(o.fieldName, 44)}
+      <span class="npc-name-tag"><b>${esc(o.fieldName)}</b><small>сосед</small></span>
+      <span class="npc-side">${goodsIcon(o.good)}</span></div>
+    <div class="go-head">
+      <div class="go-title">
+        <b>Просит ${GOODS[o.good].name.toLowerCase()} × ${fmt(o.qty)}</b>
+        <small>Товарный заказ</small>
+      </div>
+      <span class="contract-reward">${ic('coin')} ${fmt(o.reward)}</span>
+    </div>
+    <div class="go-req ${enoughQ?'ok':'no'}">
+      ${GORDER_stars(o.tier)} <span>качество «${o.tier.name}» и выше</span>
+      <em>${enoughQ ? 'склад подходит' : `сейчас ${gradeTier(q).name}`}</em>
+    </div>
+    <div class="go-stock ${enoughQty?'ok':'no'}">
+      ${ic('box')} На складе ${fmt(have)} из ${fmt(o.qty)}${need ? ` · не хватает ${fmt(need)}` : ' · хватает'}
+    </div>
+    <button class="mini-cta full" ${ok && slots ? '' : 'disabled'} onclick="App.gorderTake('${o.id}')">
+      ${!slots ? 'Все слоты заняты' : !enoughQty ? 'Собери товар' : !enoughQ ? 'Нужно выше качество' : 'Принять заказ'}
+    </button>
+  </article>`;
+}
+function GORDER_activeHTML(o){
+  const done = o.state === 'done' || Date.now() >= o.endsAt;
+  const ok = GORDER_canFill(o);
+  return `<article class="contract-card gorder ${done?'done':''}">
+    <div class="contract-visual npc">${NPC_portrait(o.fieldName, 46)}</div>
+    <div class="go-main">
+    <div class="go-head">
+      <div class="go-title"><b>${GOODS[o.good].name} × ${fmt(o.qty)}</b>
+        <small>${esc(o.fieldName)} · ${GORDER_stars(o.tier)} ${o.tier.name}</small></div>
+      <span class="contract-reward">${ic('coin')} ${fmt(o.reward)}</span>
+    </div>
+    ${done
+      ? (ok
+          ? `<button class="btn btn-primary btn-block" onclick="App.gorderClaim('${o.id}')">${ic('gift')} Отгрузить и получить</button>`
+          : `<div class="go-warn">${ic('info')} ${GORDER_have(o.good) < o.qty ? 'Товара не хватает' : 'Качество ниже требуемого'} — заказ ждёт</div>`)
+      : `<div class="contract-progress"><div class="bar"><i data-pb="contract-${o.id}" style="width:0%"></i></div>
+           <span data-timer="contract-${o.id}">…</span>
+           <button class="cancel-link" onclick="App.cancelContract('${o.id}')">Отменить</button></div>`}
+    </div>
+  </article>`;
+}
+
 /* ---------- TASKS TAB ---------- */
 function renderTasks(){
   const act=activeContracts(), goalLeft=Math.max(0,3-S.daily.contracts);
@@ -6901,6 +7168,7 @@ function renderTasks(){
     html+=`<div class="task-list">`;
     if(!act.length) html+=`<div class="empty-state"><span>${ic('clipboard')}</span><b>Пока нет активных заказов</b><small>Загляни на доску и выбери работу по силам</small><button class="mini-cta" onclick="App.taskSection('board')">Открыть доску</button></div>`;
     for(const c of act){
+      if (c.kind === 'goods'){ html += GORDER_activeHTML(c); continue; }
       const t=contractType(c), done=c.state==='done';
       html+=`<article class="contract-card ${done?'done':''}"><div class="contract-visual npc">${NPC_portrait(c.fieldName, 46)}</div><div class="contract-main"><div class="row between"><b>${t.name}</b><span class="contract-reward">${ic('coin')} ${fmt(c.reward)}</span></div><small>${esc(c.fieldName)} · ${MACHINES[t.machine].name}${c.rented?' · аренда':''}</small>
         ${done?`<button class="btn btn-primary btn-block" data-tut="claim" onclick="App.claimContract('${c.id}')">${ic('gift')} Забрать награду</button>`:`<div class="contract-progress"><div class="bar"><i data-pb="contract-${c.id}" style="width:0%"></i></div><span data-timer="contract-${c.id}">…</span><button class="cancel-link" onclick="App.cancelContract('${c.id}')">Отменить</button></div>`}</div></article>`;
@@ -6912,6 +7180,7 @@ function renderTasks(){
     html+=`<div class="board-toolbar"><span>${board.length} доступных заказов</span><span class="board-pages"><button onclick="App.boardPage(-1)" ${ui.boardPage===0?'disabled':''}>‹</button><b>${ui.boardPage+1}/${maxPage+1}</b><button onclick="App.boardPage(1)" ${ui.boardPage>=maxPage?'disabled':''}>›</button></span></div><div class="task-list">`;
     if(!board.length) html+=`<div class="empty-state"><b>Доска обновляется</b><small>Новые заказы скоро появятся</small></div>`;
     for(const c of show){
+      if (c.kind === 'goods'){ html += GORDER_boardHTML(c, act.length); continue; }
       const t=contractType(c), st=machineStatus(t.machine), rent=st.rent?Math.round(c.reward*.25):0;
       const can=act.length<3&&S.rep>=c.repReq&&S.coins>=c.cost+rent;
       html+=`<article class="board-card"><div class="contract-visual npc">${NPC_portrait(c.fieldName, 44)}
@@ -7057,16 +7326,23 @@ function openMarket(){
   }
   let html = `<h2>${ic('coin')} Рынок</h2><p class="muted">Цены обновляются каждые 10 игровых минут. Лучшая цена подсвечена.</p>`;
   for (const g of goodsList){
-    const {point, mult} = bestPoint(g);
+    const {point} = bestPoint(g);
+    const pr = MKT_priceMul(g);
+    const mult = pr.mul, pres = pr.pres;
     const price = Math.round(GOODS[g].price*mult*gradeMul(g));
+    const presPct = Math.round(pres*100);
+    const presCls = pres >= 0.97 ? 'good' : pres >= 0.85 ? 'mid' : 'bad';
+    const presTxt = pres >= 0.97 ? 'спрос высокий' : pres >= 0.85 ? 'рынок насыщается' : 'цена просела — подожди';
     html += `<div class="card" style="margin-bottom:8px">
       <div class="row between"><b class="row">${goodsIcon(g)} ${GOODS[g].name} ×${fmt(S.goods[g])}</b>
-      <span class="pill">${mult.toFixed(2)}× · ${point.name} — лучшее</span></div>
+      <span class="pill">${mult.toFixed(2)}× · ${point.name}</span></div>
       ${(()=>{const q=gradeOf(g), gt=gradeTier(q);
         return `<div class="market-grade"><span class="mg-stars" style="color:${gt.color}">${'★'.repeat(gt.stars)}${'☆'.repeat(3-gt.stars)}</span>
         <span class="mg-name" style="color:${gt.color}">${gt.name}</span>
         <span class="mg-mul">качество ×${gt.mul.toFixed(2)}</span></div>`;})()}
-      <div class="small muted">${POINTS.map(p=>`${p.name}: ${(S.market.mult[p.id][g]).toFixed(2)}×`).join(' · ')}</div>
+      <div class="mkt-pres ${presCls}"><span class="mkt-pres-bar"><i style="width:${presPct}%"></i></span>
+        <span class="mkt-pres-txt">${presTxt}</span></div>
+      <div class="small muted">${POINTS.map(p=>`${p.name}: ${(S.market.mult[p.id][g]*(pr.ev)).toFixed(2)}×`).join(' · ')}</div>
       <button class="btn btn-gold btn-block btn-sm" data-tut="sell" style="margin-top:6px" onclick="App.sell('${g}')">Продать всё за ≈ ${fmt(S.goods[g]*price)} монет</button></div>`;
   }
   if (goodsList.length){
@@ -11290,6 +11566,8 @@ function LIV_installHooks(){
     petRename(){ sfx.click(); PET_rename(); },
     petSaveName(){ PET_saveName(); },
     petWalk(){ PET_walk(); },
+    gorderTake(id){ GORDER_take(id); },
+    gorderClaim(id){ GORDER_claim(id); },
     petPet(){ PET_pet(); },
       feedPet(){ LIV_feedPet(); },
       playPet(){ LIV_playPet(); },
