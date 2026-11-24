@@ -2698,6 +2698,141 @@ body.xmas-mode #hud{background-image:linear-gradient(180deg,rgba(150,200,255,.10
 .wl-skip{display:block;width:100%;margin-top:12px;border:0;background:transparent;
   color:#7f9478;font:700 11.5px var(--font-ui);cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px;}
 
+
+/* ===== СТАРТОВЫЙ ЭКРАН v2 · v75 ===== */
+.start-wrap.v2{
+  position:relative;overflow:hidden;min-height:100dvh;
+  background:
+    radial-gradient(120% 70% at 50% 0%, #1d3040 0%, #16242b 42%, #121c17 100%);
+  padding-bottom:20px;
+}
+.start-wrap.v2 .start-content.sv2{margin-top:0 !important;padding:26px 20px 8px !important;gap:0;}
+.start-wrap.v2 .start-hero{display:none;}
+.sv2-sky{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.sv2-sun{
+  position:absolute;top:-70px;left:50%;transform:translateX(-50%);
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,214,130,.30) 0%, rgba(255,196,100,.12) 38%, transparent 68%);
+  animation:sv2breathe 7s ease-in-out infinite;
+}
+@keyframes sv2breathe{0%,100%{opacity:.75;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+.sv2-cloud{
+  position:absolute;height:34px;border-radius:40px;
+  background:rgba(255,255,255,.055);
+  filter:blur(6px);
+}
+.sv2-cloud.c1{width:130px;top:70px;left:-40px;animation:sv2drift 26s linear infinite;}
+.sv2-cloud.c2{width:96px;top:120px;left:60%;animation:sv2drift 34s linear infinite reverse;opacity:.7;}
+.sv2-cloud.c3{width:74px;top:190px;left:20%;animation:sv2drift 42s linear infinite;opacity:.5;}
+@keyframes sv2drift{0%{transform:translateX(0)}100%{transform:translateX(120vw)}}
+
+.start-content.sv2{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;align-items:center;
+  padding:26px 20px 8px;
+}
+.sv2-badge{margin-bottom:10px;filter:drop-shadow(0 8px 20px rgba(243,217,164,.30));}
+.sv2-logo{width:56px;height:56px;display:block;animation:sv2float 6s ease-in-out infinite;}
+@keyframes sv2float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.sv2-kicker{
+  font-size:9.5px;letter-spacing:2.6px;font-weight:800;color:#b9c9b5;
+  text-transform:uppercase;margin-bottom:6px;
+}
+h1.start-title.sv2{
+  font-size:32px;line-height:1.02;letter-spacing:-.6px;text-align:center;
+  color:#fff8ea;margin:0 0 8px;
+  text-shadow:0 2px 0 rgba(0,0,0,.22), 0 10px 32px rgba(255,206,120,.18);
+}
+.start-sub.sv2{
+  font-size:12.5px;line-height:1.5;color:#a8b8a4;text-align:center;margin-bottom:6px;
+}
+.sv2-island{width:100%;max-width:330px;margin:2px 0 6px;}
+.sv2-island svg{width:100%;height:auto;display:block;filter:drop-shadow(0 12px 24px rgba(0,0,0,.35));}
+.sv2-smoke circle{animation:sv2smoke 4.5s ease-out infinite;}
+.sv2-smoke circle:nth-child(2){animation-delay:1.1s;}
+.sv2-smoke circle:nth-child(3){animation-delay:2.2s;}
+@keyframes sv2smoke{0%{opacity:.28;transform:translateY(0) scale(.8)}70%{opacity:.10}100%{opacity:0;transform:translateY(-14px) scale(1.5)}}
+@media(prefers-reduced-motion:reduce){.sv2-smoke circle{animation:none;}}
+
+.start-wrap.v2 .start-cta.sv2{
+  width:100%;max-width:330px;margin:0;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;
+  gap:12px;padding:13px 16px;border-radius:17px;text-align:left;
+  background:linear-gradient(180deg,#ffe0a1,#d9ab5f);
+  box-shadow:0 10px 26px rgba(217,171,95,.34), inset 0 1px 0 rgba(255,255,255,.62);
+}
+.start-wrap.v2 .start-cta.sv2 .ic,.start-wrap.v2 .start-cta.sv2 svg{width:19px;height:19px;margin:0;}
+.start-cta.sv2 .cta-ico{
+  width:38px;height:38px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+  background:rgba(60,40,10,.16);color:#3a2a08;
+}
+.start-cta.sv2 .cta-ico .ic,.start-cta.sv2 .cta-ico svg{width:19px;height:19px;}
+.start-cta.sv2 .cta-txt{display:flex;flex-direction:column;gap:1px;}
+.start-cta.sv2 .cta-txt b{font-size:16px;font-weight:900;color:#33280f;letter-spacing:.2px;}
+.start-cta.sv2 .cta-txt small{font-size:10px;font-weight:700;color:rgba(51,40,15,.62);}
+.start-cta.sv2:active{transform:scale(.985);}
+
+.start-wrap.v2 .start-adv.sv2{
+  max-width:330px;margin:10px 0 0;font-size:11.5px;font-weight:700;color:#93a48f;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 12px;border-radius:11px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+}
+.start-wrap.v2 .sv2-feats{
+  display:grid !important;grid-template-columns:1fr 1fr !important;gap:7px;
+  width:100%;max-width:330px;margin:14px 0 4px;flex-direction:row;
+}
+.start-wrap.v2 .sv2-feats span{
+  display:flex;align-items:center;justify-content:flex-start;gap:7px;
+  padding:9px 11px;border-radius:12px;white-space:nowrap;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);
+  font-size:10.5px;font-weight:700;color:#b7c6b2;
+}
+.sv2-feats .ic,.sv2-feats svg{width:14px;height:14px;flex:0 0 auto;color:#f3d9a4;}
+.start-note{margin-top:12px;text-align:center;}
+
+
+/* ===== КОМПОСТ И СЕВООБОРОТ · v75 ===== */
+.comp-card{
+  border-radius:15px;padding:11px 13px;margin:10px 0;
+  background:rgba(255,255,255,.032);border:1px solid rgba(255,255,255,.08);
+}
+.comp-card.has{background:linear-gradient(180deg,rgba(111,191,115,.10),rgba(111,191,115,.02));
+  border-color:rgba(111,191,115,.22);}
+.comp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.comp-head span{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#e8eee2;}
+.comp-head span .ic,.comp-head span svg{width:14px;height:14px;color:#8fd08a;}
+.comp-head b{font-size:12px;color:#f3e7cf;}
+.comp-card small{display:block;font-size:10px;color:#95a393;line-height:1.35;}
+.comp-actions{display:flex;gap:6px;margin-top:9px;}
+.comp-btn{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:9px 10px;border-radius:11px;font-size:11px;font-weight:800;
+  background:linear-gradient(180deg,rgba(111,191,115,.26),rgba(111,191,115,.12));
+  border:1px solid rgba(143,208,138,.42);color:#ddf5d6;
+}
+.comp-btn.ghost{flex:0 0 auto;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10);color:#c3cfbe;}
+.comp-btn:disabled{opacity:.42;}
+.comp-btn .ic,.comp-btn svg{width:13px;height:13px;}
+.rot-warn{
+  display:flex;align-items:flex-start;gap:7px;margin-top:8px;padding:9px 11px;border-radius:12px;
+  background:linear-gradient(180deg,rgba(224,160,90,.14),rgba(224,160,90,.04));
+  border:1px solid rgba(224,160,90,.30);font-size:10.5px;color:#f0cfae;line-height:1.35;
+}
+.rot-warn .ic,.rot-warn svg{width:13px;height:13px;flex:0 0 auto;color:#e0a05a;margin-top:1px;}
+
+.comp-big,.comp-cooking{
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  border-radius:15px;padding:12px;margin:10px 0;
+}
+.comp-cooking{border-color:rgba(243,217,164,.22);background:linear-gradient(180deg,rgba(243,217,164,.08),rgba(201,160,90,.02));}
+.comp-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#cbd6c6;font-weight:700;}
+.comp-row span{display:inline-flex;align-items:center;gap:6px;}
+.comp-row .ic,.comp-row svg{width:14px;height:14px;color:#8fd08a;}
+.comp-row b{color:#f3e7cf;font-size:12.5px;}
+.comp-bar{height:7px;border-radius:5px;background:rgba(0,0,0,.34);overflow:hidden;margin:7px 0 10px;
+  border:1px solid rgba(255,255,255,.06);}
+.comp-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#5aa862,#a6e08a);transition:width .4s;}
+.comp-bar.cook i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
 </style>
 </head>
 <body>
@@ -3038,7 +3173,7 @@ function freshState(presetId, styleId){
       state:'sterna', crop:null, t0:0, t1:0,
       fert:0, watered:false, weeded:false, limed:false, sprayed:false,
       weeds:false, weedsChecked:false, busy:null, manualBonus:0,
-      soil:100, quality:0,
+      soil:100, quality:0, lastCrop:null, cropStreak:0,
     });
   }
   if (p.fields > 0){
@@ -3057,6 +3192,7 @@ function freshState(presetId, styleId){
     coins:p.coins, gems:5, xp:0, level:1, rep:10, debt: p.loan ? Math.round(p.loan*1.05) : 0,
     fields, machines, buildings, productions, goods,
     warehouseCap:5000, autoSell:false,
+    comp:{ manure:0, compost:0, ready:0, startedAt:0 },
     board:[], boardAt:0, market:{mult:{}, at:0},
     jobs:[], foreman:{unlocked:false, on:false, lvl:1, xp:0, mode:'auto', tasks:0, energy:100, since:0, resting:false},
     settings:{ sound:true, music:true, vibrate:true, timeScale:5, textScale:100, colorblind:false, fixedSummer: st.fixedSummer },
@@ -3314,6 +3450,59 @@ function sellGood(good, qty){
   return gain;
 }
 
+/* ---------------- КОМПОСТ (v75) ----------------
+   Животные дают навоз → яма компостирует → компост восстанавливает почву. */
+const COMP_MANURE_PER_CYCLE = 6;
+const COMP_NEED    = 20;    /* навоза на одну партию компоста */
+const COMP_TIME    = 180;   /* игровых секунд на созревание */
+const COMP_YIELD   = 3;     /* компоста с партии */
+const COMP_SOIL    = 34;    /* сколько почвы восстанавливает один компост */
+
+function COMP_state(){
+  if (!S.comp) S.comp = { manure:0, compost:0, ready:0, startedAt:0 };
+  return S.comp;
+}
+function COMP_addManure(buildingId){
+  const c = COMP_state();
+  const rate = buildingId === 'apiary' ? 0.4 : 1;   /* пасека почти не даёт навоза */
+  c.manure += COMP_MANURE_PER_CYCLE * rate;
+}
+function COMP_working(){ const c = COMP_state(); return c.ready > 0; }
+function COMP_leftMs(){
+  const c = COMP_state();
+  if (!c.ready) return 0;
+  return Math.max(0, (c.startedAt + durMs(COMP_TIME)) - Date.now());
+}
+function COMP_start(){
+  const c = COMP_state();
+  if (c.ready){ toast('Яма уже полна — забери компост','', 'leaf'); return; }
+  if (c.manure < COMP_NEED){ toast(`Нужно ${COMP_NEED} навоза, есть ${Math.floor(c.manure)}`,'bad','leaf'); sfx.bad(); return; }
+  c.manure -= COMP_NEED;
+  c.ready = 1;
+  c.startedAt = Date.now();
+  toast('Компост заложен — созреет через '+Math.ceil(COMP_TIME/60)+' мин','good','leaf');
+  sfx.good(); save(); renderAll();
+}
+function COMP_collect(){
+  const c = COMP_state();
+  if (!c.ready) return 0;
+  if (Date.now() < c.startedAt + durMs(COMP_TIME)){ toast('Ещё не готово','', 'clock'); return 0; }
+  c.ready = 0; c.startedAt = 0;
+  c.compost += COMP_YIELD;
+  toast(`Компост готов: +${COMP_YIELD} 🍂`,'good','leaf'); sfx.good();
+  save(); renderAll(); return COMP_YIELD;
+}
+function COMP_applyToField(fieldId){
+  const c = COMP_state();
+  if (c.compost <= 0){ toast('Нет компоста','bad','leaf'); sfx.bad(); return; }
+  const f = fieldById(fieldId); if (!f) return;
+  if (soilOf(f) >= 99){ toast('Почва и так в порядке','', 'leaf'); return; }
+  c.compost -= 1;
+  f.soil = clamp(soilOf(f) + COMP_SOIL, 0, 100);
+  toast(`${f.name}: почва +${COMP_SOIL}% (${Math.round(soilOf(f))}%)`,'good','leaf');
+  sfx.good(); save(); openField(fieldId); renderAll();
+}
+
 /* ---------------- JOBS ---------------- */
 function addJob(job){ job.id = uid(); job.endsAt = Date.now() + job.durMs; S.jobs.push(job); }
 function startFieldWork(f, action, extra={}){
@@ -3380,7 +3569,12 @@ function completeFieldWork(f){
     f.manualBonus = b.manualBonus||0;
     const got = addGoods(cropId, units);
     gradeAdd(cropId, got, quality);
-    f.soil = clamp(soilOf(f) - SOIL_DRAIN, 0, 100);
+    /* севооборот: та же культура подряд истощает сильнее, смена — бережёт землю */
+    const sameCrop = f.lastCrop === cropId;
+    const drain = SOIL_DRAIN * (sameCrop ? 1.5 : 0.72);
+    f.soil = clamp(soilOf(f) - drain, 0, 100);
+    f.cropStreak = sameCrop ? (f.cropStreak||1)+1 : 1;
+    f.lastCrop = cropId;
     f.state='sterna'; f.crop=null; f.fert=0; f.watered=false; f.weeded=false; f.limed=false; f.sprayed=false; f.weeds=false;
     S.stats.harvests++; addXP(10);
     if (typeof STAT_harvest === 'function') STAT_harvest(cropId, got, fieldId);
@@ -3534,6 +3728,8 @@ function tickBuildings(){
       if (now >= b.cycleEndsAt){
         b.stored = Math.min(b.stored + BUILDINGS[id].units, BUILDINGS[id].units*3);
         b.cycleEndsAt = now + durMs(BUILDINGS[id].time);
+        /* животные дают навоз — сырьё для компоста */
+        if (typeof COMP_addManure === 'function') COMP_addManure(id);
       }
     }
   }
@@ -6203,6 +6399,53 @@ function renderTasks(){
 }
 
 /* ---------- FIELD SHEET ---------- */
+/* что показать в шите поля про почву и компост */
+function COMP_fieldHTML(f){
+  const c = COMP_state();
+  const soil = Math.round(soilOf(f));
+  const next = f.crop ? CROPS[f.crop] : null;
+  const sameAdvice = (f.lastCrop && f.cropStreak >= 2)
+    ? `<div class="rot-warn">${ic('info')} Третья пшеница подряд: почва устала. Смени культуру — расход упадёт вдвое.</div>` : '';
+  const rotLine = f.lastCrop
+    ? `<small>Прошлая культура: ${(CROPS[f.lastCrop]||{}).name || f.lastCrop}${f.cropStreak>1?` · подряд ${f.cropStreak} раза`:''}</small>`
+    : `<small>Поле ещё не знает культуры — первый посев пройдёт мягко</small>`;
+  return `<div class="comp-card ${c.compost>0?'has':''}">
+    <div class="comp-head"><span>${ic('leaf')} Компост</span><b>${c.compost} шт</b></div>
+    ${rotLine}
+    <div class="comp-actions">
+      <button class="comp-btn" ${c.compost>0?'':'disabled'} onclick="App.compApply('${f.id}')">
+        ${ic('leaf')} Внести компост (+${COMP_SOIL}% почвы)
+      </button>
+      <button class="comp-btn ghost" onclick="App.compOpen()">${ic('barn')} Яма</button>
+    </div>
+  </div>${sameAdvice}`;
+}
+
+/* экран компостной ямы */
+function COMP_open(){
+  const c = COMP_state();
+  const left = COMP_leftMs();
+  const done = c.ready && left <= 0;
+  const pct = c.ready ? (done ? 100 : Math.round(100*(1 - left/durMs(COMP_TIME)))) : 0;
+  openSheet(`<h2>${ic('leaf')} Компостная яма</h2>
+    <p class="muted">Животные дают навоз. Из навоза получается компост — он возвращает почве плодородие без ожидания.</p>
+    <div class="comp-big">
+      <div class="comp-row"><span>${ic('cow')} Навоз</span><b>${Math.floor(c.manure)} / ${COMP_NEED}</b></div>
+      <div class="comp-bar"><i style="width:${Math.min(100, Math.round(c.manure/COMP_NEED*100))}%"></i></div>
+      <div class="comp-row"><span>${ic('leaf')} Компост на складе</span><b>${c.compost} шт</b></div>
+    </div>
+    ${c.ready ? `
+      <div class="comp-cooking">
+        <div class="comp-row"><span>${ic('clock')} Созревает</span><b>${done?'Готово!':fmtTime(Math.ceil(left/1000))}</b></div>
+        <div class="comp-bar cook"><i style="width:${pct}%"></i></div>
+        <button class="btn btn-gold btn-block" ${done?'':'disabled'} onclick="App.compCollect()">${ic('leaf')} Забрать ${COMP_YIELD} компоста</button>
+      </div>` : `
+      <button class="btn btn-primary btn-block" ${c.manure>=COMP_NEED?'':'disabled'} onclick="App.compStart()">${ic('leaf')} Заложить партию · ${COMP_NEED} навоза</button>
+      <p class="small muted" style="text-align:center;margin-top:8px">Одна партия созревает ~${Math.ceil(COMP_TIME/60)} игровые минуты и даёт ${COMP_YIELD} компоста</p>`}
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
+}
+
+/* ---------------- FIELD SHEET ---------- */
 function openField(id){
   const f = fieldById(id);
   ui.selField = id;
@@ -6258,6 +6501,7 @@ function openField(id){
     if (f.fert<2) html += actBtn('fertilize',`Удобрение ${f.fert+1}/2 (+25%)`);
     if (!f.sprayed) html += actBtn('spray','Опрыскивание (+5%)');
     if (style().lime && !f.limed) html += actBtn('lime','Известь (+10%)');
+    html += COMP_fieldHTML(f);
     html += `<button class="btn btn-gold btn-block speedup-cta" onclick="App.speedField('${f.id}')">${ic('bolt')} Ускорить за самоцветы</button>`;
     html += `<button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button></div>`;
   } else if (f.state==='ready'){
@@ -6562,17 +6806,82 @@ function renderStart(){
     return `<div class="pick-card ${ui.selStyle===id?'sel':''}" onclick="App.selectStyle('${id}')">
       <span class="pic">${ic(icon)}</span><div class="t">${s.name}</div><div class="d">${s.desc}</div></div>`;
   };
-  $('#screen').innerHTML = `<div class="start-wrap">
-    ${typeof MENU_bgHTML==='function'?MENU_bgHTML():''}
-    <div class="start-hero"></div>
-    <div class="start-content">
-      <h1 class="start-title">Островная ферма</h1>
-      <div class="start-sub">Фермерский симулятор для телефона.<br>Отдавай команды, техника работает сама!</div>
-      <button class="start-cta" onclick="App.quickStart()">
-        ${ic('play')} Играть
-        <small>новая ферма · подсказки включены</small>
+  $('#screen').innerHTML = `<div class="start-wrap v2">
+    <div class="sv2-sky" aria-hidden="true">
+      <div class="sv2-sun"></div>
+      <div class="sv2-cloud c1"></div><div class="sv2-cloud c2"></div><div class="sv2-cloud c3"></div>
+    </div>
+    <div class="start-content sv2">
+      <div class="sv2-badge">
+        <svg viewBox="0 0 44 44" class="sv2-logo" aria-hidden="true">
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffe6a8"/><stop offset="1" stop-color="#c9a05a"/></linearGradient></defs>
+          <circle cx="22" cy="22" r="21" fill="url(#lg)"/>
+          <path d="M22 32c0-6 2-10 7-13-1 6-3 10-7 13z" fill="#3a5c34"/>
+          <path d="M22 32c0-6-2-10-7-13 1 6 3 10 7 13z" fill="#4a7040"/>
+          <path d="M22 32V19" stroke="#2f4a2a" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="22" cy="17" r="3" fill="#f2d97a"/>
+        </svg>
+      </div>
+      <div class="sv2-kicker">ФЕРМЕРСКИЙ СИМУЛЯТОР</div>
+      <h1 class="start-title sv2">Островная<br>ферма</h1>
+      <div class="start-sub sv2">Техника работает сама —<br>ты только отдаёшь команды</div>
+
+      <div class="sv2-island" aria-hidden="true">
+        <svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMax meet">
+          <defs>
+            <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f7e6b8"/><stop offset="1" stop-color="#e9cf95"/>
+            </linearGradient>
+            <linearGradient id="gr" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7fbb5c"/><stop offset="1" stop-color="#4e8d3c"/>
+            </linearGradient>
+            <linearGradient id="wt" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7fd0e0"/><stop offset="1" stop-color="#4aa8c4"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="150" cy="140" rx="140" ry="16" fill="rgba(0,0,0,.18)"/>
+          <ellipse cx="150" cy="112" rx="118" ry="30" fill="url(#gr)"/>
+          <ellipse cx="150" cy="118" rx="128" ry="26" fill="url(#wt)" opacity=".55"/>
+          <ellipse cx="150" cy="104" rx="96" ry="24" fill="url(#gr)"/>
+          <g transform="translate(96 62)">
+            <rect x="0" y="14" width="34" height="22" rx="2" fill="#d8c39a"/>
+            <path d="M-4 15 L17 0 L38 15 Z" fill="#b4523a"/>
+            <rect x="12" y="24" width="10" height="12" fill="#7a5a3c"/>
+            <rect x="4" y="19" width="6" height="6" rx="1" fill="#ffd07a"/>
+            <rect x="24" y="19" width="6" height="6" rx="1" fill="#ffd07a"/>
+          </g>
+          <g transform="translate(196 70)">
+            <rect x="0" y="12" width="26" height="16" rx="2" fill="#cbbd9e"/>
+            <path d="M-3 13 L13 2 L29 13 Z" fill="#8a6a45"/>
+          </g>
+          <g stroke="#3f7a34" stroke-width="1.6" fill="none" stroke-linecap="round">
+            <path d="M60 104 q3 -8 6 0 M72 106 q3 -9 6 0 M84 103 q3 -7 6 0"/>
+          </g>
+          <g transform="translate(150 74)">
+            <rect x="-13" y="0" width="26" height="22" rx="3" fill="#d8c39a"/>
+            <path d="M-17 1 L0 -10 L17 1 Z" fill="#9c5a3e"/>
+            <rect x="-10" y="6" width="20" height="12" rx="2" fill="#c2ad82" opacity=".8"/>
+            <circle cx="0" cy="-4" r="3.6" fill="#f2d97a"/>
+          </g>
+          <g fill="#3f7a34"><circle cx="52" cy="100" r="3"/><circle cx="238" cy="96" r="3.4"/><circle cx="222" cy="104" r="2.6"/></g>
+          <g fill="#ffffff" opacity=".30">
+            <rect x="52" y="118" width="26" height="2.2" rx="1.1"/>
+            <rect x="196" y="122" width="34" height="2.2" rx="1.1"/>
+            <rect x="120" y="128" width="22" height="2" rx="1"/>
+            <rect x="230" y="112" width="16" height="2" rx="1"/>
+          </g>
+          <g class="sv2-smoke" fill="#ffffff" opacity=".22">
+            <circle cx="151" cy="60" r="2.6"/><circle cx="154" cy="54" r="2"/><circle cx="149" cy="49" r="1.6"/>
+          </g>
+        </svg>
+      </div>
+
+      <button class="start-cta sv2" onclick="App.quickStart()">
+        <span class="cta-ico">${ic('play')}</span>
+        <span class="cta-txt"><b>Играть</b><small>новая ферма · подсказки включены</small></span>
       </button>
-      <button class="start-adv" onclick="App.toggleAdvanced()">
+      <button class="start-adv sv2" onclick="App.toggleAdvanced()">
         ${ui.showAdvanced ? 'Свернуть настройки' : 'Настроить старт и стиль'}
         <span class="start-chev">${ui.showAdvanced ? '▴' : '▾'}</span>
       </button>
@@ -6581,6 +6890,12 @@ function renderStart(){
       ${presetCard('fresh')}${presetCard('manager')}${presetCard('zero')}
       <div class="pick-label">Стиль игры:</div>
       <div class="pick-row">${styleCard('casual')}${styleCard('classic')}${styleCard('expert')}</div>` : ''}
+      <div class="sv2-feats">
+        <span>${ic('barn')} 12 полей</span>
+        <span>${ic('tractor')} 9 машин</span>
+        <span>${ic('clipboard')} заказы</span>
+        <span>${ic('hand')} бригадир</span>
+      </div>
       <p class="small start-note">Прогресс — на этом устройстве. <a href="#" onclick="App.openSave();return false">Перенести?</a></p>
     </div>
   </div>`;
@@ -6960,6 +7275,10 @@ const App = {
   },
   openGarage(){ sfx.click(); openGarage(); },
   openForeman(){ sfx.click(); openForeman(); },
+  compOpen(){ sfx.click(); COMP_open(); },
+  compStart(){ COMP_start(); COMP_open(); },
+  compCollect(){ COMP_collect(); COMP_open(); },
+  compApply(id){ COMP_applyToField(id); },
   fmRest(){ sfx.click(); FM_restNow(); },
   fmUseEnergy(){
     const p = (typeof PUR_init==='function') ? PUR_init() : null;
@@ -7872,6 +8191,7 @@ function migrateFields(state){
     else f.soil = clamp(f.soil, 0, 100);
   }
   if (!state.grade || typeof state.grade !== 'object') state.grade = {};
+  for (const f of state.fields){ if (typeof f.lastCrop !== 'number' && f.lastCrop !== null) f.lastCrop = null; if (typeof f.cropStreak !== 'number') f.cropStreak = 0; }
 }
 function migrateForeman(state){
   if (!state) return;
@@ -10621,7 +10941,8 @@ body.decor-aurora #app::before{
 .act-meta{font-size:9.5px;font-weight:600;opacity:.72;letter-spacing:.15px;}
 .grade-card.ready{background:linear-gradient(180deg,rgba(243,217,164,.16),rgba(201,160,90,.05));
   border-color:rgba(243,217,164,.34);}
-</style>
+
+
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
   </svg>`;
