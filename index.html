@@ -2833,6 +2833,186 @@ h1.start-title.sv2{
   border:1px solid rgba(255,255,255,.06);}
 .comp-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#5aa862,#a6e08a);transition:width .4s;}
 .comp-bar.cook i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
+
+/* ===== НАВИГАЦИЯ v76: 4 раздела + «Ещё» ===== */
+.farm-switch{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:5px !important;
+  overflow:visible !important;padding:5px !important;}
+.fs-item{
+  position:relative;flex:1 1 auto;min-width:0;border:0;background:transparent;border-radius:11px;
+  padding:9px 6px 8px;color:#9aa896;font:700 11px/1 var(--font-ui);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:background .18s,color .18s,transform .12s;
+  white-space:nowrap;overflow:hidden;
+}
+.fs-item .ic,.fs-item svg{width:19px;height:19px;opacity:.82;transition:opacity .18s;}
+.fs-item:active{transform:scale(.95);}
+.fs-item.active{
+  background:linear-gradient(180deg,rgba(243,217,164,.20),rgba(201,160,90,.10));
+  color:#ffeecb;box-shadow:inset 0 0 0 1px rgba(243,217,164,.34);
+}
+.fs-item.active .ic,.fs-item.active svg{opacity:1;color:#f3d9a4;}
+.fs-badge{
+  position:absolute;top:3px;right:calc(50% - 22px);min-width:15px;height:15px;border-radius:8px;
+  background:#c9563f;color:#fff;font-size:9px;font-weight:900;font-style:normal;
+  display:grid;place-items:center;padding:0 4px;box-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+.fs-dot{
+  position:absolute;top:6px;right:calc(50% - 18px);width:6px;height:6px;border-radius:50%;
+  background:#f3d9a4;box-shadow:0 0 8px rgba(243,217,164,.8);
+}
+
+/* шторка «Ещё» */
+.more-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:12px 0;width:100%;}
+.more-item{
+  min-width:0;overflow:hidden;
+  display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:15px;text-align:left;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  transition:background .18s,border-color .18s,transform .12s;
+}
+.more-item:active{transform:scale(.97);}
+.more-item.on{background:linear-gradient(180deg,rgba(243,217,164,.14),rgba(201,160,90,.05));
+  border-color:rgba(243,217,164,.30);}
+.mi-ico{
+  width:36px;height:36px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+  background:rgba(255,255,255,.06);color:#c8d3c2;
+}
+.more-item.on .mi-ico{background:linear-gradient(180deg,rgba(243,217,164,.28),rgba(201,160,90,.16));
+  color:#ffeecb;box-shadow:inset 0 0 0 1px rgba(243,217,164,.3);}
+.mi-ico .ic,.mi-ico svg{width:18px;height:18px;}
+.mi-copy{min-width:0;flex:1;}
+.mi-copy b{display:block;font-size:12.5px;color:#eef3e9;letter-spacing:.1px;}
+.mi-copy small{display:block;font-size:9.5px;color:#94a391;margin-top:2px;line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mi-cur{color:#f3d9a4;flex:0 0 auto;display:grid;place-items:center;}
+.mi-cur .ic,.mi-cur svg{width:15px;height:15px;}
+@media(max-width:360px){
+  .fs-item{font-size:10px;padding:8px 4px 7px;}
+  .more-grid{grid-template-columns:1fr;}
+}
+
+/* ===== СОБЫТИЕ ДНЯ · v76 ===== */
+.ev-banner{
+  display:flex;align-items:center;gap:11px;width:100%;margin-top:10px;padding:11px 13px;
+  border-radius:16px;text-align:left;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,color-mix(in srgb, var(--ev) 16%, transparent),rgba(255,255,255,.02));
+  border:1px solid color-mix(in srgb, var(--ev) 34%, transparent);
+}
+.ev-banner::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(90% 130% at 0% -30%, color-mix(in srgb, var(--ev) 22%, transparent), transparent 65%);}
+.ev-banner:active{transform:scale(.995);}
+.ev-ico{
+  width:38px;height:38px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
+  background:color-mix(in srgb, var(--ev) 22%, rgba(0,0,0,.3));
+  color:var(--ev);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ev) 40%, transparent);
+  position:relative;z-index:1;
+}
+.ev-ico .ic,.ev-ico svg{width:19px;height:19px;}
+.ev-copy{flex:1;min-width:0;position:relative;z-index:1;}
+.ev-copy b{display:block;font-size:13px;color:#f7efdd;letter-spacing:.15px;}
+.ev-copy small{display:block;font-size:10.5px;color:#a8b5a3;margin-top:2px;}
+.ev-go{color:#8e9b8c;flex:0 0 auto;position:relative;z-index:1;}
+.ev-go .ic,.ev-go svg{width:15px;height:15px;}
+
+.ev-hero{
+  display:flex;align-items:center;gap:13px;padding:15px;border-radius:18px;margin:12px 0;position:relative;overflow:hidden;
+  background:linear-gradient(140deg,color-mix(in srgb, var(--ev) 20%, transparent),rgba(255,255,255,.015));
+  border:1px solid color-mix(in srgb, var(--ev) 38%, transparent);
+}
+.ev-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(100% 120% at 10% -20%, color-mix(in srgb, var(--ev) 26%, transparent), transparent 62%);}
+.ev-hero-ico{
+  width:52px;height:52px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;
+  background:color-mix(in srgb, var(--ev) 26%, rgba(0,0,0,.35));color:var(--ev);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ev) 45%, transparent);position:relative;z-index:1;
+}
+.ev-hero-ico .ic,.ev-hero-ico svg{width:26px;height:26px;}
+.ev-hero-copy{position:relative;z-index:1;}
+.ev-hero-copy small{display:block;font-size:8.5px;letter-spacing:1.6px;font-weight:800;color:#9fae9c;}
+.ev-hero-copy b{display:block;font-size:17px;color:#fff8ea;margin:2px 0 3px;letter-spacing:-.2px;}
+.ev-hero-copy span{display:block;font-size:11px;color:#b4c1ae;}
+.ev-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.ev-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);opacity:.6;}
+.ev-row.on{opacity:1;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);}
+.ev-row-ico{width:26px;height:26px;flex:0 0 auto;display:grid;place-items:center;}
+.ev-row-ico .ic,.ev-row-ico svg{width:16px;height:16px;}
+.ev-row-copy{flex:1;min-width:0;}
+.ev-row-copy b{display:block;font-size:12px;color:#e8eee2;}
+.ev-row-copy small{display:block;font-size:10px;color:#94a391;margin-top:1px;}
+.ev-now{font-size:8.5px;font-weight:900;letter-spacing:.6px;color:#33280f;
+  background:linear-gradient(180deg,#f3d9a4,#c9a05a);border-radius:7px;padding:3px 7px;flex:0 0 auto;}
+
+/* ===== ГЛАВНЫЙ ЭКРАН · v76: плотнее и чище ===== */
+#app > #screen{padding-bottom:104px !important;}   /* контент не прячется под панелью */
+
+/* приоритетная карточка → тонкая строка-подсказка */
+.priority-card{
+  min-height:0 !important;padding:9px 11px !important;margin-bottom:8px !important;
+  border-radius:13px !important;gap:9px !important;
+}
+.priority-icon{width:31px !important;height:31px !important;border-radius:10px !important;}
+.priority-icon .ic,.priority-icon svg{width:17px !important;height:17px !important;}
+.priority-copy small{font-size:7.5px !important;letter-spacing:.14em !important;opacity:.75;}
+.priority-copy b{font-size:11.5px !important;}
+.priority-copy span{font-size:9px !important;opacity:.8;}
+.priority-go{width:30px !important;height:30px !important;border-radius:10px !important;}
+
+/* ежедневные заказы — компактнее */
+.daily-focus{padding:9px 11px !important;margin-bottom:8px !important;border-radius:13px !important;}
+.focus-mark{width:30px !important;height:30px !important;border-radius:9px !important;}
+.focus-copy b{font-size:11.5px !important;}
+.focus-copy small{font-size:9.5px !important;}
+
+/* быстрые действия — выше и заметнее */
+.overview-actions{gap:7px !important;margin-top:8px !important;}
+.overview-action{
+  min-height:58px !important;border-radius:13px !important;gap:4px !important;
+  font-size:9.5px !important;font-weight:700 !important;
+  transition:transform .12s, border-color .18s, background .18s;
+}
+.overview-action:active{transform:scale(.955);}
+.overview-action .ic,.overview-action svg{width:20px !important;height:20px !important;}
+
+/* карточка бригадира — компактнее */
+.fm-card{margin-top:9px !important;padding:9px 11px !important;border-radius:14px !important;}
+.fm-card-ico{width:33px !important;height:33px !important;border-radius:10px !important;}
+.fm-card-ico .ic,.fm-card-ico svg{width:17px !important;height:17px !important;}
+.fm-card-copy b{font-size:12px !important;}
+.fm-card-copy small{font-size:9.5px !important;}
+.fm-card-btn{padding:6px 10px !important;font-size:10px !important;}
+
+/* полоса заданий дня — компактнее */
+.dch-card,.dch-body{padding:10px 12px !important;}
+
+/* сцена — чуть ниже, чтобы освободить место контенту */
+.farm-scene.compact-scene{min-height:0 !important;}
+.scene-title{font-size:20px !important;}
+
+/* ===== ЖУРНАЛ КУЛЬТУР · v76 ===== */
+.log-sum{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 13px;margin:10px 0;border-radius:14px;
+  background:linear-gradient(180deg,rgba(243,217,164,.10),rgba(201,160,90,.03));
+  border:1px solid rgba(243,217,164,.22);
+}
+.log-sum span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#cbd6c6;font-weight:700;}
+.log-sum span .ic,.log-sum span svg{width:15px;height:15px;color:#f3d9a4;}
+.log-sum b{font-size:16px;color:#f6ecd9;letter-spacing:.2px;}
+.log-list{display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
+.log-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);}
+.log-row.done{background:rgba(243,217,164,.07);border-color:rgba(243,217,164,.20);}
+.log-ic{width:30px;height:30px;flex:0 0 auto;border-radius:9px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);overflow:hidden;}
+.log-ic svg{width:20px;height:20px;}
+.log-copy{flex:1;min-width:0;}
+.log-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+.log-top b{font-size:12px;color:#eef3e9;}
+.log-n{font-size:12px;font-weight:900;color:#f3d9a4;}
+.log-row:not(.done) .log-n{color:#b8c4b2;}
+.log-bar{display:block;height:5px;border-radius:4px;background:rgba(0,0,0,.32);overflow:hidden;margin:5px 0 4px;}
+.log-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#c9a05a,#f3d9a4);transition:width .4s;}
+.log-row small{display:block;font-size:9.5px;color:#94a391;}
 </style>
 </head>
 <body>
@@ -3287,6 +3467,68 @@ function weatherForDay(days){
   return {name:'Засуха', icon:'drought', id:'drought'};
 }
 function weatherInfo(){ return weatherForDay(Math.floor(Date.now()/86400000)); }
+
+/* ---------------- СОБЫТИЯ ДНЯ (v76) ----------------
+   Раз в день на острове случается событие — на 6 игровых часов.
+   Оно меняет экономику и подсказывает, чем заняться прямо сейчас. */
+const EVENTS = [
+  { id:'harvest_fever', name:'Уборочная страда', icon:'wheat',  color:'#e8c46a',
+    desc:'Урожай +40%', long:'Поля отдают больше', mods:{ yield:1.40 } },
+  { id:'rich_soil',     name:'Щедрая земля',      icon:'leaf',   color:'#8fd08a',
+    desc:'Почва не истощается', long:'Уборка не снимает плодородие', mods:{ noDrain:true } },
+  { id:'quality_day',   name:'День качества',     icon:'star',   color:'#ffd76a',
+    desc:'Качество +18', long:'Каждый урожай лучше', mods:{ quality:18 } },
+  { id:'market_boom',   name:'Ажиотаж на рынке',  icon:'coin',   color:'#f3d9a4',
+    desc:'Цены ×1.35', long:'Скупщики платят больше', mods:{ price:1.35 } },
+  { id:'calm_day',      name:'Тихий день',        icon:'sun',    color:'#a5c8f0',
+    desc:'Работы быстрее на 25%', long:'Техника работает споро', mods:{ speed:0.75 } },
+  { id:'fertile_rain',  name:'Тёплый дождь',      icon:'rain',   color:'#8fc4e0',
+    desc:'Полив не нужен', long:'Поля напитываются сами', mods:{ autoWater:true } },
+];
+/* событие дня детерминировано — одно и то же у всех в этот день */
+function EV_today(){
+  if (S.settings.fixedSummer && S.settings.noEvents) return null;
+  const day = Math.floor(Date.now()/86400000);
+  const r = ((day*7919+104729)%233280)/233280;
+  if (r < 0.34) return null;                    /* треть дней — без события */
+  return EVENTS[Math.floor(((day*3571)%233280)/233280 * EVENTS.length) % EVENTS.length];
+}
+function EV_mods(){ const e = EV_today(); return e ? e.mods : {}; }
+function EV_active(){ return !!EV_today(); }
+function EV_bannerHTML(){
+  const e = EV_today();
+  if (!e) return '';
+  return `<button class="ev-banner" onclick="App.evOpen()" style="--ev:${e.color}">
+    <span class="ev-ico">${ic(e.icon)}</span>
+    <span class="ev-copy">
+      <b>${e.name}</b>
+      <small>Событие дня · ${e.desc}</small>
+    </span>
+    <span class="ev-go">${ic('arrow')}</span>
+  </button>`;
+}
+function EV_open(){
+  const e = EV_today();
+  if (!e){
+    openSheet(`<h2>${ic('sun')} События дня</h2>
+      <p class="muted">Сегодня остров отдыхает — особых событий нет. Загляни завтра: события дают заметные бонусы.</p>
+      <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Понятно</button>`);
+    return;
+  }
+  const list = EVENTS.map(x=>`<div class="ev-row ${x.id===e.id?'on':''}">
+    <span class="ev-row-ico" style="color:${x.color}">${ic(x.icon)}</span>
+    <span class="ev-row-copy"><b>${x.name}</b><small>${x.long}</small></span>
+    ${x.id===e.id?`<span class="ev-now">СЕЙЧАС</span>`:''}
+  </div>`).join('');
+  openSheet(`<h2>${ic('sun')} События дня</h2>
+    <p class="muted">Каждый день на острове может случиться одно событие. Оно действует весь день и меняет правила игры.</p>
+    <div class="ev-hero" style="--ev:${e.color}">
+      <span class="ev-hero-ico">${ic(e.icon)}</span>
+      <span class="ev-hero-copy"><small>СЕГОДНЯ НА ОСТРОВЕ</small><b>${e.name}</b><span>${e.long}</span></span>
+    </div>
+    <div class="ev-list">${list}</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
+}
 function openForecast(){
   const day=Math.floor(Date.now()/86400000), labels=['Сегодня','Завтра','Через 2 дня'];
   const effects={sunny:'Обычные условия. Полив даёт +5% к урожаю.',rain:'Работы дольше на 20%, урожай ×0,85.',drought:'Полив даёт +10% к урожаю.'};
@@ -3390,6 +3632,7 @@ function fieldQuality(f){
   if (f.sprayed) q += 4;
   if (f.limed) q += 5;
   q += (f.manualBonus || 0) * 100;           /* ручная уборка даёт +10% урожая — и качества */
+  q += (EV_mods().quality || 0);             /* событие дня */
   return clamp(Math.round(q), 0, 100);
 }
 function addGoods(good, n){
@@ -3407,6 +3650,8 @@ function fieldYield(f){
   if (weatherInfo().id==='rain') mult *= 0.85;
   if (f.weeds && !f.weeded) mult *= 0.85;
   mult *= soilMul(f);                         /* плодородие почвы */
+  const ev = EV_mods();
+  if (ev.yield) mult *= ev.yield;             /* событие дня */
   return Math.max(1, Math.round(c.yield * mult));
 }
 
@@ -3433,7 +3678,7 @@ function sellGood(good, qty){
   qty = Math.min(qty, S.goods[good]);
   if (qty <= 0) return 0;
   const {mult} = bestPoint(good);
-  let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good));
+  let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good) * (EV_mods().price || 1));
   S.goods[good] -= qty;
   // множитель престижа: «новый остров» бустит все доходы
   if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
@@ -3448,6 +3693,64 @@ function sellGood(good, qty){
   if (typeof XMAS_track==='function') XMAS_track('seller', Math.round(gain));
   if (typeof TUT2_onAction==='function') TUT2_onAction('sell');
   return gain;
+}
+
+/* ---------------- ЖУРНАЛ КУЛЬТУР (v76) ----------------
+   Каждая культура копит счётчик уборок. На порогах — награды.
+   Это мягкая цель «попробуй всё» без давления. */
+const CROP_MILESTONES = [
+  { at: 3,   coins: 200,  gems: 0 },
+  { at: 10,  coins: 700,  gems: 1 },
+  { at: 25,  coins: 2000, gems: 3 },
+  { at: 60,  coins: 6000, gems: 8 },
+];
+function LOG_state(){ if (!S.cropLog) S.cropLog = {}; return S.cropLog; }
+function LOG_of(crop){ const L = LOG_state(); return L[crop] || 0; }
+function LOG_add(cropId){
+  const L = LOG_state();
+  const before = L[cropId] || 0;
+  L[cropId] = before + 1;
+  const hit = CROP_MILESTONES.find(m => before < m.at && L[cropId] >= m.at);
+  if (hit){
+    addCoins(hit.coins);
+    if (hit.gems) S.gems += hit.gems;
+    const name = (CROPS[cropId]||{}).name || cropId;
+    toast(`${name} ×${hit.at}! +${fmt(hit.coins)} монет${hit.gems?` и ${hit.gems} ${gemWord(hit.gems)}`:''}`, 'good', 'trophy');
+    sfx.good(); buzz(60);
+  }
+}
+function LOG_next(cropId){
+  const n = LOG_of(cropId);
+  return CROP_MILESTONES.find(m => m.at > n) || null;
+}
+function LOG_pct(cropId){
+  const n = LOG_of(cropId), nx = LOG_next(cropId);
+  if (!nx) return 100;
+  const prev = CROP_MILESTONES.filter(m=>m.at<=n).pop();
+  const from = prev ? prev.at : 0;
+  return clamp(Math.round((n - from)/(nx.at - from)*100), 0, 100);
+}
+function LOG_total(){ const L = LOG_state(); return Object.values(L).reduce((a,b)=>a+b,0); }
+function LOG_open(){
+  const crops = Object.keys(CROPS);
+  const rows = crops.map(id=>{
+    const c = CROPS[id], n = LOG_of(id), nx = LOG_next(id), pct = LOG_pct(id);
+    const done = !nx;
+    const gt = gradeOf(id);
+    return `<div class="log-row ${done?'done':''}">
+      <span class="log-ic">${goodsIcon(id)}</span>
+      <span class="log-copy">
+        <span class="log-top"><b>${c.name}</b><span class="log-n">${n}</span></span>
+        <span class="log-bar"><i style="width:${pct}%"></i></span>
+        <small>${done ? 'Все рубежи взяты' : `до ${nx.at} · +${fmt(nx.coins)} монет${nx.gems?` и ${nx.gems} ${gemWord(nx.gems)}`:''}`}</small>
+      </span>
+    </div>`;
+  }).join('');
+  openSheet(`<h2>${ic('wheat')} Журнал культур</h2>
+    <p class="muted">Сколько раз ты убирал каждую культуру. На рубежах — награды монетами и самоцветами.</p>
+    <div class="log-sum"><span>${ic('trophy')} Всего уборок</span><b>${fmt(LOG_total())}</b></div>
+    <div class="log-list">${rows}</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
 }
 
 /* ---------------- КОМПОСТ (v75) ----------------
@@ -3571,7 +3874,7 @@ function completeFieldWork(f){
     gradeAdd(cropId, got, quality);
     /* севооборот: та же культура подряд истощает сильнее, смена — бережёт землю */
     const sameCrop = f.lastCrop === cropId;
-    const drain = SOIL_DRAIN * (sameCrop ? 1.5 : 0.72);
+    const drain = EV_mods().noDrain ? 0 : SOIL_DRAIN * (sameCrop ? 1.5 : 0.72);
     f.soil = clamp(soilOf(f) - drain, 0, 100);
     f.cropStreak = sameCrop ? (f.cropStreak||1)+1 : 1;
     f.lastCrop = cropId;
@@ -3583,6 +3886,7 @@ function completeFieldWork(f){
     ui.fieldFx={id:f.id,action:'harvest',at:Date.now()};
     setTimeout(()=>{document.querySelector(`[data-swipe-field="${f.id}"]`)?.classList.remove('field-harvest-pop');if(ui.fieldFx?.id===f.id)ui.fieldFx=null;},1200);
     const gt = gradeTier(quality);
+    LOG_add(cropId);
     toast(`Урожай: +${got} ${goodsAcc(b.crop)} · ${gt.name}`, 'good', 'check');
     sfx.harvest(); buzz([25, 40, 25]);
     // VISUAL JUICE: салют из поля и монеты в кошелёк
@@ -4089,6 +4393,11 @@ const I = {
   flame:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c3.4 0 6-2.4 6-5.6 0-4-3.4-6.2-4.6-9.4-.3-.9-1.6-.9-1.9 0-.7 2.2-2 3.4-2.6 4.6-.4-1-.7-2.1-.7-3.1 0-1-1.4-1.4-1.9-.5C5 10 6 13 6 15.4 6 18.6 8.6 21 12 21z"/><path d="M12 21c-1.5 0-2.6-1.1-2.6-2.5 0-1.7 1.4-2.6 2-4 .2-.5.9-.6 1.2 0 .7 1.4 2 2.3 2 4 0 1.4-1.1 2.5-2.6 2.5z"/></svg>',
   cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .4-8 6 6 0 0 0-11.4 1.4A3.3 3.3 0 0 0 7 18z"/></svg>',
   sleep:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.2 8.2 0 1 1 9.5 4a6.6 6.6 0 0 0 10.5 10.5Z"/><path d="M15.5 4.6h3.2l-3.2 3.4h3.2" stroke-width="1.6"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 6-3 7-3 7h18s-3-1-3-7Z"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/></svg>',
+  grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>',
+  gift:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="12" rx="2"/><path d="M3.5 12.5h17M12 8.5v12"/><path d="M12 8.5S9.8 4 7.6 4a2.1 2.1 0 0 0 0 4.5M12 8.5s2.2-4.5 4.4-4.5a2.1 2.1 0 0 1 0 4.5"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/><path d="M12 14v3M8.5 20h7"/></svg>',
+  bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
 };
 function ic(name, cls){ return `<span class="ic ${cls||''}">${I[name]||''}</span>`; }
 
@@ -4198,7 +4507,7 @@ function machIcon(id, cls){ return `<span class="ic ${cls||''}">${MACH_SVG[id] ?
 /* ---------- Goods icons ---------- */
 const GOODS_ICON = {
   wheat:'wheat', rapeseed:'rapeseed', corn:'corn', soy:'soy', potato:'potato', cotton:'cotton', grape:'grape',
-  hay:'hay', eggs:'egg', wool:'wool', milk:'milk', meat:'meat', honey:'honey', veggies:'tomato',
+  grass:'grass', hay:'hay', eggs:'egg', wool:'wool', milk:'milk', meat:'meat', honey:'honey', veggies:'tomato',
   flour:'sack', bread:'bread', cheese:'cheese', fabric:'fabric', clothes:'shirt', silage:'silage', biogas:'bolt',
 };
 function goodsIcon(g, cls){
@@ -6554,6 +6863,32 @@ function openMarket(){
   hint('market');
 }
 
+/* ---------- ШТОРКА «ЕЩЁ» (v76) ---------- */
+function openMoreMenu(){
+  sfx.click();
+  const view = ui.farmView || 'map';
+  const items = [
+    { id:'stats',    icon:'chart',    label:'Дневник',   desc:'Цифры и рекорды фермы' },
+    { id:'prestige', icon:'star',     label:'Остров',    desc:'Престиж и новый старт' },
+    { id:'weekly',   icon:'calendar', label:'Итоги',     desc:'Результаты недели' },
+    { id:'pass',     icon:'medal',    label:'Пропуск',   desc:'Сезонные награды' },
+    { id:'ach',      icon:'trophy',   label:'Награды',   desc:'Достижения фермы' },
+    { id:'exped',    icon:'map',      label:'Походы',    desc:'Экспедиции за редкостями' },
+    { id:'cards',    icon:'grid',     label:'Коллекция', desc:'Собранные карточки' },
+    { id:'log',      icon:'wheat',    label:'Журнал культур', desc:'Рубежи по каждой культуре', sheet:'logOpen' },
+    ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
+  ];
+  const grid = items.map(it=>`<button class="more-item ${view===it.id?'on':''}" onclick="${it.sheet?`App.${it.sheet}()`:`App.farmView('${it.id}');closeModal()`}">
+    <span class="mi-ico">${ic(it.icon)}</span>
+    <span class="mi-copy"><b>${it.label}</b><small>${it.desc}</small></span>
+    ${view===it.id?`<span class="mi-cur">${ic('check')}</span>`:''}
+  </button>`).join('');
+  openSheet(`<h2>${ic('grid')} Ещё разделы</h2>
+    <p class="muted">Всё, что не поместилось в основную ленту</p>
+    <div class="more-grid">${grid}</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
+}
+
 /* ---------- КАРТОЧКА БРИГАДИРА НА ФЕРМЕ (v70) ---------- */
 function FM_cardHTML(){
   const fm = S.foreman;
@@ -7274,6 +7609,9 @@ const App = {
     save(); renderAll(); if (ui.modal) openMarket();
   },
   openGarage(){ sfx.click(); openGarage(); },
+  openMoreMenu(){ openMoreMenu(); },
+  evOpen(){ sfx.click(); EV_open(); },
+  logOpen(){ sfx.click(); LOG_open(); },
   openForeman(){ sfx.click(); openForeman(); },
   compOpen(){ sfx.click(); COMP_open(); },
   compStart(){ COMP_start(); COMP_open(); },
@@ -8930,21 +9268,25 @@ function RET_renderFarm(){
   const tutAttr = S.tutorial && !S.tutorial.done && (S.tutorial.step===0 && focus?.id==='f1' || S.tutorial.step===2 && focus?.id==='f1') ? `data-tut="${S.tutorial.step===0?'harvest':'field-f1'}"` : '';
 
   // --- переключатель вида
-  const sw = (id, icon, label) => `<button class="${view===id?'active':''}" onclick="App.farmView('${id}')">${ic(icon)}${label}</button>`;
-  const xmasBase = (typeof XMAS_active==='function' && XMAS_active()) ? sw('xmas','gift','Ёлка') : '';
-  /* Один и тот же набор вкладок на ВСЕХ экранах: раньше базовые виды давали 8
-     кнопок, а расширенные — 10, и «Походы»/«Коллекция» пропадали. */
+  const sw = (id, icon, label, badge) => `<button class="fs-item ${view===id?'active':''}" onclick="App.farmView('${id}')">${badge?`<i class="fs-badge">${badge}</i>`:''}${ic(icon)}<span>${label}</span></button>`;
+  const xmasBase = (typeof XMAS_active==='function' && XMAS_active()) ? {id:'xmas', icon:'gift', label:'Ёлка'} : null;
+  /* Двухуровневая навигация: 4 главных раздела + шторка «Ещё».
+     Раньше 10 кнопок не влезали в ширину экрана и обрезались. */
+  const MORE = [
+    { id:'stats',    icon:'chart',    label:'Дневник',   desc:'Статистика фермы' },
+    { id:'prestige', icon:'star',     label:'Остров',    desc:'Престиж и новый старт' },
+    { id:'weekly',   icon:'calendar', label:'Итоги',     desc:'Недельные результаты' },
+    { id:'pass',     icon:'medal',    label:'Пропуск',   desc:'Сезонный прогресс' },
+    { id:'ach',      icon:'trophy',   label:'Награды',   desc:'Достижения' },
+    { id:'exped',    icon:'map',      label:'Походы',    desc:'Экспедиции' },
+    { id:'cards',    icon:'grid',     label:'Коллекция', desc:'Собранные награды' },
+    ...(xmasBase ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
+  ];
+  const moreActive = MORE.some(m=>m.id===view);
   const switcher = `<div class="farm-switch">
     ${sw('map','map','Ферма')}
     ${sw('quests','target','Задания')}
-    ${xmasBase}
-    ${sw('stats','chart','Дневник')}
-    ${sw('prestige','star','Остров')}
-    ${sw('weekly','calendar','Итоги')}
-    ${sw('pass','medal','Пропуск')}
-    ${sw('ach','star','Награды')}
-    ${sw('exped','map','Походы')}
-    ${sw('cards','star','Коллекция')}
+    <button class="fs-item ${moreActive?'active':''}" onclick="App.openMoreMenu()">${ic('grid')}<span>Ещё</span>${moreActive?`<i class="fs-dot"></i>`:''}</button>
   </div>`;
 
   let body = '';
@@ -8959,6 +9301,7 @@ function RET_renderFarm(){
       </div>
       ${typeof NEXT_html==='function'?NEXT_html():''}
       ${RET_renderFarmMap()}
+      ${EV_bannerHTML()}
       ${typeof WR_bannerHTML==='function'?WR_bannerHTML():''}
       ${typeof DCH_renderCard==='function'?DCH_renderCard():''}
       ${RET_renderFair()}
