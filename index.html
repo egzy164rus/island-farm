@@ -3261,6 +3261,168 @@ ${PET_CSS}
 .cellar-ok{display:flex;gap:7px;align-items:center;font-size:10px;padding:9px 11px;border-radius:12px;
   margin:8px 0;background:rgba(122,200,140,.09);border:1px solid rgba(122,200,140,.20);color:#a9d8ae;}
 .cellar-ok .ic,.cellar-ok svg{width:13px;height:13px;}
+
+/* ===== СЕЗОНЫ · v81 ===== */
+.se-heat{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:13px;margin-bottom:11px;
+  background:rgba(243,217,164,.09);border:1px solid rgba(243,217,164,.20);font-size:11px;color:#cfdcc8;font-weight:700;}
+.se-heat .ic,.se-heat svg{width:15px;height:15px;color:#f0c95e;}
+.se-heat b{color:#f6ecd9;font-size:13px;}
+.se-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.se-card{padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);opacity:.78;}
+.se-card.on{opacity:1;background:rgba(243,217,164,.08);border-color:rgba(243,217,164,.26);}
+.se-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.se-ico{width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);color:#b9cbb2;}
+.se-ico .ic,.se-ico svg{width:17px;height:17px;}
+.se-card.on .se-ico{background:rgba(243,217,164,.16);color:#f3d9a4;}
+.se-head>div{flex:1;min-width:0;}
+.se-head b{display:block;font-size:12px;color:#eef4e8;}
+.se-head small{display:block;font-size:9.5px;color:#93a48e;margin-top:1px;line-height:1.35;}
+.se-left{font-size:9px;font-weight:800;color:#f3d9a4;background:rgba(243,217,164,.13);
+  padding:3px 8px;border-radius:999px;white-space:nowrap;}
+.se-crops{display:flex;flex-wrap:wrap;gap:5px;}
+.se-crop{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:8px;
+  background:rgba(0,0,0,.20);font-size:9px;color:#b9cbb2;}
+.se-crop svg{width:13px;height:13px;}
+.se-crop em{font-style:normal;}
+
+/* ===== СКЛАД · v81 ===== */
+.stk-hero{background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:13px;margin-bottom:11px;}
+.stk-hero-top{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:#9fae9a;font-weight:700;margin-bottom:7px;}
+.stk-hero-top b{font-size:13px;color:#eaf2f8;}
+.stk-bar{height:8px;border-radius:5px;background:rgba(0,0,0,.34);overflow:hidden;margin-bottom:8px;}
+.stk-bar i{display:block;height:100%;border-radius:5px;transition:width .4s;}
+.stk-bar.good i{background:linear-gradient(90deg,#4f9d63,#8fd08a);}
+.stk-bar.mid i{background:linear-gradient(90deg,#b8912f,#e5c25a);}
+.stk-bar.bad i{background:linear-gradient(90deg,#a8452f,#e08363);}
+.stk-hero-foot{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#8d9c88;gap:8px;}
+.stk-hero-foot b{color:#f3d9a4;font-size:12px;}
+.stk-alert{display:inline-flex;align-items:center;gap:4px;color:#e8a58e;font-weight:800;}
+.stk-alert .ic,.stk-alert svg{width:12px;height:12px;}
+.stk-warn{display:flex;gap:7px;align-items:flex-start;font-size:9.5px;line-height:1.45;color:#e3c778;
+  padding:9px 11px;border-radius:12px;background:rgba(227,199,120,.08);border:1px solid rgba(227,199,120,.18);margin-bottom:10px;}
+.stk-warn .ic,.stk-warn svg{width:13px;height:13px;flex:none;margin-top:1px;}
+.stk-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+@media (max-width:340px){.stk-list{grid-template-columns:1fr;}}
+.stk-card{padding:11px;border-radius:15px;background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.065);min-width:0;display:flex;flex-direction:column;gap:7px;}
+.stk-card.soon{border-color:rgba(227,199,120,.24);background:rgba(227,199,120,.055);}
+.stk-card.urgent{border-color:rgba(226,140,110,.32);background:rgba(226,140,110,.07);}
+.stk-head{display:flex;align-items:center;gap:8px;}
+.stk-ic{width:32px;height:32px;flex:none;border-radius:10px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);overflow:hidden;}
+.stk-ic svg{width:21px;height:21px;}
+.stk-copy{flex:1;min-width:0;}
+.stk-copy b{display:block;font-size:11px;color:#eef4e8;font-weight:800;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stk-copy small{display:block;font-size:9px;font-weight:800;}
+.stk-qty{font-size:11.5px;font-weight:900;color:#f3d9a4;white-space:nowrap;}
+.stk-meta{display:flex;justify-content:space-between;gap:6px;font-size:8.5px;font-weight:800;}
+.stk-spoil{display:inline-flex;align-items:center;gap:3px;color:#8d9c88;}
+.stk-spoil .ic,.stk-spoil svg{width:11px;height:11px;}
+.stk-spoil.soon{color:#e3c778;}
+.stk-spoil.urgent{color:#e8a58e;}
+.stk-mkt{display:inline-flex;align-items:center;gap:3px;}
+.stk-mkt .ic,.stk-mkt svg{width:11px;height:11px;}
+.stk-mkt.good{color:#9fd48a;} .stk-mkt.mid{color:#e3c778;} .stk-mkt.bad{color:#e8a58e;}
+
+/* ===== ЖИВЫЕ АНИМАЦИИ · v81 ===== */
+.fx-layer{position:absolute;inset:0;pointer-events:none;z-index:200;overflow:hidden;}
+
+/* всплывающая цифра */
+.fx-float{
+  position:absolute;transform:translate(-50%,-100%);
+  font-size:13px;font-weight:900;letter-spacing:.02em;
+  color:#f3d9a4;text-shadow:0 2px 8px rgba(0,0,0,.6);
+  animation:fxFloatUp 1.05s cubic-bezier(.2,.8,.3,1) forwards;
+  white-space:nowrap;
+}
+.fx-float.coin{color:#ffd76a;}
+@keyframes fxFloatUp{
+  0%{opacity:0;transform:translate(-50%,-100%) scale(.7);}
+  18%{opacity:1;transform:translate(-50%,-115%) scale(1.12);}
+  35%{transform:translate(-50%,-120%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-190%) scale(.96);}
+}
+
+/* монета, летящая в HUD */
+.fx-coin{
+  position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffe9a8,#d9a53f 70%);
+  box-shadow:0 0 8px rgba(255,215,106,.6);
+  animation:fxCoinFly .82s cubic-bezier(.35,.05,.2,1) forwards;
+}
+@keyframes fxCoinFly{
+  0%{opacity:0;transform:translate(0,0) scale(.4);}
+  15%{opacity:1;transform:translate(0,-14px) scale(1.15);}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.5);}
+}
+
+/* вход экрана */
+@keyframes screenIn{
+  from{opacity:0;transform:translateY(9px);}
+  to{opacity:1;transform:translateY(0);}
+}
+#screen.anim-in{animation:screenIn .26s cubic-bezier(.2,.8,.3,1);}
+
+/* карточки: каскадный вход */
+@keyframes cardRise{
+  from{opacity:0;transform:translateY(12px) scale(.985);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.stk-card,.log-row,.gorder,.se-card,.wx-row,.cellar-row,.gold-card{
+  animation:cardRise .32s cubic-bezier(.2,.8,.3,1) backwards;
+}
+.stk-card:nth-child(1),.log-row:nth-child(1),.se-card:nth-child(1){animation-delay:.02s}
+.stk-card:nth-child(2),.log-row:nth-child(2),.se-card:nth-child(2){animation-delay:.05s}
+.stk-card:nth-child(3),.log-row:nth-child(3),.se-card:nth-child(3){animation-delay:.08s}
+.stk-card:nth-child(4),.log-row:nth-child(4),.se-card:nth-child(4){animation-delay:.11s}
+.stk-card:nth-child(5),.log-row:nth-child(5){animation-delay:.14s}
+.stk-card:nth-child(6),.log-row:nth-child(6){animation-delay:.17s}
+
+/* мягкий пульс у важных кнопок */
+@keyframes softPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(243,217,164,.34);}
+  50%{box-shadow:0 0 0 7px rgba(243,217,164,0);}
+}
+.btn-gold:not(:disabled){animation:softPulse 2.6s ease-in-out infinite;}
+
+/* прогресс-полосы оживают */
+@keyframes barShine{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(320%);}
+}
+.stk-bar i,.pet-bar i,.log-bar i{position:relative;overflow:hidden;}
+.stk-bar i::after,.pet-bar i::after,.log-bar i::after{
+  content:'';position:absolute;inset:0;width:40%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:barShine 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .fx-float,.fx-coin,.stk-card,.log-row,.gorder,.se-card,.wx-row,.cellar-row,.gold-card,
+  #screen.anim-in,.btn-gold{animation:none!important;}
+  .stk-bar i::after,.pet-bar i::after,.log-bar i::after{animation:none;}
+}
+
+/* ===== HUD: сезон и погода · v81 ===== */
+.season-meta{
+  position:relative;display:inline-flex;align-items:center;gap:4px;padding:4px 10px 5px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:#d6e2cf;font:700 10px system-ui;cursor:pointer;overflow:hidden;
+}
+.season-meta .ic,.season-meta svg{width:13px;height:13px;color:#a9d8ae;}
+.season-meta em{font-style:normal;opacity:.62;font-size:9px;}
+.season-meta:active{transform:scale(.97);}
+.season-prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(255,255,255,.08);}
+.season-prog i{display:block;height:100%;background:linear-gradient(90deg,#7fb86a,#a9d8ae);transition:width .4s;}
+.weather-meta{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  color:#d6e2cf;font:700 10px system-ui;cursor:pointer;
+}
+.weather-meta .ic,.weather-meta svg{width:13px;height:13px;color:#f0c95e;}
+.weather-meta:active{transform:scale(.97);}
 </style>
 </head>
 <body>
@@ -3699,14 +3861,70 @@ function addCoins(n){
   S.coins += n; if (n>0) S.stats.earned += n;
   if (n > 0) DAY_logEarn(n);
 }
+/* ============================================================
+   СЕЗОНЫ · v81
+   12 дней на сезон, у каждого свои правила:
+   что растёт, что дорого, что недоступно.
+   ============================================================ */
+const SEASONS = {
+  spring:{ name:'Весна', icon:'flower', color:'#8fd08a', next:'summer',
+           grows:['rapeseed','potato','grape','wheat','grass'], heat:1.0,
+           desc:'Время посева. Рапс и картофель растут лучше всего.' },
+  summer:{ name:'Лето',  icon:'sun',    color:'#f0c95e', next:'autumn',
+           grows:['corn','soy','cotton','wheat','grass'], heat:1.0,
+           desc:'Кукуруза и хлопок на пике. Засуха сушит поля.' },
+  autumn:{ name:'Осень', icon:'leaf',   color:'#e8963f', next:'winter',
+           grows:['wheat','rapeseed','potato','grape','grass'], heat:0.9,
+           desc:'Урожайная пора. Пшеница и виноград дают больше.' },
+  winter:{ name:'Зима',  icon:'snow',   color:'#a8d0f0', next:'spring',
+           grows:['grass'], heat:0.35,
+           desc:'Поля спят. Работают теплицы, животные и переработка.' },
+};
+const SEASON_LEN = 12;   // дней на сезон
+function SEASON_dayIn(){
+  if (S.settings.fixedSummer) return 1;
+  const days = Math.floor((Date.now() - S.createdAt) / 86400000);
+  return days % SEASON_LEN;
+}
+function SEASON_daysLeft(){ return SEASON_LEN - SEASON_dayIn(); }
 function seasonInfo(){
-  if (S.settings.fixedSummer) return {name:'Лето (фикс.)', icon:'sun', id:'summer'};
+  if (S.settings.fixedSummer) return {name:'Лето (фикс.)', icon:'sun', id:'summer', ...SEASONS.summer};
   const days = Math.floor((Date.now()-S.createdAt)/86400000);
   const m = days % 12;
-  if (m<3)  return {name:'Весна', icon:'flower', id:'spring'};
-  if (m<6)  return {name:'Лето',  icon:'sun', id:'summer'};
-  if (m<9)  return {name:'Осень', icon:'leaf', id:'autumn'};
-  return {name:'Зима', icon:'snow', id:'winter'};
+  if (m<3)  return { ...SEASONS.spring, id:'spring' };
+  if (m<6)  return { ...SEASONS.summer, id:'summer' };
+  if (m<9)  return { ...SEASONS.autumn, id:'autumn' };
+  return { ...SEASONS.winter, id:'winter' };
+}
+/* Сезонная пригодность культуры: 1.0 родная, 0.55 чужая, 0 зимой вне теплицы */
+function SEASON_fit(cropId){
+  if (S.settings.fixedSummer) return 1;
+  const c = CROPS[cropId], s = seasonInfo().id;
+  if (c.season === 'any') return 1;
+  if (c.season === s) return 1;
+  const S_ = SEASONS[s];
+  if (S_ && S_.grows.includes(cropId)) return 0.88;
+  return s === 'winter' ? 0.35 : 0.62;
+}
+function SEASON_open(){
+  const cur = seasonInfo();
+  const rows = Object.keys(SEASONS).map(id=>{
+    const S_ = SEASONS[id];
+    const on = id === (cur.id || '');
+    const crops = S_.grows.map(g=>`<span class="se-crop">${goodsIcon(g)}<em>${CROPS[g].name}</em></span>`).join('');
+    return `<div class="se-card ${on?'on':''}">
+      <div class="se-head"><span class="se-ico">${ic(S_.icon)}</span>
+        <div><b>${S_.name}${on?' · сейчас':''}</b><small>${S_.desc}</small></div>
+        ${on?`<span class="se-left">${SEASON_daysLeft()} дн.</span>`:''}</div>
+      <div class="se-crops">${crops}</div>
+    </div>`;
+  }).join('');
+  const heat = Math.round(cur.heat*100);
+  openSheet(`<h2>${ic(cur.icon)} Сезоны</h2>
+    <p class="muted">Каждый сезон длится ${SEASON_LEN} дней. Родные культуры растут втрое быстрее чужих, зимой поля почти спят.</p>
+    <div class="se-heat">${ic('sun')} Скорость роста сейчас: <b>${heat}%</b></div>
+    <div class="se-list">${rows}</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
 }
 /* ============================================================
    ПОГОДА · v80
@@ -3860,14 +4078,12 @@ function openForecast(){
   const cards=labels.map((label,i)=>{const w=weatherForDay(day+i);return `<div class="forecast-card"><small>${label}</small><span class="forecast-icon">${ic(w.icon)}</span><b>${w.name}</b><p>${effects[w.id]}</p></div>`;}).join('');
   openDialog(`<h2>${ic('sun')} Прогноз погоды</h2><p class="muted forecast-intro">Погода острова влияет на таймеры и урожай. Прогноз на ближайшие дни:</p><div class="forecast-grid">${cards}</div><p class="forecast-note">Сезон: <b>${seasonInfo().name}</b> · сезонность культур тоже влияет на урожай.</p><button class="btn btn-primary btn-block" onclick="App.closeModal()">Понятно</button>`);
 }
-function seasonMult(cropId){
-  const c = CROPS[cropId], s = seasonInfo().id;
-  if (c.season==='any') return 1;
-  return c.season===s ? 1 : 0.7;
-}
+function seasonMult(cropId){ return SEASON_fit(cropId); }
 function growthFactor(){
   let f = style().growth;
-  if (seasonInfo().id==='winter') f *= 0.25;
+  if (S.settings.fixedSummer) return f;
+  const se = seasonInfo();
+  f *= (se.heat || 1);
   return f;
 }
 function machineSpeed(mid){
@@ -4162,6 +4378,7 @@ function sellGood(good, qty){
   if (typeof STAT_migrate === 'function'){ const d=STAT_migrate(); if(d) d.best.earn=Math.max(d.best.earn||0, Math.round(gain)); }
   if (typeof XMAS_track==='function') XMAS_track('seller', Math.round(gain));
   if (typeof TUT2_onAction==='function') TUT2_onAction('sell');
+  try { if (typeof ANIM_coinsFrom === 'function') ANIM_coinsFrom(window.__lastSellEl, gain); } catch(e){}
   return gain;
 }
 
@@ -7110,6 +7327,86 @@ let hudLastCoins=null,hudLastGems=null;
 function renderAll(){ renderHUD(); renderTabs(); renderScreen();
   if (typeof XMAS_applyBodyClass==='function') XMAS_applyBodyClass();
   if (typeof MUS_tryAutoStart==='function') MUS_tryAutoStart(); }
+/* ============================================================
+   ЖИВЫЕ АНИМАЦИИ · v81
+   Счётчики крутятся, монеты вылетают из места действия, экраны
+   мягко въезжают. Всё на CSS+JS, без внешних библиотек.
+   ============================================================ */
+
+/* --- Счётчик: плавный пересчёт числа --- */
+function ANIM_count(el, to, ms){
+  if (!el) return;
+  const from = Number(el.dataset.num ?? to);
+  el.dataset.num = String(to);
+  const dur = ms || 620;
+  if (from === to || typeof requestAnimationFrame !== 'function'){ el.textContent = fmt(to); return; }
+  const t0 = performance.now();
+  const step = (t)=>{
+    const p = Math.min(1, (performance.now()-t0)/dur);
+    const e = 1 - Math.pow(1-p, 3);          // easeOutCubic
+    el.textContent = fmt(Math.round(from + (to-from)*e));
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+/* --- Всплывающая цифра в точке --- */
+function ANIM_float(x, y, text, tone){
+  const layer = document.getElementById('fxLayer') || (()=>{
+    const d = document.createElement('div');
+    d.id = 'fxLayer'; d.className = 'fx-layer';
+    document.getElementById('app').appendChild(d);
+    return d;
+  })();
+  const el = document.createElement('div');
+  el.className = 'fx-float ' + (tone || '');
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  layer.appendChild(el);
+  setTimeout(()=>el.remove(), 1100);
+}
+
+/* --- Монеты из точки действия в HUD --- */
+function ANIM_coinsFrom(fromEl, amount){
+  if (!fromEl || amount <= 0) return;
+  try {
+    const a = fromEl.getBoundingClientRect();
+    const chip = document.querySelector('.money-chip');
+    if (!chip) return;
+    const b = chip.getBoundingClientRect();
+    const app = document.getElementById('app');
+    const base = app.getBoundingClientRect();
+    const layer = document.getElementById('fxLayer') || (()=>{
+      const d = document.createElement('div'); d.id='fxLayer'; d.className='fx-layer';
+      app.appendChild(d); return d;
+    })();
+    const n = Math.min(7, 3 + Math.floor(amount/300));
+    for (let i=0;i<n;i++){
+      const c = document.createElement('div');
+      c.className = 'fx-coin';
+      const sx = a.left - base.left + a.width/2, sy = a.top - base.top + a.height/2;
+      c.style.left = sx + 'px'; c.style.top = sy + 'px';
+      c.style.setProperty('--dx', (b.left - base.left + b.width/2 - sx) + 'px');
+      c.style.setProperty('--dy', (b.top - base.top + b.height/2 - sy) + 'px');
+      c.style.animationDelay = (i*45) + 'ms';
+      layer.appendChild(c);
+      setTimeout(()=>c.remove(), 900 + i*45);
+    }
+    ANIM_float(a.left - base.left + a.width/2, a.top - base.top - 6,
+               `+${fmt(amount)}`, 'coin');
+  } catch(e){}
+}
+
+/* --- Мягкий въезд экрана --- */
+function ANIM_enterScreen(){
+  const sc = document.getElementById('screen');
+  if (!sc) return;
+  sc.classList.remove('anim-in');
+  void sc.offsetWidth;                 // перезапуск анимации
+  sc.classList.add('anim-in');
+}
+
 function renderHUD(){
   if(!S) return;
   const seas=seasonInfo(), wea=weatherInfo();
@@ -7121,12 +7418,24 @@ function renderHUD(){
   hudLastCoins=S.coins;hudLastGems=S.gems;
   $('#hud').innerHTML=`
     <div class="hud-top">
-      <div class="chip money-chip ${coinFx}">${ic('coin')} <b data-coins>${fmt(S.coins)}</b>${S.debt>0?`<small>−${fmt(S.debt)}</small>`:''}</div>
-      <div class="chip gem-chip ${gemFx}">${ic('gem')} <b data-gems>${S.gems}</b></div>
+      <div class="chip money-chip ${coinFx}">${ic('coin')} <b data-coins data-num="${hudLastCoins===null?S.coins:hudLastCoins}">${fmt(S.coins)}</b>${S.debt>0?`<small>−${fmt(S.debt)}</small>`:''}</div>
+      <div class="chip gem-chip ${gemFx}">${ic('gem')} <b data-gems data-num="${hudLastGems===null?S.gems:hudLastGems}">${S.gems}</b></div>
       <div class="hud-btn"><button class="prem-enter ${(typeof PUR_isVip==='function'&&PUR_isVip())?'is-vip':''}" onclick="App.openPremium()" title="Премиум" aria-label="Премиум">${ic('gem')}<span>${(typeof PUR_isVip==='function'&&PUR_isVip())?'VIP':'Премиум'}</span></button><button class="icon-btn settings-control" onclick="App.openSettings()" title="Настройки" aria-label="Настройки">${ic('gear')}</button></div>
     </div>
-    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span>${(typeof PUR_isVip==='function' && PUR_isVip()) ? `<span class="hud-flag vip">${ic('medal')} VIP ${PUR_vipDaysLeft()}д</span>` : ''}${(typeof PUR_boostActive==='function' && PUR_boostActive()) ? `<span class="hud-flag boost">${ic('bolt')} ${purBoostLeft()}</span>` : ''}<span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span><span class="weather-meta">${seas.name} <i>·</i> ${ic(wea.icon)} ${wea.name}</span></div>
+    <div class="hud-meta"><span class="level-meta"><b>${ic('star')} ${S.level}</b><i></i>${ic('heart')} ${S.rep}</span>${(typeof PUR_isVip==='function' && PUR_isVip()) ? `<span class="hud-flag vip">${ic('medal')} VIP ${PUR_vipDaysLeft()}д</span>` : ''}${(typeof PUR_boostActive==='function' && PUR_boostActive()) ? `<span class="hud-flag boost">${ic('bolt')} ${purBoostLeft()}</span>` : ''}<span class="liv-phase">${ic(LIV_todPhase().icon)} ${LIV_todPhase().name}</span>
+      <button class="season-meta" onclick="App.seasonOpen()" title="Сезоны">
+        ${ic(seas.icon)} ${seas.name}<em>${S.settings.fixedSummer?'':`· ${SEASON_daysLeft()} дн.`}</em>
+        <span class="season-prog"><i style="width:${S.settings.fixedSummer?100:Math.round((SEASON_LEN-SEASON_daysLeft())/SEASON_LEN*100)}%"></i></span>
+      </button>
+      <button class="weather-meta" onclick="App.wxOpen()" title="Погода">${ic(wea.icon)} ${wea.name}</button></div>
     <div class="xpbar"><i style="width:${xpPct}%"></i></div>`;
+  // живой пересчёт чисел
+  try {
+    const cEl = document.querySelector('[data-coins]');
+    const gEl = document.querySelector('[data-gems]');
+    if (cEl) ANIM_count(cEl, S.coins);
+    if (gEl) ANIM_count(gEl, S.gems, 420);
+  } catch(e){}
 }
 
 function renderTabs(){
@@ -7324,6 +7633,90 @@ function renderBusiness(){
       <div class="business-hint">${S.autoSell?'Авто-продажа включена':'Продажа вручную · цены меняются на рынке'}<button class="mini-cta" onclick="App.toggleAutoSell()">${S.autoSell?'Отключить':'Авто-продажа'}</button></div>`;
   }
   $('#screen').innerHTML=`<div class="page-heading"><div><small>РАЗВИТИЕ</small><h2>Хозяйство</h2></div><button class="garage-shortcut" onclick="App.openGarage()">${ic('tractor')} Гараж</button></div><div class="biz-tabs">${tabs}</div>${body}`;
+}
+
+/* ============================================================
+   ЭКРАН «СКЛАД» · v81
+   Всё, что лежит в амбаре: количество, качество, срок жизни,
+   быстрая продажа и подсказка «что вот-вот испортится».
+   ============================================================ */
+function STOCK_rows(){
+  const rows = [];
+  for (const g in S.goods){
+    const qty = S.goods[g];
+    if (!qty || !GOODS[g]) continue;
+    const q = gradeOf(g), gt = gradeTier(q);
+    const h = (typeof SPOIL_hoursLeft === 'function') ? SPOIL_hoursLeft(g, q) : Infinity;
+    const pr = MKT_priceMul(g);
+    const unit = GOODS[g].price * pr.mul * gradeMul(g);
+    rows.push({ good:g, qty, q:Math.round(q), tier:gt, hours:h,
+                unit, total:Math.round(qty*unit), pres:pr.pres });
+  }
+  return rows.sort((a,b)=> a.hours - b.hours);   // сначала то, что портится
+}
+function STOCK_summary(){
+  const rows = STOCK_rows();
+  return {
+    rows,
+    total: rows.reduce((a,r)=>a+r.total,0),
+    kinds: rows.length,
+    urgent: rows.filter(r=>r.hours < 12).length,
+    units: rows.reduce((a,r)=>a+r.qty,0),
+  };
+}
+function STOCK_render(){
+  const { rows, total, kinds, urgent, units } = STOCK_summary();
+  const cap = 3000;   // вместимость амбара
+  const used = Math.min(cap, units);
+  const pct = Math.round(used/cap*100);
+  const capCls = pct > 90 ? 'bad' : pct > 70 ? 'mid' : 'good';
+  if (!rows.length){
+    return `<div class="page-heading"><div><small>АМБАР</small><h2>Склад</h2></div></div>
+      <div class="empty-state"><span>${ic('box')}</span><b>Склад пуст</b><small>Собери урожай или забери продукцию животных</small></div>`;
+  }
+  const cards = rows.map(r=>{
+    const urgentCls = r.hours < 6 ? 'urgent' : r.hours < 12 ? 'soon' : '';
+    const hTxt = !isFinite(r.hours) ? 'не портится'
+      : r.hours <= 0 ? 'портится сейчас'
+      : `≈${r.hours} ч`;
+    const presCls = r.pres >= 0.97 ? 'good' : r.pres >= 0.85 ? 'mid' : 'bad';
+    return `<article class="stk-card ${urgentCls}">
+      <div class="stk-head">
+        <span class="stk-ic">${goodsIcon(r.good)}</span>
+        <div class="stk-copy">
+          <b>${GOODS[r.good].name}</b>
+          <small style="color:${r.tier.color}">${r.tier.name} · ${r.q}</small>
+        </div>
+        <span class="stk-qty">×${fmt(r.qty)}</span>
+      </div>
+      <div class="stk-meta">
+        <span class="stk-spoil ${urgentCls}">${ic('clock')} ${hTxt}</span>
+        <span class="stk-mkt ${presCls}">${ic('coin')} ${Math.round(r.unit)}/шт</span>
+      </div>
+      <button class="btn btn-gold btn-block btn-sm" onclick="App.sell('${r.good}')">
+        Продать за ≈ ${fmt(r.total)}
+      </button>
+    </article>`;
+  }).join('');
+  return `<div class="page-heading"><div><small>АМБАР</small><h2>Склад</h2></div>
+      <span class="rep-tag">${ic('box')} ${kinds}</span></div>
+    <div class="stk-hero">
+      <div class="stk-hero-top">
+        <span>${ic('box')} Заполнено</span>
+        <b>${fmt(units)} / ${fmt(cap)}</b>
+      </div>
+      <div class="stk-bar ${capCls}"><i style="width:${pct}%"></i></div>
+      <div class="stk-hero-foot">
+        <span>Стоимость: <b>${fmt(total)}</b> монет</span>
+        ${urgent ? `<span class="stk-alert">${ic('bolt')} ${urgent} товара портятся</span>` : `<span>${ic('check')} Порча не грозит</span>`}
+      </div>
+    </div>
+    ${urgent ? `<div class="stk-warn">${ic('info')} Порядок: сверху — то, что испортится быстрее. Холодный погреб замедлит порчу.</div>` : ''}
+    <div class="stk-list">${cards}</div>
+    <div class="row" style="gap:8px;margin-top:10px">
+      <button class="btn btn-ghost btn-block" onclick="App.cellarOpen()">${ic('home')} Погреб</button>
+      <button class="btn btn-primary btn-block" onclick="App.openMarket()">${ic('coin')} Рынок</button>
+    </div>`;
 }
 
 /* ---------- ТОВАРНЫЕ ЗАКАЗЫ: рендер ---------- */
@@ -7598,6 +7991,7 @@ function openMoreMenu(){
     { id:'log',      icon:'wheat',    label:'Журнал культур', desc:'Рубежи по каждой культуре', sheet:'logOpen' },
     { id:'pet',      icon:'paw',      label:'Питомец',  desc:'Друг, прогулки и ласка', sheet:'openPet' },
     { id:'cellar',   icon:'home',     label:'Погреб',   desc:'Защита урожая от порчи', sheet:'cellarOpen' },
+    { id:'season',   icon:'flower',   label:'Сезоны',   desc:'Что растёт и когда', sheet:'seasonOpen' },
     ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
   ];
   const grid = items.map(it=>`<button class="more-item ${view===it.id?'on':''}" onclick="${it.sheet?`App.${it.sheet}()`:`App.farmView('${it.id}');closeModal()`}">
@@ -8304,6 +8698,7 @@ const App = {
   },
   openMarket(){ sfx.click(); openMarket(); },
   sell(good){
+    try { window.__lastSellEl = document.querySelector('.stk-card .btn-gold, #modal-root .sheet .btn-gold, .market-card .btn-gold'); } catch(e){}
     const gain = sellGood(good, S.goods[good]);
     if (gain>0){
       toast(`+${fmt(gain)} монет`, 'good', 'coin'); sfx.coin(); addXP(5);
@@ -10280,6 +10675,7 @@ function RET_installHooks(){
   if (window.App){
     Object.assign(App, {
       farmView(v){ const changed = ui.farmView !== v; ui.tab = 'farm'; ui.farmView = v; sfx.click(); renderScreen();
+        try { if (typeof ANIM_enterScreen === 'function') ANIM_enterScreen(); } catch(e){}
         setTimeout(()=>{ try{ if (typeof LIV_scrollActiveTab==='function') LIV_scrollActiveTab(); }catch(e){} }, 30);
         if (changed){ try{ const sc=$('#screen'); if (sc) sc.scrollTop = 0; }catch(e){} }
         if (typeof TUT2_onNav==='function') TUT2_onNav(v); },
@@ -11800,6 +12196,8 @@ function LIV_installHooks(){
     wxOpen(){ sfx.click(); WEATHER_open(); },
     cellarOpen(){ sfx.click(); CELLAR_open(); },
     cellarBuy(){ CELLAR_buy(); },
+    seasonOpen(){ sfx.click(); SEASON_open(); },
+    stockOpen(){ sfx.click(); ui.farmView='stock'; ui.tab='farm'; renderScreen(); },
     petPet(){ PET_pet(); },
       feedPet(){ LIV_feedPet(); },
       playPet(){ LIV_playPet(); },
@@ -11889,6 +12287,10 @@ function LIV_extendFarmTabs(){
   const orig = RET_renderFarm;
   RET_renderFarm = function(){
     const view = ui.farmView || 'map';
+    if (view === 'stock'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('stock')}</div>${STOCK_render()}`;
+      return;
+    }
     if (view === 'exped'){
       $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('exped')}</div>
         ${LIV_renderWeek()}${LIV_renderStorm()}${LIV_renderExpeditions()}
