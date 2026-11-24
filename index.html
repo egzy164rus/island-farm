@@ -3542,6 +3542,41 @@ ${PET_CSS}
 .anim-care em{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c95a6e,#f0a0a8);transition:width .4s;}
 .anim-bonus{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:9px;font-weight:800;color:#9fd48a;}
 .anim-bonus .ic,.anim-bonus svg{width:12px;height:12px;}
+
+/* ===== ИТОГИ СЕЗОНА · v83 ===== */
+.ss-hero{background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:13px;margin-bottom:11px;}
+.ss-hero-top{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;
+  color:#9fae9a;font-weight:700;margin-bottom:8px;}
+.ss-hero-top b{font-size:12px;color:#eaf2f8;}
+.ss-prog{height:8px;border-radius:5px;background:rgba(0,0,0,.34);overflow:hidden;margin-bottom:8px;}
+.ss-prog i{display:block;height:100%;border-radius:5px;transition:width .5s;
+  background:linear-gradient(90deg,#4f9d63,#8fd08a,#f3d9a4);}
+.ss-hero-foot{display:flex;justify-content:space-between;font-size:10px;color:#8d9c88;gap:8px;}
+.ss-hero-foot b{color:#f3d9a4;font-size:12px;}
+.ss-compare{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:13px;
+  font-size:10.5px;font-weight:700;margin-bottom:12px;}
+.ss-compare.up{background:rgba(122,200,140,.10);border:1px solid rgba(122,200,140,.22);color:#a9d8ae;}
+.ss-compare.down{background:rgba(226,140,110,.09);border:1px solid rgba(226,140,110,.20);color:#e8b09c;}
+.ss-compare .ic,.ss-compare svg{width:14px;height:14px;flex:none;}
+.ss-compare b{font-size:12px;}
+.ss-list{display:flex;flex-direction:column;gap:6px;margin-bottom:11px;}
+.ss-row{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.055);}
+.ss-ic{width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);overflow:hidden;}
+.ss-ic svg{width:17px;height:17px;}
+.ss-name{font-size:10.5px;color:#dfe8d6;font-weight:700;min-width:78px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ss-bar{flex:1;height:5px;border-radius:4px;background:rgba(0,0,0,.32);overflow:hidden;}
+.ss-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5fa86a,#a9d8ae);}
+.ss-row b{font-size:11px;color:#f3d9a4;font-weight:900;min-width:36px;text-align:right;}
+.ss-empty{display:flex;align-items:center;gap:8px;padding:16px;border-radius:13px;
+  background:rgba(255,255,255,.02);color:#8d9c88;font-size:10.5px;}
+.ss-empty .ic,.ss-empty svg{width:16px;height:16px;}
+.ss-note{display:flex;gap:7px;align-items:flex-start;font-size:9.5px;line-height:1.45;
+  color:#8d9c88;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.025);}
+.ss-note .ic,.ss-note svg{width:13px;height:13px;flex:none;margin-top:1px;}
 </style>
 </head>
 <body>
@@ -4000,12 +4035,13 @@ const SEASONS = {
            desc:'Поля спят. Работают теплицы, животные и переработка.' },
 };
 const SEASON_LEN = 12;   // дней на сезон
+/* День сезона от 1 до SEASON_LEN — как считает игрок, а не программист */
 function SEASON_dayIn(){
   if (S.settings.fixedSummer) return 1;
   const days = Math.floor((Date.now() - S.createdAt) / 86400000);
-  return days % SEASON_LEN;
+  return (days % SEASON_LEN) + 1;
 }
-function SEASON_daysLeft(){ return SEASON_LEN - SEASON_dayIn(); }
+function SEASON_daysLeft(){ return SEASON_LEN - SEASON_dayIn() + 1; }
 function seasonInfo(){
   if (S.settings.fixedSummer) return {name:'Лето (фикс.)', icon:'sun', id:'summer', ...SEASONS.summer};
   const days = Math.floor((Date.now()-S.createdAt)/86400000);
@@ -4485,6 +4521,7 @@ function sellGood(good, qty){
   let gain = Math.round(qty * GOODS[good].price * mult * gradeMul(good));
   S.goods[good] -= qty;
   MKT_registerSale(good, qty);
+  S.stats.marketEarned = (S.stats.marketEarned||0) + gain;
   // множитель престижа: «новый остров» бустит все доходы
   if (typeof PRE_apply === 'function') gain = PRE_apply(gain);
   addCoins(gain); S.stats.sold += qty;
@@ -7986,6 +8023,9 @@ function AUCT_bid(){
   // победа
   addCoins(-a.price);
   a.won = true;
+  a.wins = (a.wins||0) + 1;
+  if (!S.auctWins) S.auctWins = 0;
+  S.auctWins++;
   if (lot.type === 'good'){
     S.goods[lot.good] = (S.goods[lot.good]||0) + a.qty;
     if (!S.grade) S.grade = {};
@@ -8309,6 +8349,7 @@ function openMoreMenu(){
     { id:'pet',      icon:'paw',      label:'Питомец',  desc:'Друг, прогулки и ласка', sheet:'openPet' },
     { id:'cellar',   icon:'home',     label:'Погреб',   desc:'Защита урожая от порчи', sheet:'cellarOpen' },
     { id:'season',   icon:'flower',   label:'Сезоны',   desc:'Что растёт и когда', sheet:'seasonOpen' },
+    { id:'seasonstats', icon:'chart', label:'Итоги сезона', desc:'Урожай и сравнение' },
     { id:'auct',     icon:'trophy',   label:'Аукцион',  desc:'Лот дня и торги', sheet:'auctOpen' },
     ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
   ];
@@ -10158,6 +10199,18 @@ const ACHIEVEMENTS = [
   { id:'sold_5k',       icon:'box',     name:'Оптовик',            desc:'Продай 5 000 единиц товара',   need:5000, stat:'goodsSold',  reward:{coins:3000, gems:4} },
   { id:'machines_all',  icon:'tractor', name:'Полный гараж',       desc:'Купи всю технику',            need:6,    stat:'machines',   reward:{coins:4500, gems:6} },
   { id:'week_12',       icon:'chart',   name:'Летописец',          desc:'Получи 12 отчётов недели',     need:12,   stat:'weeklyReports',reward:{coins:6000, gems:8} },
+  /* --- v83: новые механики --- */
+  { id:'auct_1',        icon:'trophy',  name:'Первый молоток',     desc:'Выиграй лот на аукционе',      need:1,    stat:'auctionWins', reward:{coins:1200, gems:2} },
+  { id:'auct_10',       icon:'trophy',  name:'Аукционный волк',    desc:'Выиграй 10 лотов',             need:10,   stat:'auctionWins', reward:{coins:6000, gems:8} },
+  { id:'gold_1',        icon:'medal',   name:'Золотая культура',   desc:'Открой первую золотую карточку',need:1,   stat:'goldCards',  reward:{coins:2500, gems:4} },
+  { id:'gold_4',        icon:'medal',   name:'Золотая коллекция',  desc:'Открой 4 золотые карточки',    need:4,    stat:'goldCards',  reward:{coins:9000, gems:12} },
+  { id:'gold_8',        icon:'medal',   name:'Всё золото',         desc:'Открой все 8 золотых карточек',need:8,    stat:'goldCards',  reward:{coins:30000, gems:30} },
+  { id:'cellar_3',      icon:'home',    name:'Хранитель урожая',   desc:'Построй ледник',               need:3,    stat:'cellarLvl',  reward:{coins:8000, gems:10} },
+  { id:'animals_named', icon:'heart',   name:'По имени',           desc:'Назови животное по-своему',    need:2,    stat:'animalsNamed',reward:{coins:900} },
+  { id:'care_100',      icon:'heart',   name:'Заботливый хозяин',  desc:'Доведи заботу животного до 100%',need:100,stat:'bestCare',    reward:{coins:3500, gems:5} },
+  { id:'season_all',    icon:'flower',  name:'Круглый год',        desc:'Собери урожай во все 4 сезона',need:4,   stat:'seasonsHarvested', reward:{coins:7000, gems:9} },
+  { id:'weather_storm', icon:'bolt',    name:'Не боится грозы',    desc:'Собери урожай в грозу',        need:1,    stat:'stormHarvests', reward:{coins:1500, gems:2} },
+  { id:'mkt_rich',      icon:'coin',    name:'Хозяин рынка',       desc:'Продай товара на 50 000 монет',need:50000,stat:'marketEarned', reward:{coins:6000, gems:7} },
 ];
 
 /* Последствия «просрочки» — мягкие, не карательные */
@@ -10191,6 +10244,18 @@ function ACH_statValues(){
     fairSales: (S.stats?.fairSales||0),
     goodsSold: (S.stats?.sold||0),
     machines: Object.values(S.machines||{}).filter(m=>m.owned).length,
+    // v83: новые механики
+    auctionWins: (S.auctWins||0),
+    goldCards: (typeof GOLD_all==='function') ? GOLD_all().length : 0,
+    cellarLvl: (typeof CELLAR_state==='function') ? CELLAR_state() : 0,
+    animalsNamed: (()=>{ let n=0; const A=S.animals||{};
+      for (const id in A){ const def=(ANIMAL_NAMES[id]||[]); if (def.length && !def.includes(A[id].name)) n++; }
+      return n; })(),
+    bestCare: (()=>{ let m=0; const A=S.animals||{};
+      for (const id in A) m=Math.max(m, Math.round(A[id].care||0)); return m; })(),
+    seasonsHarvested: (S.stats?.seasonsSet ? Object.keys(S.stats.seasonsSet).length : 0),
+    stormHarvests: (S.stats?.stormHarvests||0),
+    marketEarned: (S.stats?.marketEarned||0),
     coinsNow: S.coins||0,
   };
 }
@@ -10960,6 +11025,15 @@ function RET_installHooks(){
             const q = (typeof gradeOf === 'function') ? gradeOf(hadCrop) : 50;
             LOG_trackGrade(delta, q, hadCrop);
           if (typeof PET_react === 'function') PET_react('harvest');
+          /* v83: сезоны и гроза — для достижений */
+          try {
+            if (!S.stats.seasonsSet) S.stats.seasonsSet = {};
+            const se = seasonInfo();
+            if (!S.settings.fixedSummer) S.stats.seasonsSet[se.id] = 1;
+            const wx = weatherInfo();
+            if (wx.id === 'storm') S.stats.stormHarvests = (S.stats.stormHarvests||0) + 1;
+            if (typeof SEASON_logHarvest === 'function') SEASON_logHarvest(hadCrop, delta);
+          } catch(e){}
             if (typeof GOLD_check === 'function') GOLD_check(hadCrop);
           } catch(e){}
         }
@@ -12400,6 +12474,83 @@ function LIV_renderExpeditions(){
   return html;
 }
 
+/* ============================================================
+   СТАТИСТИКА СЕЗОНА · v83
+   Что собрано за текущий сезон, сравнение и прогресс.
+   ============================================================ */
+function SEASON_logHarvest(cropId, qty){
+  try {
+    if (!S.stats) S.stats = {};
+    if (!S.stats.seasonLog) S.stats.seasonLog = {};
+    const se = seasonInfo();
+    const key = se.id + '|' + Math.floor((Date.now()-S.createdAt)/86400000/12);
+    const L = S.stats.seasonLog;
+    if (!L[key]) L[key] = { season:se.id, crops:{}, total:0, coins:0, startedAt:Date.now() };
+    const row = L[key];
+    row.crops[cropId] = (row.crops[cropId]||0) + qty;
+    row.total += qty;
+    // храним только 4 последних сезона
+    const keys = Object.keys(L).sort((a,b)=> (L[a].startedAt||0)-(L[b].startedAt||0));
+    while (keys.length > 4){ delete L[keys.shift()]; }
+  } catch(e){}
+}
+function SEASON_current(){
+  const se = seasonInfo();
+  const key = se.id + '|' + Math.floor((Date.now()-(S.createdAt||0))/86400000/12);
+  const L = (S.stats && S.stats.seasonLog) || {};
+  return L[key] || { season:se.id, crops:{}, total:0, coins:0, startedAt:Date.now() };
+}
+function SEASON_statsHTML(){
+  const se = seasonInfo();
+  const cur = SEASON_current();
+  const days = SEASON_dayIn(), left = SEASON_daysLeft();
+  const pct = Math.round(days / SEASON_LEN * 100);
+  const crops = Object.entries(cur.crops||{}).filter(([id,v])=>v>0 && CROPS[id])
+    .sort((a,b)=>b[1]-a[1]);
+  const maxCrop = Math.max(1, ...crops.map(c=>c[1]));
+  const rows = crops.length
+    ? crops.map(([id,num])=>`<div class="ss-row">
+        <span class="ss-ic">${goodsIcon(id)}</span>
+        <span class="ss-name">${CROPS[id].name}</span>
+        <span class="ss-bar"><i style="width:${Math.round(num/maxCrop*100)}%"></i></span>
+        <b>${fmt(num)}</b>
+      </div>`).join('')
+    : `<div class="ss-empty">${ic('seed')} В этом сезоне ещё ничего не собрано</div>`;
+  // сравнение с прошлым сезоном
+  const L = (S.stats && S.stats.seasonLog) || {};
+  const all = Object.values(L).sort((a,b)=>(b.startedAt||0)-(a.startedAt||0));
+  const prev = all[1];
+  let compare = '';
+  if (prev && prev.total > 0){
+    const diff = cur.total - prev.total;
+    const pctDiff = Math.round(diff/prev.total*100);
+    const cls = diff >= 0 ? 'up' : 'down';
+    compare = `<div class="ss-compare ${cls}">${ic(diff>=0?'chart':'chart')}
+      ${diff>=0?'Больше':'Меньше'} чем в прошлом сезоне на <b>${Math.abs(pctDiff)}%</b></div>`;
+  }
+  return `<div class="page-heading"><div><small>ИТОГИ СЕЗОНА</small><h2>${se.name}</h2></div>
+      <span class="rep-tag">${ic(se.icon)} ${left} дн.</span></div>
+
+    <div class="ss-hero">
+      <div class="ss-hero-top">
+        <span>${ic(se.icon)} Прогресс сезона</span>
+        <b>${days} / ${SEASON_LEN} дней</b>
+      </div>
+      <div class="ss-prog"><i style="width:${pct}%"></i></div>
+      <div class="ss-hero-foot">
+        <span>Собрано: <b>${fmt(cur.total)}</b> ед.</span>
+        <span>Культур: <b>${crops.length}</b></span>
+      </div>
+    </div>
+
+    ${compare}
+
+    <div class="sec-title"><h3>${ic('wheat')} Урожай сезона</h3></div>
+    <div class="ss-list">${rows}</div>
+
+    <div class="ss-note">${ic('info')} Сезон длится ${SEASON_LEN} дней. Смена через ${left} дн. — готовь поля.</div>`;
+}
+
 /* ---------- ЗОЛОТЫЕ КАРТОЧКИ КУЛЬТУР (v77) ----------
    Культура получает «золотую» карточку, когда её собрали LOG_GOLD=60 раз.
    Это долгая цель: мимо неё нельзя пройти случайно. */
@@ -12609,6 +12760,7 @@ function LIV_installHooks(){
     seasonOpen(){ sfx.click(); SEASON_open(); },
     auctOpen(){ sfx.click(); AUCT_open(); },
     auctBid(){ AUCT_bid(); },
+    seasonStats(){ sfx.click(); ui.farmView='seasonstats'; ui.tab='farm'; renderScreen(); },
     animalRename(id){ sfx.click(); ANIM_rename(id); },
     animalSaveName(id){ ANIM_saveName(id); },
     stockOpen(){ sfx.click(); ui.farmView='stock'; ui.tab='farm'; renderScreen(); },
@@ -12701,6 +12853,10 @@ function LIV_extendFarmTabs(){
   const orig = RET_renderFarm;
   RET_renderFarm = function(){
     const view = ui.farmView || 'map';
+    if (view === 'seasonstats'){
+      $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('seasonstats')}</div>${SEASON_statsHTML()}`;
+      return;
+    }
     if (view === 'stock'){
       $('#screen').innerHTML = `<div class="farm-switch">${LIV_switchHTML('stock')}</div>${STOCK_render()}`;
       return;
