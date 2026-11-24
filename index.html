@@ -1237,11 +1237,14 @@ body.tod-night .liv-ff{animation:livFly 8s ease-in-out infinite;}
   100%{opacity:0;transform:translate(-20px,-76px) scale(.8)}}
 
 /* ---------- 3. ПИТОМЕЦ ---------- */
-.liv-pet{position:absolute;right:6px;bottom:calc(env(safe-area-inset-bottom) + 58px);z-index:9;width:56px;cursor:pointer;
+.liv-pet{position:absolute;right:8px;bottom:calc(env(safe-area-inset-bottom) + 78px);z-index:12;width:64px;cursor:pointer;
   filter:drop-shadow(0 4px 8px rgba(0,0,0,.45));transition:transform .2s;}
+/* мягкая подложка, чтобы питомец читался на любом фоне карты */
+.liv-pet::before{content:'';position:absolute;left:50%;bottom:2px;transform:translateX(-50%);
+  width:52px;height:16px;border-radius:50%;background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.42),rgba(0,0,0,0) 72%);z-index:-1;}
 .liv-pet:active{transform:scale(.93);}
 .liv-pet.sleeping{opacity:.8;}
-.liv-pet svg{display:block;width:56px;height:46px;transition:transform .3s;}
+.liv-pet svg{display:block;width:64px;height:53px;transition:transform .3s;}
 .liv-pet.wag svg{animation:petWag .5s ease-in-out 3;}
 @keyframes petWag{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(6deg)}}
 .liv-pet-bubble{position:absolute;right:48px;bottom:30px;background:#f4faf0;color:#1b2a1f;
@@ -3071,6 +3074,101 @@ h1.start-title.sv2{
 .day-chart.empty{display:grid;place-items:center;height:70px;border-radius:12px;background:rgba(255,255,255,.02);}
 .day-empty{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;color:#7d8b79;}
 .day-empty .ic,.day-empty svg{width:15px;height:15px;}
+${PET_CSS}
+    
+/* ===== ПИТОМЕЦ · v78 ===== */
+.pet-hero{
+  position:relative;text-align:center;padding:6px 10px 14px;margin:-4px -2px 12px;border-radius:18px;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(122,190,132,.16),rgba(255,255,255,0) 70%);
+}
+.pet-art{display:grid;place-items:center;min-height:96px;}
+.pet-art svg{width:132px;height:108px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.42));}
+.pet-rename{
+  position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:10px;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);color:#cfdcc8;
+}
+.pet-rename:active{transform:scale(.93);}
+.pet-rename .ic,.pet-rename svg{width:15px;height:15px;}
+.pet-name{font-size:21px;font-weight:900;letter-spacing:.2px;color:#f4f8f0;margin:2px 0 2px;justify-content:center;}
+.pet-sub{font-size:11px;color:#93a48e;font-weight:700;}
+.pet-mood{
+  display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;border-radius:999px;
+  font-size:10.5px;font-weight:800;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#cdd9c6;
+}
+.pet-mood.happy{background:rgba(122,200,140,.14);border-color:rgba(122,200,140,.28);color:#b6e4bd;}
+.pet-mood.sad,.pet-mood.bad{background:rgba(226,140,110,.13);border-color:rgba(226,140,110,.26);color:#f0bcac;}
+
+.pet-stats{padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.065);margin-bottom:11px;}
+.pet-stat{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;color:#9fae9a;font-weight:700;}
+.pet-stat b{font-size:11px;color:#e2ebd9;font-weight:800;}
+.pet-bar{height:6px;border-radius:4px;background:rgba(0,0,0,.34);overflow:hidden;margin:5px 0 10px;}
+.pet-bar:last-child{margin-bottom:0;}
+.pet-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5fa86a,#9fd48a);transition:width .4s;}
+.pet-bar.heart i{background:linear-gradient(90deg,#c95a6e,#f0a0a8);}
+
+.pet-trait{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-bottom:12px;
+  background:linear-gradient(180deg,rgba(243,217,164,.10),rgba(201,160,90,.03));
+  border:1px solid rgba(243,217,164,.20);
+}
+.pet-trait .pt-ico{width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;
+  background:rgba(243,217,164,.14);color:#f3d9a4;}
+.pet-trait .pt-ico .ic,.pet-trait .pt-ico svg{width:16px;height:16px;}
+.pet-trait b{display:block;font-size:11.5px;color:#f6ecd9;text-transform:capitalize;}
+.pet-trait small{display:block;font-size:9.5px;color:#a8b79f;margin-top:1px;}
+
+.pet-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-bottom:11px;}
+.pet-act{
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 3px 9px;border-radius:14px;
+  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);color:#dfe8d6;
+  font:inherit;cursor:pointer;min-width:0;transition:transform .12s,background .18s;
+}
+.pet-act:active{transform:scale(.955);}
+.pet-act.off{opacity:.45;}
+.pet-act .pa-ico{font-size:19px;line-height:1;display:grid;place-items:center;height:22px;color:#c8d8bf;}
+.pet-act .pa-ico .ic,.pet-act .pa-ico svg{width:20px;height:20px;}
+.pet-act:not(.off) .pa-ico{color:#9fd48a;}
+.pet-act b{font-size:9.5px;font-weight:800;color:#e9f1e2;}
+.pet-act small{font-size:8.5px;color:#93a48e;font-weight:700;}
+.pet-act:not(.off) small{color:#a9c9a4;}
+.pet-note{
+  display:flex;gap:7px;align-items:flex-start;font-size:9.5px;line-height:1.45;color:#93a48e;
+  padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.025);margin-bottom:11px;
+}
+.pet-note .ic,.pet-note svg{width:13px;height:13px;flex:none;margin-top:1px;opacity:.8;}
+
+/* --- выбор породы --- */
+.pb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;}
+.pb-card{
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 8px 11px;border-radius:16px;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.075);color:inherit;font:inherit;
+  cursor:pointer;text-align:center;min-width:0;transition:transform .12s,border-color .2s,background .2s;
+}
+.pb-card:active{transform:scale(.97);}
+.pb-card.on{
+  background:linear-gradient(170deg,rgba(243,217,164,.16),rgba(201,160,90,.04));
+  border-color:rgba(243,217,164,.46);
+}
+.pb-art{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;
+  background:rgba(255,255,255,.06);color:#b9cbb2;margin-bottom:3px;}
+.pb-art .ic,.pb-art svg{width:22px;height:22px;}
+.pb-card.on .pb-art{background:rgba(243,217,164,.18);color:#f3d9a4;}
+.pb-name{font-size:12px;font-weight:800;color:#eef4e8;}
+.pb-trait{font-size:8.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c9a05a;}
+.pb-desc{font-size:9px;line-height:1.35;color:#93a48e;margin-top:3px;}
+.pb-field{margin:4px 0 12px;}
+.pb-field label{display:block;font-size:10px;font-weight:800;color:#9fae9a;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.pb-input{
+  width:100%;box-sizing:border-box;padding:12px 14px;border-radius:13px;font:inherit;font-size:15px;font-weight:700;
+  background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12);color:#f0f6ea;outline:none;text-align:center;
+}
+.pb-input:focus{border-color:rgba(243,217,164,.5);box-shadow:0 0 0 3px rgba(243,217,164,.10);}
+
+/* питомец: прогулка и ласка — анимации */
+.liv-pet.walking svg{animation:petWalkBounce .5s ease-in-out 4;}
+@keyframes petWalkBounce{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(-4deg)}}
+@media (prefers-reduced-motion:reduce){.liv-pet.walking svg{animation:none}}
 </style>
 </head>
 <body>
@@ -4383,6 +4481,9 @@ function hint(key){
    SVG LIBRARY — иконки, растения, техника
    ============================================================ */
 const I = {
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M14.5 6.5 17.5 9.5"/></svg>',
+  wind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 13h13a3 3 0 1 1-3 3"/><path d="M3 18h7"/></svg>',
+  paw:'<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="7" cy="7.5" rx="2.1" ry="2.7"/><ellipse cx="12" cy="5.6" rx="2.1" ry="2.9"/><ellipse cx="17" cy="7.5" rx="2.1" ry="2.7"/><ellipse cx="20" cy="12.4" rx="1.9" ry="2.3"/><path d="M12 11.4c2.7 0 5.2 1.9 5.2 4.4 0 2.1-1.7 3.3-3.6 3.3-.8 0-1.2-.3-1.6-.3s-.8.3-1.6.3c-1.9 0-3.6-1.2-3.6-3.3 0-2.5 2.5-4.4 5.2-4.4Z"/></svg>',
   chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20V11M9.3 20V6M14.7 20v-6.4M20 20V9"/></svg>',
   calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17" stroke-linecap="round"/><path d="M8 14h2M8 17.2h2M14 14h2M14 17.2h2" stroke-linecap="round"/></svg>',
   coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffb300"/><circle cx="12" cy="12" r="7.4" fill="#ffca28"/><path d="M12 7.4l1.35 2.8 3.05.4-2.2 2.1.5 3-2.7-1.45-2.7 1.45.5-3-2.2-2.1 3.05-.4z" fill="#fff8e1"/></svg>',
@@ -6991,6 +7092,7 @@ function openMoreMenu(){
     { id:'exped',    icon:'map',      label:'Походы',    desc:'Экспедиции за редкостями' },
     { id:'cards',    icon:'grid',     label:'Коллекция', desc:'Собранные карточки' },
     { id:'log',      icon:'wheat',    label:'Журнал культур', desc:'Рубежи по каждой культуре', sheet:'logOpen' },
+    { id:'pet',      icon:'paw',      label:'Питомец',  desc:'Друг, прогулки и ласка', sheet:'openPet' },
     ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
   ];
   const grid = items.map(it=>`<button class="more-item ${view===it.id?'on':''}" onclick="${it.sheet?`App.${it.sheet}()`:`App.farmView('${it.id}');closeModal()`}">
@@ -9555,6 +9657,7 @@ function RET_installHooks(){
           try {
             const q = (typeof gradeOf === 'function') ? gradeOf(hadCrop) : 50;
             LOG_trackGrade(delta, q, hadCrop);
+          if (typeof PET_react === 'function') PET_react('harvest');
             if (typeof GOLD_check === 'function') GOLD_check(hadCrop);
           } catch(e){}
         }
@@ -10082,7 +10185,7 @@ function LIV_feedPet(){
   toast(`${p.name} накормлен · +18 опыта`, 'good', 'sack');
   sfx.pop(); buzz(30);
   FX.pop(document.querySelector('.liv-pet'), '🍖', 4);
-  save(); renderAll(); openPet();
+  save(); renderAll(); PET_openDialog();
 }
 function LIV_playPet(){
   const p = S.liv.pet;
@@ -10095,8 +10198,30 @@ function LIV_playPet(){
   const el = document.querySelector('.liv-pet');
   if (el){ el.classList.add('wag'); setTimeout(()=>el.classList.remove('wag'), 1600); }
   FX.pop(el, '❤️', 3);
-  save(); renderAll(); openPet();
+  save(); renderAll(); PET_openDialog();
 }
+/* --- ЖИВЫЕ РЕАКЦИИ (v78) ---
+   Питомец не молчит: комментирует уборку, посадку, голод и погоду.
+   Срабатывает не чаще раза в 25 секунд, чтобы не надоедать. */
+let PET_lastSay = 0;
+function PET_react(kind){
+  const now = Date.now();
+  if (now - PET_lastSay < 25000) return;
+  const p = PET_get();
+  const name = p.name || 'Питомец';
+  const pool = {
+    harvest: ['Отличный урожай!', 'Гав! Смотри, сколько!', 'Я помогал!', 'Ещё один собран!'],
+    plant:   ['Надеюсь, вырастет!', 'Я посторожу.', 'Скоро зелёное будет!'],
+    hungry:  ['Покорми меня…', 'Я тут… совсем один', 'Гав?'],
+    rain:    ['Дождь! Люблю лужи!', 'Пахнет землёй'],
+    levelup: ['Ты растёшь!', 'Мы вместе!'],
+  }[kind];
+  if (!pool) return;
+  PET_lastSay = now;
+  const msg = pool[(Math.random()*pool.length)|0];
+  setTimeout(()=>LIV_petSay(msg), 600);
+}
+
 function LIV_petSay(text){
   const el = document.querySelector('.liv-pet-bubble');
   if (el) el.remove();
@@ -10583,846 +10708,233 @@ function LIV_petSVG(){
     .replace(/#4fba88/g, P.collar[0]).replace(/#2f7d59/g, P.collar[1]).replace(/#154a2c/g, P.collar[2])
     .replace(/#e5be58/g, P.tag);
   return `<svg viewBox="0 0 128 104" aria-hidden="true" class="liv-pet-svg">
-    <style>${PET_CSS}
-/* ============================================================
-   ПРЕМИУМ-СЛОЙ · v66
-   Дорогая типографика, глубина, золотой акцент.
-   Ничего не ломает: только обогащает существующие классы.
-   ============================================================ */
-:root{
-  --pr-gold:#e3b872; --pr-gold-2:#f3d9a4; --pr-gold-deep:#a9772f;
-  --pr-ink:#1c2a22; --pr-line:rgba(227,184,114,.30);
-  --pr-glass:rgba(255,255,255,.075); --pr-glass-2:rgba(255,255,255,.045);
-  --pr-hair:rgba(255,255,255,.10);
-  --pr-shadow:0 10px 30px rgba(0,0,0,.34), 0 2px 6px rgba(0,0,0,.22);
-  --pr-shadow-sm:0 4px 14px rgba(0,0,0,.24);
-  --pr-emboss:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.22);
-}
-
-/* --- фон приложения: дорогая глубина вместо плоского цвета --- */
-#app{
-  background:
-    radial-gradient(120% 60% at 50% -10%, rgba(227,184,114,.055) 0%, transparent 58%),
-    radial-gradient(90% 45% at 0% 100%, rgba(90,140,110,.10) 0%, transparent 60%),
-    linear-gradient(180deg,#121a15 0%,#16201a 40%,#131c17 100%) !important;
-}
-
-/* --- HUD: стеклянная панель с золотой линией --- */
-#hud{
-  background:linear-gradient(180deg,rgba(30,44,36,.96),rgba(22,33,27,.92)) !important;
-  border-bottom:1px solid rgba(227,184,114,.16);
-  box-shadow:0 6px 22px rgba(0,0,0,.32);
-  position:relative;
-}
-#hud::after{
-  content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(227,184,114,.45) 18%,rgba(243,217,164,.65) 50%,rgba(227,184,114,.45) 82%,transparent);
-}
-.chip{
-  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.045)) !important;
-  border:1px solid rgba(255,255,255,.13) !important;
-  box-shadow:var(--pr-emboss),0 2px 10px rgba(0,0,0,.20) !important;
-  color:#f6f3e8 !important;
-  letter-spacing:.01em;
-}
-.chip b{font-variant-numeric:tabular-nums;letter-spacing:.01em;}
-.chip .ic{opacity:.95;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
-.money-chip .ic{color:#f0cf8f;}
-.gem-chip .ic{color:#9fd8e8;}
-
-/* --- ТАБЫ снизу: полированная панель --- */
-#tabs{
-  background:linear-gradient(180deg,rgba(24,35,28,.97),rgba(17,25,20,.99)) !important;
-  border-top:1px solid rgba(227,184,114,.14) !important;
-  box-shadow:0 -10px 30px rgba(0,0,0,.38) !important;
-}
-.tab-btn{color:#8fa094 !important;}
-.tab-btn .ic{opacity:.62;filter:none !important;transition:transform .18s,opacity .18s;}
-.tab-btn.active{
-  color:var(--pr-gold-2) !important;
-  background:linear-gradient(180deg,rgba(227,184,114,.16),rgba(227,184,114,.06)) !important;
-  box-shadow:inset 0 0 0 1px rgba(227,184,114,.24),0 2px 10px rgba(0,0,0,.24) !important;
-  font-weight:800;
-}
-.tab-btn.active .ic{opacity:1;transform:translateY(-1px);}
-.tab-badge{
-  background:linear-gradient(180deg,#e0603f,#b8391f) !important;
-  border:2px solid #1a2620 !important;
-  box-shadow:0 2px 8px rgba(200,70,35,.55) !important;
-}
-
-/* --- КНОПКИ: объём, золото, тактильность --- */
-.btn{
-  letter-spacing:.012em;
-  position:relative;
-  transition:transform .12s cubic-bezier(.2,.8,.3,1),filter .16s,box-shadow .16s;
-}
-.btn:active{transform:scale(.975) !important;filter:brightness(.94);}
-.btn-primary{
-  background:linear-gradient(180deg,#3f6a4f,#2c4d3a) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 12px rgba(0,0,0,.28) !important;
-  border:1px solid rgba(255,255,255,.07);
-}
-.btn-gold{
-  background:linear-gradient(180deg,#f0d7a2,#d3ac6e 46%,#c09250) !important;
-  color:#231a08 !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 3px 14px rgba(160,110,40,.40) !important;
-  border:1px solid rgba(255,235,190,.5);
-  text-shadow:0 1px 0 rgba(255,245,220,.5);
-}
-.btn-blue{
-  background:linear-gradient(180deg,#5f8e95,#436c74) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 12px rgba(0,0,0,.26) !important;
-}
-.btn-ghost{
-  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03)) !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-  color:#e8ede2 !important;
-  box-shadow:var(--pr-emboss) !important;
-}
-.btn-danger{
-  background:linear-gradient(180deg,#b25e4c,#8d3f31) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 3px 12px rgba(120,40,25,.34) !important;
-}
-
-/* --- КАРТОЧКИ: тонкая грань, глубина, блик --- */
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.032)) !important;
-  border:1px solid var(--pr-hair) !important;
-  box-shadow:var(--pr-shadow-sm),var(--pr-emboss) !important;
-  position:relative;
-  overflow:hidden;
-}
-.card::before{
-  content:'';position:absolute;left:0;right:0;top:0;height:1px;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.30) 30%,rgba(255,255,255,.42) 50%,rgba(255,255,255,.30) 70%,transparent);
-  opacity:.55;
-}
-
-/* --- ДИАЛОГИ: дорогое стекло --- */
-.dialog,.sheet{
-  background:linear-gradient(180deg,rgba(34,47,39,.985),rgba(22,32,26,.995)) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  box-shadow:0 30px 80px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.10) !important;
-}
-/* Градиентный текст только для ЗАГОЛОВКА диалога (первый h2),
-   иначе он перехватывает h2 внутри карточек и они тускнеют */
-.dialog > h2:first-child,.sheet > h2:first-child{
-  letter-spacing:-.012em;
-  background:linear-gradient(180deg,#ffffff,#dbe4d6);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  text-shadow:none;
-}
-.dialog > h2:first-child .ic,.sheet > h2:first-child .ic{
-  -webkit-text-fill-color:initial;color:var(--pr-gold);
-}
-/* заголовки внутри содержимого — обычные, яркие */
-.dialog h3,.dialog .card h2,.dialog section h2{color:#eef3e9;}
-
-/* --- #screen прозрачен, и снизу в него пробивался пейзаж #ambient.
-       Даём мягкую подложку: сверху пропускаем сцену, книзу — плотный фон. --- */
-#app > #screen{
-  background:linear-gradient(180deg,
-    rgba(20,29,24,0) 0%,
-    rgba(20,29,24,.55) 34%,
-    rgba(19,27,22,.88) 62%,
-    #141d18 82%,
-    #141d18 100%) !important;
-}
-.backdrop{
-  backdrop-filter:blur(7px) saturate(.9) !important;
-  -webkit-backdrop-filter:blur(7px) saturate(.9) !important;
-  background:radial-gradient(120% 80% at 50% 0%,rgba(6,12,9,.55),rgba(4,8,6,.72)) !important;
-}
-
-/* --- ВЕРХНИЙ ПЕРЕКЛЮЧАТЕЛЬ: премиальная пилюля --- */
-.farm-switch{
-  background:linear-gradient(180deg,rgba(27,39,32,.94),rgba(20,30,24,.94)) !important;
-  border:1px solid rgba(255,255,255,.09) !important;
-  box-shadow:0 6px 20px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.07) !important;
-  backdrop-filter:blur(14px) saturate(1.05) !important;
-}
-.farm-switch button{color:#9aa89c !important;}
-.farm-switch button.active{
-  background:linear-gradient(180deg,rgba(227,184,114,.26),rgba(227,184,114,.13)) !important;
-  box-shadow:inset 0 0 0 1px rgba(243,217,164,.42),0 2px 8px rgba(0,0,0,.28) !important;
-  color:#fff8e7 !important;
-}
-
-/* --- ТИПОГРАФИКА: заголовки и цифры --- */
-b,h1,h2,h3,.stat-big,.big-num{font-variant-numeric:tabular-nums;}
-.small.muted,.muted{color:#93a396 !important;}
-
-/* --- ПОЛОСЫ ПРОГРЕССА: золотое свечение --- */
-.bar,.xpbar{border-radius:99px;overflow:hidden;}
-.bar>i,.xpbar>i{
-  background:linear-gradient(90deg,#c99b52,#f0d7a2) !important;
-  box-shadow:0 0 10px rgba(227,184,114,.45) !important;
-}
-
-/* --- ПРЕМИУМ-БЕЙДЖ (корона) --- */
-.pr-crown{
-  display:inline-flex;align-items:center;gap:5px;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);
-  color:#2a1e07;font:900 10px/1 var(--font-ui,inherit);letter-spacing:.06em;
-  padding:3px 8px 3px 6px;border-radius:99px;
-  box-shadow:0 2px 8px rgba(190,140,60,.45),inset 0 1px 0 rgba(255,255,255,.6);
-  text-transform:uppercase;
-}
-.pr-crown .ic{width:11px;height:11px;color:#5d421a;}
-@keyframes pr-shine{
-  0%{transform:translateX(-120%) skewX(-18deg);opacity:0}
-  25%{opacity:.85}
-  100%{transform:translateX(320%) skewX(-18deg);opacity:0}
-}
-.pr-shine{position:relative;overflow:hidden;}
-.pr-shine::after{
-  content:'';position:absolute;top:0;bottom:0;width:45%;
-  background:linear-gradient(90deg,transparent,rgba(255,246,220,.55),transparent);
-  animation:pr-shine 3.6s ease-in-out infinite;
-  pointer-events:none;
-}
-@media (prefers-reduced-motion:reduce){ .pr-shine::after{animation:none;} }
-
-/* ============================================================
-   ПРЕМИУМ-МАГАЗИН · стили витрины
-   ============================================================ */
-.prem-backdrop{padding-top:46px !important;}
-.prem-dialog{
-  max-width:520px;width:min(520px,calc(100vw - 20px));
-  max-height:88dvh;overflow-y:auto;
-  padding:16px 14px calc(env(safe-area-inset-bottom) + 16px);
-  border-radius:22px 22px 0 0;
-  background:linear-gradient(180deg,#20302a 0%,#141d18 100%) !important;
-  scrollbar-width:thin;
-}
-.prem-dialog::-webkit-scrollbar{width:4px}
-.prem-dialog::-webkit-scrollbar-thumb{background:rgba(227,184,114,.34);border-radius:4px}
-
-.prem-head{position:relative;margin-bottom:12px;}
-.prem-head h2{
-  display:flex;align-items:center;gap:9px;margin:0 0 5px;
-  font-size:23px;letter-spacing:-.015em;
-  background:linear-gradient(180deg,#fff6e2,#e2c79a);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.prem-head h2 .ic{color:var(--pr-gold);-webkit-text-fill-color:initial;}
-.prem-head p{margin:0;font-size:12.5px;line-height:1.45;color:#9db0a2;}
-
-.prem-vip-badge{
-  display:inline-flex;align-items:center;gap:7px;margin-top:10px;
-  padding:7px 13px;border-radius:99px;position:relative;overflow:hidden;
-  background:linear-gradient(180deg,rgba(243,217,164,.24),rgba(201,160,90,.14));
-  border:1px solid rgba(243,217,164,.46);
-  color:#ffeecb;font:800 11.5px/1 var(--font-ui,inherit);letter-spacing:.02em;
-  box-shadow:0 4px 16px rgba(190,140,60,.24),inset 0 1px 0 rgba(255,255,255,.18);
-}
-.prem-vip-badge .ic{width:14px;height:14px;color:var(--pr-gold-2);}
-
-.prem-balance{display:flex;gap:8px;margin-bottom:16px;}
-
-.prem-sec{margin-bottom:16px;}
-.prem-sec-head{
-  display:flex;align-items:baseline;gap:8px;margin:0 2px 8px;
-}
-.prem-sec-head b{
-  font-size:12px;letter-spacing:.10em;text-transform:uppercase;
-  color:#c9b48a;font-weight:850;
-}
-.prem-sec-head small{font-size:11px;color:#7d8f84;font-weight:600;}
-
-/* --- карточка товара --- */
-.prem-item{
-  position:relative;display:grid;width:100%;
-  grid-template-columns:44px 1fr auto;grid-template-areas:"ico txt price";
-  align-items:center;gap:11px;
-  padding:11px 12px;margin-bottom:8px;
-  border-radius:14px;text-align:left;cursor:pointer;
-  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
-  border:1px solid rgba(255,255,255,.095);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 2px 10px rgba(0,0,0,.20);
-  transition:transform .13s,box-shadow .16s,border-color .16s;
-  font-family:inherit;
-}
-.prem-item:active{transform:scale(.985);}
-.prem-item.is-hot{
-  border-color:rgba(243,217,164,.40);
-  background:linear-gradient(180deg,rgba(227,184,114,.14),rgba(227,184,114,.05));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 18px rgba(160,115,45,.24);
-}
-.prem-item.is-owned{opacity:.52;cursor:default;filter:saturate(.55);}
-.prem-item[disabled]{pointer-events:none;}
-
-.prem-ico{
-  grid-area:ico;width:44px;height:44px;border-radius:12px;
-  display:grid;place-items:center;flex:none;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 2px 8px rgba(0,0,0,.28);
-}
-.prem-ico .ic{width:22px;height:22px;}
-.prem-ico.gems {background:linear-gradient(180deg,#5fa8c4,#2f6f89);color:#e8f8ff;}
-.prem-ico.sub  {background:linear-gradient(180deg,#f0d7a2,#b98d45);color:#3a2a0c;}
-.prem-ico.pack {background:linear-gradient(180deg,#6aa374,#436b4c);color:#e8f5e2;}
-.prem-ico.decor{background:linear-gradient(180deg,#8f7bc4,#5a4a8c);color:#f0eaff;}
-.prem-ico.perk {background:linear-gradient(180deg,#c97a5a,#8d4a33);color:#fff0e8;}
-
-.prem-txt{grid-area:txt;display:flex;flex-direction:column;gap:2px;min-width:0;}
-.prem-name{font-size:13.5px;font-weight:800;color:#f2f6ee;letter-spacing:.005em;
-  display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.prem-desc{font-size:11px;color:#8ea095;font-weight:600;line-height:1.35;}
-
-.prem-flag{
-  font:900 8.5px/1 var(--font-ui,inherit);letter-spacing:.08em;text-transform:uppercase;
-  padding:3px 6px;border-radius:5px;
-  background:linear-gradient(180deg,#efc98a,#c29a55);color:#2b1e07;
-  box-shadow:0 1px 4px rgba(180,130,50,.4);
-}
-
-.prem-price{
-  grid-area:price;justify-self:end;white-space:nowrap;
-  font-size:13px;font-weight:850;color:#ffe9bd;
-  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.13);
-  padding:7px 11px;border-radius:10px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
-}
-.prem-item.is-owned .prem-price{
-  color:#9fb8a6;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08);
-}
-.prem-per{
-  grid-column:1/-1;font-size:9.5px;color:#7d8f84;font-weight:700;
-  margin-top:-2px;letter-spacing:.02em;
-}
-.prem-legal{
-  font-size:10px;line-height:1.5;color:#6f8177;text-align:center;
-  margin:14px 8px 10px;
-}
-
-@media (max-width:360px){
-  .prem-name{font-size:12.5px;}
-  .prem-desc{font-size:10.5px;}
-  .prem-price{font-size:12px;padding:6px 9px;}
-  .prem-ico{width:40px;height:40px;}
-  .prem-item{grid-template-columns:40px 1fr auto;}
-}
-
-/* --- эффекты купленного декора --- */
-body.decor-golden #screen .field-tile,
-body.decor-golden .field{
-  filter:saturate(1.28) contrast(1.06) sepia(.16) hue-rotate(-8deg);
-  transition:filter .5s ease;
-}
-body.decor-golden .mapv2{filter:sepia(.14) saturate(1.18) brightness(1.03);}
-body.decor-aurora #app::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(60% 30% at 20% 0%,rgba(120,220,190,.16),transparent 70%),
-    radial-gradient(50% 26% at 75% 4%,rgba(150,150,240,.14),transparent 72%);
-  animation:pr-aurora 14s ease-in-out infinite alternate;
-}
-@keyframes pr-aurora{
-  0%{opacity:.55;transform:translateX(-2%) scaleY(1)}
-  100%{opacity:1;transform:translateX(2%) scaleY(1.06)}
-}
-@media (prefers-reduced-motion:reduce){ body.decor-aurora #app::before{animation:none;} }
-
-/* ============================================================
-   ПОЛИРОВКА ЭКРАНОВ · v68
-   ============================================================ */
-
-/* --- Заголовки страниц: контраст на фоне пейзажа --- */
-.page-heading{position:relative;z-index:2;}
-.page-heading h2{
-  color:#f7faf3 !important;
-  letter-spacing:-.02em;
-  text-shadow:0 2px 10px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.7);
-}
-.page-heading .kicker,.page-heading small{
-  color:#b9c8b8 !important;
-  text-shadow:0 1px 4px rgba(0,0,0,.6);
-}
-/* кнопка «Гараж» в шапке страницы */
-.page-heading .btn-ghost,.page-heading .icon-btn{
-  background:linear-gradient(180deg,rgba(38,52,43,.94),rgba(26,37,30,.94)) !important;
-  border:1px solid rgba(255,255,255,.16) !important;
-  color:#eaf0e4 !important;
-  box-shadow:0 3px 12px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.10) !important;
-}
-
-/* --- Сегментные переключатели (Животные / Цеха / Склад, районы поля) --- */
-.biz-tab,.district-tab,.land-tab{
-  color:#9dab9f !important;font-weight:700;
-  transition:color .16s,background .16s,box-shadow .16s;
-  border-radius:10px;
-}
-.biz-tab.active,.district-tab.active,.land-tab.active{
-  color:#fff8e8 !important;
-  background:linear-gradient(180deg,rgba(227,184,114,.26),rgba(227,184,114,.12)) !important;
-  box-shadow:inset 0 0 0 1px rgba(243,217,164,.40),0 2px 10px rgba(0,0,0,.26) !important;
-  font-weight:850;
-}
-/* контейнеры этих переключателей */
-.biz-tabs,.district-tabs,.land-tabs{
-  background:linear-gradient(180deg,rgba(25,36,29,.92),rgba(18,27,22,.94)) !important;
-  border:1px solid rgba(255,255,255,.09) !important;
-  box-shadow:0 4px 16px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06) !important;
-}
-
-/* --- Карточки построек/животных: аккуратная рамка и цена-пилюля --- */
-.business-card,.barn-card,.animal-card{
-  position:relative;
-  border:1px solid rgba(255,255,255,.10) !important;
-  box-shadow:0 4px 16px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.07) !important;
-}
-.business-card .price,.barn-card .price{
-  font-variant-numeric:tabular-nums;letter-spacing:.01em;
-}
-
-/* --- «Построить» / «Купить» — золотой акцент для доступных --- */
-.business-card:not(.locked) .btn-primary,
-.land-card .btn-primary{
-  background:linear-gradient(180deg,#426f53,#2d5040) !important;
-}
-
-/* --- Диалог ускорения --- */
-.speedup-box{
-  background:linear-gradient(180deg,rgba(227,184,114,.10),rgba(227,184,114,.035));
-  border:1px solid rgba(243,217,164,.30);
-  border-radius:14px;padding:12px;margin:12px 0;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
-}
-.speedup-row{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
-.speedup-ico{
-  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;
-  background:linear-gradient(180deg,#f0d7a2,#c09456);color:#3a2a0c;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 3px 10px rgba(160,110,40,.32);
-}
-.speedup-ico .ic{width:21px;height:21px;}
-.speedup-row b{display:block;font-size:13.5px;color:#fdf5e6;}
-.speedup-row small{font-size:11px;color:#a4b3a6;font-weight:650;}
-
-/* кнопка «ускорить» на карточке поля */
-.field-speedup{
-  position:absolute;top:8px;right:8px;z-index:3;
-  display:inline-flex;align-items:center;gap:3px;
-  padding:5px 8px;border-radius:9px;cursor:pointer;
-  font:850 10px/1 var(--font-ui,inherit);letter-spacing:.02em;
-  color:#2b1e07;background:linear-gradient(180deg,#f3d9a4,#c9a05a);
-  border:1px solid rgba(255,236,198,.5);
-  box-shadow:0 2px 8px rgba(170,120,50,.4),inset 0 1px 0 rgba(255,255,255,.55);
-  transition:transform .12s,filter .16s;
-}
-.field-speedup .ic{width:11px;height:11px;color:#5d421a;}
-.field-speedup:active{transform:scale(.93);filter:brightness(.94);}
-/* «Ускорить» на карточке постройки */
-.mini-cta.speed{
-  background:linear-gradient(180deg,rgba(243,217,164,.22),rgba(201,160,90,.12)) !important;
-  border:1px solid rgba(243,217,164,.40) !important;
-  color:#ffeecb !important;
-  display:inline-flex;align-items:center;gap:4px;
-}
-.mini-cta.speed .ic{width:12px;height:12px;color:var(--pr-gold-2);}
-
-/* Пустое состояние «Заказов» · v69 */
-.empty-state{
-  background:linear-gradient(180deg,rgba(243,217,164,.055),rgba(255,255,255,.015)) !important;
-  border:1px solid rgba(243,217,164,.16) !important;
-  border-radius:18px;
-}
-.empty-state h3,.empty-state .empty-title{color:#fff5e3 !important;}
-.empty-state .ic,.empty-state svg{color:var(--pr-gold-2);}
-
-/* Подсказки на экране «Заказы» · v69 */
-.task-tips{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.task-tip{
-  display:flex;align-items:center;gap:10px;
-  background:linear-gradient(180deg,rgba(243,217,164,.055),rgba(255,255,255,.012));
-  border:1px solid rgba(243,217,164,.14);border-radius:14px;padding:11px 13px;
-}
-.task-tip>span{
-  width:34px;height:34px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
-  background:rgba(243,217,164,.10);border:1px solid rgba(243,217,164,.20);color:var(--pr-gold-2);
-}
-.task-tip>span .ic,.task-tip>span svg{width:17px;height:17px;}
-.task-tip b{display:block;font-size:12.5px;color:#f4ecdc;letter-spacing:.1px;}
-.task-tip small{display:block;font-size:11px;color:#9fae9c;margin-top:2px;line-height:1.35;}
-
-/* --- Инфо-подписи внизу экранов --- */
-.screen-hint,.map-hint,.biz-hint{
-  color:#8fa094 !important;
-  background:rgba(0,0,0,.22);
-  border-radius:9px;padding:6px 10px;
-  backdrop-filter:blur(4px);
-}
-
-
-/* --- VIP в HUD --- */
-.chip.vip-chip{
-  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.14)) !important;
-  border-color:rgba(243,217,164,.48) !important;
-  color:#ffeecb !important;
-}
-.chip.vip-chip .ic{color:var(--pr-gold-2);}
-
-/* --- кнопка «Премиум» в шапке --- */
-.prem-enter{
-  position:relative;display:inline-flex;align-items:center;gap:5px;
-  height:34px;padding:0 11px 0 8px;border-radius:10px;cursor:pointer;
-  font:850 11px/1 var(--font-ui,inherit);letter-spacing:.02em;white-space:nowrap;
-  color:#2b1e07;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);
-  border:1px solid rgba(255,236,198,.55);
-  box-shadow:0 2px 10px rgba(190,140,60,.38),inset 0 1px 0 rgba(255,255,255,.62);
-  transition:transform .12s,filter .16s;
-  overflow:hidden;
-  flex:0 0 auto;
-}
-.prem-enter .ic{width:14px;height:14px;color:#5d421a;}
-.prem-enter:active{transform:scale(.95);filter:brightness(.94);}
-.prem-enter::after{
-  content:'';position:absolute;top:0;bottom:0;width:42%;
-  background:linear-gradient(90deg,transparent,rgba(255,250,235,.62),transparent);
-  transform:translateX(-130%) skewX(-18deg);
-  animation:pr-enter-shine 4.4s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes pr-enter-shine{
-  0%,68%{transform:translateX(-130%) skewX(-18deg);opacity:0}
-  74%{opacity:.9}
-  88%,100%{transform:translateX(320%) skewX(-18deg);opacity:0}
-}
-@media (prefers-reduced-motion:reduce){ .prem-enter::after{animation:none;} }
-@media (max-width:359px){
-  .prem-enter span{display:none;}
-  .prem-enter{padding:0 8px;width:34px;justify-content:center;}
-}
-/* VIP-статус в шапке вместо кнопки */
-.prem-enter.is-vip{
-  background:linear-gradient(180deg,rgba(243,217,164,.28),rgba(201,160,90,.16));
-  color:#ffeecb;border-color:rgba(243,217,164,.5);
-  box-shadow:0 2px 10px rgba(190,140,60,.22),inset 0 1px 0 rgba(255,255,255,.18);
-}
-.prem-enter.is-vip .ic{color:var(--pr-gold-2);}
-
-.chip.boost-chip{
-  background:linear-gradient(180deg,rgba(240,200,90,.26),rgba(200,150,40,.14)) !important;
-  border-color:rgba(240,210,120,.5) !important;color:#ffeab5 !important;
-  animation:pr-boost-pulse 1.6s ease-in-out infinite;
-}
-.chip.boost-chip .ic{color:#ffd96b;}
-/* на узком экране чипы статуса сжимаем, но текст не рвём */
-.chip.vip-chip small,.chip.boost-chip b{font-size:11px;font-weight:850;}
-@media (max-width:400px){
-  .chip.vip-chip,.chip.boost-chip{padding-inline:7px;gap:4px;font-size:11px;}
-  .chip.vip-chip small{display:none;}
-  .prem-enter span{font-size:10px;}
-}
-@media (max-width:359px){
-  .chip.vip-chip,.chip.boost-chip{padding-inline:6px;}
-}
-
-/* --- статус VIP / буст во второй строке HUD --- */
-.hud-flag{
-  display:inline-flex;align-items:center;gap:3px;
-  font:850 10px/1 var(--font-ui,inherit);letter-spacing:.03em;
-  padding:3px 7px;border-radius:99px;white-space:nowrap;
-}
-.hud-flag .ic{width:11px;height:11px;}
-.hud-flag.vip{
-  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.14));
-  border:1px solid rgba(243,217,164,.46);color:#ffeecb;
-}
-.hud-flag.vip .ic{color:var(--pr-gold-2);}
-.hud-flag.boost{
-  background:linear-gradient(180deg,rgba(240,200,90,.24),rgba(200,150,40,.12));
-  border:1px solid rgba(240,210,120,.48);color:#ffeab5;
-  animation:pr-boost-pulse 1.6s ease-in-out infinite;
-}
-.hud-flag.boost .ic{color:#ffd96b;}
-@media (prefers-reduced-motion:reduce){ .hud-flag.boost{animation:none;} }
-@keyframes pr-boost-pulse{0%,100%{box-shadow:0 0 0 0 rgba(240,200,90,.30)}50%{box-shadow:0 0 0 6px rgba(240,200,90,0)}}
-@media (prefers-reduced-motion:reduce){ .chip.boost-chip{animation:none;} }
-
-
-/* ===== ЭКРАН БРИГАДИРА · v70 ===== */
-.fm-hero{
-  display:flex;gap:12px;align-items:center;padding:14px;border-radius:18px;margin:10px 0 12px;
-  background:linear-gradient(180deg,rgba(243,217,164,.11),rgba(201,160,90,.05));
-  border:1px solid rgba(243,217,164,.24);position:relative;overflow:hidden;
-}
-.fm-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(120% 90% at 15% -20%,rgba(243,217,164,.18),transparent 62%);}
-.fm-hero.locked{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
-  border-color:rgba(255,255,255,.10);}
-.fm-avatar{
-  width:52px;height:52px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;
-  box-shadow:0 6px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.5);position:relative;z-index:1;
-}
-.fm-avatar .ic,.fm-avatar svg{width:26px;height:26px;}
-.fm-hero.locked .fm-avatar{background:#33402f;color:#9fae9c;box-shadow:none;}
-.fm-hero-copy{min-width:0;flex:1;position:relative;z-index:1;}
-.fm-hero-copy>b{display:block;font-size:15px;color:#fff6e6;letter-spacing:.2px;}
-.fm-hero-copy>small{display:block;font-size:11.5px;color:#b3c0ae;margin-top:2px;}
-.fm-bar{height:7px;border-radius:6px;background:rgba(0,0,0,.32);margin-top:9px;overflow:hidden;
-  border:1px solid rgba(255,255,255,.07);}
-.fm-bar i{display:block;height:100%;border-radius:6px;
-  background:linear-gradient(90deg,#c9a05a,#f3d9a4);transition:width .4s;}
-.fm-bar-txt{display:block;font-size:10.5px;color:#a9b6a4;margin-top:5px;font-weight:600;}
-.fm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
-.fm-stats>div{
-  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
-  border-radius:13px;padding:9px 6px;text-align:center;
-}
-.fm-stats b{display:block;font-size:16px;color:#f3e7cf;letter-spacing:.3px;}
-.fm-stats small{display:block;font-size:9.5px;color:#9aa898;margin-top:3px;line-height:1.2;}
-.fm-switch-row{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
-  border-radius:15px;padding:11px 13px;margin-bottom:12px;
-}
-.fm-switch-row b{display:block;font-size:13px;color:#eef3e9;}
-.fm-switch-row small{display:block;font-size:10.5px;color:#9aa898;margin-top:2px;}
-.fm-toggle{
-  width:52px;height:30px;border-radius:16px;border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.34);position:relative;flex:0 0 auto;cursor:pointer;transition:.22s;
-}
-.fm-toggle i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
-  background:#8d9b8b;transition:.22s;}
-.fm-toggle.on{background:linear-gradient(180deg,rgba(243,217,164,.30),rgba(201,160,90,.20));
-  border-color:rgba(243,217,164,.5);}
-.fm-toggle.on i{left:26px;background:linear-gradient(180deg,#f3d9a4,#d6b273);box-shadow:0 2px 8px rgba(0,0,0,.4);}
-.fm-upgrade{
-  background:linear-gradient(180deg,rgba(243,217,164,.09),rgba(201,160,90,.04));
-  border:1px solid rgba(243,217,164,.22);border-radius:16px;padding:12px;margin-bottom:12px;
-}
-.fm-upgrade b{font-size:13px;color:#f6ecd9;}
-.fm-upgrade small{display:block;font-size:10.5px;color:#a9b6a4;margin:4px 0 9px;line-height:1.35;}
-.fm-upgrade .fm-or{text-align:center;margin:8px 0 0;font-size:10px;color:#8e9b8c;}
-.fm-price{font-size:12px;font-weight:800;color:#f3d9a4;display:inline-flex;align-items:center;gap:4px;}
-.fm-price .ic,.fm-price svg{width:13px;height:13px;}
-.fm-max{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;color:#f3d9a4;
-  background:rgba(243,217,164,.10);border:1px solid rgba(243,217,164,.26);
-  border-radius:14px;padding:11px 13px;margin-bottom:12px;}
-.fm-max .ic,.fm-max svg{width:15px;height:15px;flex:0 0 auto;}
-.fm-perks-title{font-size:10px;letter-spacing:1.1px;color:#93a291;font-weight:800;
-  text-transform:uppercase;margin:2px 0 8px 2px;}
-.fm-perks{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-.fm-perk{
-  display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:13px;
-  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);opacity:.55;
-}
-.fm-perk.on{opacity:1;background:rgba(243,217,164,.07);border-color:rgba(243,217,164,.20);}
-.fm-perk-lvl{
-  width:22px;height:22px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
-  font-size:10.5px;font-weight:900;background:rgba(255,255,255,.07);color:#b9c5b5;
-}
-.fm-perk.on .fm-perk-lvl{background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;}
-.fm-perk-lvl .ic,.fm-perk-lvl svg{width:12px;height:12px;}
-.fm-perk-copy{flex:1;min-width:0;}
-.fm-perk-copy b{display:block;font-size:12px;color:#e8eee2;}
-.fm-perk-copy small{display:block;font-size:10px;color:#95a393;margin-top:1px;line-height:1.3;}
-.fm-perk-val{font-size:11px;font-weight:800;color:#c9d3c4;flex:0 0 auto;}
-.fm-perk.on .fm-perk-val{color:#f3d9a4;}
-.fm-buy{background:rgba(255,255,255,.035);border:1px solid rgba(243,217,164,.18);
-  border-radius:16px;padding:13px;margin:0 0 10px;}
-.fm-buy b{font-size:14px;color:#f6ecd9;}
-.fm-buy small{display:block;font-size:10.5px;color:#a9b6a4;margin:4px 0 10px;}
-/* компактная карточка на Ферме */
-.foreman-row{cursor:pointer;}
-.foreman-row.active{border-color:rgba(243,217,164,.22);}
-.foreman-row:active{transform:scale(.995);}
-.fm-mini-bar{display:block;height:3px;border-radius:3px;background:rgba(0,0,0,.35);
-  margin-top:4px;overflow:hidden;max-width:120px;}
-.fm-mini-bar i{display:block;height:100%;background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
-.fm-go{display:inline-flex;align-items:center;color:#8e9b8c;flex:0 0 auto;}
-.fm-go .ic,.fm-go svg{width:15px;height:15px;}
-
-/* карточка бригадира на Ферме */
-.fm-card{
-  display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 12px;
-  border-radius:16px;cursor:pointer;position:relative;overflow:hidden;
-  background:linear-gradient(180deg,rgba(243,217,164,.075),rgba(201,160,90,.03));
-  border:1px solid rgba(243,217,164,.18);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-}
-.fm-card.working{border-color:rgba(243,217,164,.34);}
-.fm-card.working::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(90% 120% at 8% -30%,rgba(243,217,164,.16),transparent 62%);}
-.fm-card.locked{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.09);}
-.fm-card:active{transform:scale(.995);}
-.fm-card-ico{
-  width:38px;height:38px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;position:relative;z-index:1;
-}
-.fm-card.locked .fm-card-ico{background:#33402f;color:#9fae9c;}
-.fm-card-ico .ic,.fm-card-ico svg{width:19px;height:19px;}
-.fm-card-copy{flex:1;min-width:0;position:relative;z-index:1;}
-.fm-card-copy b{display:block;font-size:13px;color:#f7efdd;letter-spacing:.15px;}
-.fm-card-copy small{display:block;font-size:10.5px;color:#a8b5a3;margin-top:2px;}
-.fm-card-btn{
-  flex:0 0 auto;padding:7px 12px;border-radius:11px;font-size:11px;font-weight:800;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#dfe8da;
-  position:relative;z-index:1;
-}
-.fm-card-btn.on{background:rgba(243,217,164,.16);border-color:rgba(243,217,164,.34);color:#f6e6c8;}
-.fm-card-cta{
-  flex:0 0 auto;padding:8px 13px;border-radius:12px;font-size:11.5px;font-weight:900;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;letter-spacing:.2px;
-  box-shadow:0 3px 10px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.5);position:relative;z-index:1;
-}
-
-/* ===== ЭНЕРГИЯ БРИГАДИРА · v71 ===== */
-.fm-duo{display:flex;flex-direction:column;gap:4px;margin-top:5px;max-width:130px;}
-.fm-mini-bar.xp{max-width:100%;}
-.fm-energy-mini{display:block;height:3px;border-radius:3px;background:rgba(0,0,0,.35);overflow:hidden;}
-.fm-energy-mini i{display:block;height:100%;border-radius:3px;transition:width .4s;
-  background:linear-gradient(90deg,#6fbf73,#a6e08a);}
-.fm-energy-mini.ok i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
-.fm-energy-mini.tired i{background:linear-gradient(90deg,#c9563f,#e88a72);}
-.fm-energy-mini.sleep i{background:#6b6b6b;}
-
-.fm-energy{
-  border-radius:16px;padding:12px;margin-bottom:12px;
-  background:linear-gradient(180deg,rgba(111,191,115,.10),rgba(111,191,115,.03));
-  border:1px solid rgba(111,191,115,.24);
-}
-.fm-energy.ok{background:linear-gradient(180deg,rgba(243,217,164,.10),rgba(201,160,90,.035));
-  border-color:rgba(243,217,164,.24);}
-.fm-energy.tired{background:linear-gradient(180deg,rgba(201,86,63,.13),rgba(201,86,63,.04));
-  border-color:rgba(232,138,114,.34);}
-.fm-energy.sleep{background:linear-gradient(180deg,rgba(90,100,95,.18),rgba(90,100,95,.06));
-  border-color:rgba(150,160,150,.20);}
-.fm-energy-top{display:flex;align-items:center;gap:9px;}
-.fm-energy-ico{
-  width:32px;height:32px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
-  background:rgba(255,255,255,.07);color:#a6e08a;
-}
-.fm-energy.ok .fm-energy-ico{color:#f3d9a4;}
-.fm-energy.tired .fm-energy-ico{color:#e88a72;}
-.fm-energy.sleep .fm-energy-ico{color:#9aa69a;}
-.fm-energy-ico .ic,.fm-energy-ico svg{width:17px;height:17px;}
-.fm-energy-copy{min-width:0;flex:1;}
-.fm-energy-copy b{display:block;font-size:12.5px;color:#eef3e9;}
-.fm-energy-copy small{display:block;font-size:10.5px;color:#9fae9c;margin-top:2px;line-height:1.3;}
-.fm-energy-bar{height:8px;border-radius:6px;background:rgba(0,0,0,.34);overflow:hidden;margin-top:10px;
-  border:1px solid rgba(255,255,255,.06);}
-.fm-energy-bar i{display:block;height:100%;border-radius:6px;transition:width .45s;
-  background:linear-gradient(90deg,#5aa862,#a6e08a);}
-.fm-energy.ok .fm-energy-bar i{background:linear-gradient(90deg,#c9a05a,#f3d9a4);}
-.fm-energy.tired .fm-energy-bar i{background:linear-gradient(90deg,#b04a35,#e88a72);}
-.fm-energy.sleep .fm-energy-bar i{background:#6b6b6b;}
-.fm-energy-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;}
-.fm-energy-foot>span{font-size:9.5px;color:#8e9b8c;line-height:1.3;}
-.fm-energy-btn{
-  flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
-  padding:7px 11px;border-radius:11px;font-size:11px;font-weight:800;
-  background:linear-gradient(180deg,rgba(126,87,194,.30),rgba(103,58,183,.22));
-  border:1px solid rgba(179,157,219,.42);color:#e7ddff;
-}
-.fm-energy-btn:disabled{opacity:.42;}
-.fm-energy-btn .ic,.fm-energy-btn svg{width:12px;height:12px;}
-
-.fm-howto{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-.fm-how{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:12px;
-  background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.06);}
-.fm-how>span{width:24px;height:24px;flex:0 0 auto;border-radius:8px;display:grid;place-items:center;
-  background:rgba(243,217,164,.10);color:#f3d9a4;}
-.fm-how>span .ic,.fm-how>span svg{width:13px;height:13px;}
-.fm-how small{font-size:10.5px;color:#a5b1a1;line-height:1.45;}
-
-.fm-energy-btns{display:flex;gap:6px;flex:0 0 auto;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-.fm-energy-btn.zen{
-  background:linear-gradient(180deg,rgba(243,217,164,.26),rgba(201,160,90,.16));
-  border-color:rgba(243,217,164,.48);color:#fdf0d6;
-}
-
-.fm-energy-foot{flex-wrap:wrap;}
-.fm-cost{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#a5b1a1;font-weight:600;}
-.fm-cost .ic,.fm-cost svg{width:11px;height:11px;color:#f3d9a4;}
-.fm-cost i{font-style:normal;font-size:9px;font-weight:900;color:#8fd08a;
-  background:rgba(111,191,115,.14);border:1px solid rgba(111,191,115,.28);
-  border-radius:6px;padding:1px 4px;letter-spacing:.2px;}
-
-/* ===== ПЛОДОРОДИЕ И КАЧЕСТВО · v73 ===== */
-.soil-pill{
-  position:absolute;right:8px;top:34px;z-index:3;
-  display:flex;align-items:center;gap:3px;height:18px;padding:0 6px;border-radius:9px;
-  background:rgba(12,18,14,.80);border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(4px);box-shadow:0 2px 8px rgba(0,0,0,.3);
-}
-.soil-pill b{font-size:9px;font-weight:900;color:#cfe0c6;letter-spacing:.2px;}
-.soil-pill .ic,.soil-pill svg{width:9px;height:9px;flex:0 0 auto;color:#8fd08a;}
-.soil-pill i{display:block;height:3px;border-radius:2px;background:#8fd08a;max-width:26px;
-  min-width:3px;transition:width .3s;}
-.soil-pill.ok .ic,.soil-pill.ok svg{color:#e0c86a;} .soil-pill.ok i{background:#e0c86a;}
-.soil-pill.worn .ic,.soil-pill.worn svg{color:#e0a05a;} .soil-pill.worn i{background:#e0a05a;}
-.soil-pill.poor .ic,.soil-pill.poor svg{color:#e88a72;} .soil-pill.poor i{background:#e88a72;}
-
-.soil-card{
-  border-radius:15px;padding:11px 13px;margin:10px 0;
-  background:linear-gradient(180deg,rgba(111,191,115,.11),rgba(111,191,115,.03));
-  border:1px solid rgba(111,191,115,.24);
-}
-.soil-card.ok{background:linear-gradient(180deg,rgba(224,200,106,.10),rgba(224,200,106,.03));
-  border-color:rgba(224,200,106,.22);}
-.soil-card.worn{background:linear-gradient(180deg,rgba(224,160,90,.11),rgba(224,160,90,.03));
-  border-color:rgba(224,160,90,.26);}
-.soil-card.poor{background:linear-gradient(180deg,rgba(201,86,63,.12),rgba(201,86,63,.04));
-  border-color:rgba(232,138,114,.30);}
-.soil-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.soil-card-top span{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#eef3e9;}
-.soil-card-top .ic,.soil-card-top svg{width:14px;height:14px;color:#8fd08a;}
-.soil-card.ok .soil-card-top .ic,.soil-card.ok .soil-card-top svg{color:#e0c86a;}
-.soil-card.worn .soil-card-top .ic,.soil-card.worn .soil-card-top svg{color:#e0a05a;}
-.soil-card.poor .soil-card-top .ic,.soil-card.poor .soil-card-top svg{color:#e88a72;}
-.soil-card-top b{font-size:13px;color:#f3e7cf;}
-.soil-card-bar{height:7px;border-radius:5px;background:rgba(0,0,0,.34);overflow:hidden;margin:8px 0 6px;
-  border:1px solid rgba(255,255,255,.06);}
-.soil-card-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#5aa862,#a6e08a);
-  transition:width .4s;}
-.soil-card.ok .soil-card-bar i{background:linear-gradient(90deg,#b09a4e,#e0c86a);}
-.soil-card.worn .soil-card-bar i{background:linear-gradient(90deg,#b07a3e,#e0a05a);}
-.soil-card.poor .soil-card-bar i{background:linear-gradient(90deg,#a04a35,#e88a72);}
-.soil-card small{font-size:10.5px;color:#a5b1a1;line-height:1.35;display:block;}
-
-.grade-card{
-  display:flex;align-items:center;gap:10px;border-radius:15px;padding:10px 12px;margin:0 0 10px;
-  background:linear-gradient(180deg,rgba(243,217,164,.11),rgba(201,160,90,.03));
-  border:1px solid rgba(243,217,164,.24);
-}
-.grade-ico{width:32px;height:32px;flex:0 0 auto;border-radius:11px;display:grid;place-items:center;
-  background:linear-gradient(180deg,#f3d9a4,#c9a05a);color:#33280f;}
-.grade-ico .ic,.grade-ico svg{width:16px;height:16px;}
-.grade-copy{flex:1;min-width:0;}
-.grade-copy b{display:block;font-size:12.5px;color:#f6ecd9;}
-.grade-copy small{display:block;font-size:10.5px;color:#a9b6a4;margin-top:2px;}
-.grade-stars{font-size:15px;letter-spacing:1px;color:#f0d9a4;flex:0 0 auto;}
-
-.market-grade{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:10.5px;font-weight:700;}
-.mg-stars{font-size:12px;letter-spacing:.5px;}
-.mg-name{font-weight:800;}
-.mg-mul{margin-left:auto;font-size:9.5px;color:#9aa898;background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:2px 6px;}
-.market-avg{display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding:10px 12px;margin:8px 0;border-radius:13px;
-  background:rgba(255,255,255,.035);border:1px solid rgba(243,217,164,.16);}
-.market-avg span{font-size:11px;color:#a5b1a1;font-weight:600;}
-.market-avg b{font-size:11.5px;font-weight:800;}
-
-/* кнопки действий в шите поля: один заголовок + мелкая строка */
-.act-btn{flex-direction:column;gap:1px;padding:10px 12px;line-height:1.25;}
-.act-main{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;}
-.act-main .ic,.act-main svg{width:16px;height:16px;flex:0 0 auto;}
-.act-meta{font-size:9.5px;font-weight:600;opacity:.72;letter-spacing:.15px;}
-.grade-card.ready{background:linear-gradient(180deg,rgba(243,217,164,.16),rgba(201,160,90,.05));
-  border-color:rgba(243,217,164,.34);}
-
-
+    
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
   </svg>`;
 }
 
+
+/* ============================================================
+   МЕХАНИКА ПИТОМЦА · v78
+   Рекс — не декорация, а спутник со своим ритмом:
+   · порода выбирается и её можно переименовать
+   · прогулки по ферме, ласка, сон по времени суток
+   · характер растёт от заботы и даёт бонусы
+   ============================================================ */
+
+/* --- ПОРОДЫ: цвет, характер, стартовые бонусы --- */
+const PET_BREEDS = [
+  { id:'rex',    name:'Дворянин',  emoji:'🐕', coat:0, trait:'верный',
+    desc:'Спокойный и преданный. Растёт быстрее всех.', xpMul:1.15, walkMul:1.0 },
+  { id:'shepherd',name:'Овчарка', emoji:'🦮', coat:2, trait:'работяга',
+    desc:'Прирождённый пастух. Больше бонуса к урожаю.', xpMul:1.0, walkMul:0.9 },
+  { id:'husky',  name:'Хаски',    emoji:'🐺', coat:4, trait:'непоседа',
+    desc:'Энергии хоть отбавляй. Прогулки бодрят вдвойне.', xpMul:1.0, walkMul:1.35 },
+  { id:'corgi',  name:'Корги',    emoji:'🐶', coat:1, trait:'весельчак',
+    desc:'Заряжает позитивом. Настроение падает медленнее.', xpMul:1.05, walkMul:1.1 },
+];
+const PET_TRAITS = {
+  верный:   { icon:'heart',  bonus:'xp',    label:'+15% к опыту' },
+  работяга: { icon:'wheat',  bonus:'yield', label:'+2% к урожаю' },
+  непоседа: { icon:'wind',   bonus:'walk',  label:'+35% от прогулок' },
+  весельчак:{ icon:'sun',    bonus:'mood',  label:'Медленнее грустит' },
+};
+function PET_get(){
+  if (!S.liv) S.liv = {};
+  if (!S.liv.pet) S.liv.pet = { name:'Рекс', xp:0, fed:Date.now(), lastPlay:0, lastWalk:0, breed:'rex', pet:0, walked:0 };
+  const p = S.liv.pet;
+  if (!p.breed) p.breed = 'rex';
+  if (p.pet === undefined) p.pet = 0;
+  if (!p.walked) p.walked = 0;
+  return p;
+}
+function PET_breed(){ const p = PET_get(); return PET_BREEDS.find(b=>b.id===p.breed) || PET_BREEDS[0]; }
+
+/* --- НАЗНАЧЕНИЕ И ПЕРЕИМЕНОВАНИЕ --- */
+function PET_adopt(){
+  const cur = PET_get();
+  const PET_GLYPH = { rex:'paw', shepherd:'wheat', husky:'snow', corgi:'sun' };
+  const cards = PET_BREEDS.map(b=>`
+    <button class="pb-card ${cur.breed===b.id?'on':''}" onclick="App.petPickBreed('${b.id}')">
+      <span class="pb-art">${ic(PET_GLYPH[b.id]||'paw')}</span>
+      <span class="pb-name">${b.name}</span>
+      <span class="pb-trait">${b.trait}</span>
+      <span class="pb-desc">${b.desc}</span>
+    </button>`).join('');
+  openSheet(`<h2>${ic('heart')} Выбери питомца</h2>
+    <p class="muted">На острове живёт друг — он будет рядом каждый день, помогать с урожаем и расти вместе с фермой.</p>
+    <div class="pb-grid">${cards}</div>
+    <div class="pb-field">
+      <label>Как его зовут?</label>
+      <input id="petNameInput" class="pb-input" type="text" maxlength="14" placeholder="Рекс" value="${esc(cur.name||'Рекс')}">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="App.petAdoptSave()">${ic('check')} Взять на ферму</button>`);
+}
+function PET_adoptSave(){
+  const el = document.getElementById('petNameInput');
+  let name = (el?.value || '').trim().slice(0,14) || 'Рекс';
+  const p = PET_get();
+  p.name = name;
+  if (!p.adopted){ p.adopted = true; p.adoptedAt = Date.now(); }
+  save(); renderAll();
+  closeModal();
+  toast(`${name} теперь на ферме!`, 'good', 'heart');
+  sfx.good(); FX.confetti();
+}
+function PET_pickBreed(id){
+  const p = PET_get();
+  p.breed = id;
+  const b = PET_BREEDS.find(x=>x.id===id);
+  // подсветить выбор
+  document.querySelectorAll('.pb-card').forEach(el=>el.classList.remove('on'));
+  const el = document.querySelector(`.pb-card[onclick*="${id}"]`);
+  if (el) el.classList.add('on');
+  sfx.click();
+}
+function PET_rename(){
+  const p = PET_get();
+  openSheet(`<h2>${ic('edit')} Новое имя</h2>
+    <p class="muted">Как ты его назовёшь?</p>
+    <input id="petNameInput" class="pb-input" type="text" maxlength="14" value="${esc(p.name)}" placeholder="Имя питомца">
+    <button class="btn btn-primary btn-block" onclick="App.petSaveName()">${ic('check')} Сохранить</button>`);
+}
+function PET_saveName(){
+  const el = document.getElementById('petNameInput');
+  const p = PET_get();
+  const name = (el?.value || '').trim().slice(0,14);
+  if (!name){ toast('Введи имя', '', 'info'); return; }
+  p.name = name; save(); closeModal(); renderAll();
+  toast(`Теперь его зовут ${name}`, 'good', 'heart');
+  sfx.good();
+}
+
+/* --- ПРОГУЛКА: короткое действие, даёт опыт и настроение --- */
+const PET_WALK_CD = 20 * 60000;   // 20 минут
+function PET_walk(){
+  const p = PET_get();
+  const breed = PET_breed();
+  const left = PET_WALK_CD - (Date.now() - (p.lastWalk||0));
+  if (left > 0){ toast(`${p.name} уже нагулялся · ${fmtTime(Math.ceil(left/1000))}`, '', 'clock'); return; }
+  p.lastWalk = Date.now();
+  p.walked = (p.walked||0) + 1;
+  p.fed = Math.max(p.fed, Date.now() - 3600000);   // прогулка не кормит, но бодрит
+  const xp = Math.round(10 * breed.walkMul);
+  LIV_petXP(xp);
+  if (p.walked % 5 === 0){ addCoins(15); toast(`Прогулка №${p.walked} · +15 монет за находку`, 'good', 'coin'); }
+  toast(`${p.name} нагулялся · +${xp} опыта`, 'good', 'wind');
+  sfx.good(); buzz(25);
+  const el = document.querySelector('.liv-pet');
+  if (el){ el.classList.add('walking'); setTimeout(()=>el.classList.remove('walking'), 2200); }
+  FX.pop(el, '🐾', 4);
+  save(); renderAll();
+  if (ui.modal === 'sheet') PET_openDialog();
+}
+
+/* --- ЛАСКА: бесплатно, но с откатом; медленно поднимает привязанность --- */
+const PET_PET_CD = 5 * 60000;
+function PET_pet(){
+  const p = PET_get();
+  const left = PET_PET_CD - (Date.now() - (p.lastPet||0));
+  if (left > 0){
+    toast(`${p.name} доволен и без этого`, '', 'heart');
+    return;
+  }
+  p.lastPet = Date.now();
+  p.pet = (p.pet||0) + 1;
+  p.fed = Math.max(p.fed, Date.now() - 1800000);   // ласка тоже чуть бодрит
+  LIV_petXP(3);
+  const el = document.querySelector('.liv-pet');
+  if (el){ el.classList.add('wag'); setTimeout(()=>el.classList.remove('wag'), 1500); }
+  FX.pop(el, '❤️', 3);
+  sfx.pop();
+  if (p.pet % 10 === 0){ addCoins(20); toast(`Привязанность крепнет · +20 монет`, 'good', 'heart'); }
+  const words = ['Гав!', 'Виляет хвостом', 'Жмурится от счастья', 'Лижет руку', 'Крутится на месте'];
+  LIV_petSay(words[(p.pet-1) % words.length]);
+  save(); renderAll();
+  if (ui.modal === 'sheet') PET_openDialog();
+}
+
+/* --- НАСТРОЕНИЕ с учётом породы и привязанности --- */
+function PET_mood(){
+  const p = PET_get();
+  const breed = PET_breed();
+  let hours = (Date.now() - (p.fed || Date.now())) / 3600000;
+  // ласка и прогулки замедляют увядание настроения
+  const care = Math.min(0.35, (p.pet||0) * 0.012 + (p.walked||0) * 0.008);
+  if (breed.trait === 'весельчак') hours *= 0.82;   // весельчак грустит медленнее
+  if (breed.trait === 'непоседа' && (p.walked||0) > 3) hours *= 0.88;
+  hours *= (1 - care);
+  if (hours < 4)  return { key:'happy', label:'Сыт и весел', mult:1.0,  icon:'sun',  care };
+  if (hours < 10) return { key:'ok',    label:'Скучает',      mult:0.85, icon:'clock',care };
+  if (hours < 24) return { key:'sad',   label:'Голодный',     mult:0.6,  icon:'droplet', care };
+  return { key:'bad', label:'Совсем один', mult:0.35, icon:'heart', care };
+}
+
+/* --- СВОЙ ДИАЛОГ (перекрывает старый openPet) --- */
+function PET_openDialog(){
+  const p = PET_get();
+  const stage = LIV_petStage();
+  const breed = PET_breed();
+  const mood = PET_mood();
+  const next = PET_STAGES.find(s => s.lvl === stage.lvl + 1);
+  const pct = next ? Math.round(((p.xp - stage.need) / (next.need - stage.need)) * 100) : 100;
+  const canFeed = Date.now() - p.fed >= 3600000;
+  const canPlay = Date.now() - p.lastPlay >= 1800000;
+  const walkLeft = PET_WALK_CD - (Date.now() - (p.lastWalk||0));
+  const petLeft  = PET_PET_CD  - (Date.now() - (p.lastPet||0));
+  const walkReady = walkLeft <= 0;
+  const petReady = petLeft <= 0;
+  const bond = Math.min(100, Math.round((p.pet||0)*2 + (p.walked||0)*3));
+
+  openSheet(`
+    <div class="pet-hero">
+      <div class="pet-art" id="petArtBig">${LIV_petSVG()}</div>
+      <button class="pet-rename" onclick="App.petRename()" aria-label="Переименовать">${ic('edit')}</button>
+      <h2 class="pet-name">${esc(p.name)}</h2>
+      <div class="pet-sub">${breed.name} · ${stage.name}</div>
+      <div class="pet-mood ${mood.key}">${ic(mood.icon)} ${mood.label}</div>
+    </div>
+
+    <div class="pet-stats">
+      <div class="pet-stat">
+        <span>Опыт</span>
+        <b>${Math.floor(p.xp)}${next?' / '+next.need:' · макс'}</b>
+      </div>
+      <div class="pet-bar"><i style="width:${pct}%"></i></div>
+      <div class="pet-stat">
+        <span>Привязанность</span>
+        <b>${bond}%</b>
+      </div>
+      <div class="pet-bar heart"><i style="width:${bond}%"></i></div>
+    </div>
+
+    <div class="pet-trait">
+      <span class="pt-ico">${ic(PET_TRAITS[breed.trait].icon)||ic('heart')}</span>
+      <div><b>${breed.trait}</b><small>${PET_TRAITS[breed.trait].label} · ${stage.bonus}</small></div>
+    </div>
+
+    <div class="pet-actions">
+      <button class="pet-act ${canFeed?'':'off'}" onclick="App.feedPet()">
+        <span class="pa-ico">${ic('sack')}</span><b>Покормить</b><small>40</small>
+      </button>
+      <button class="pet-act ${canPlay?'':'off'}" onclick="App.playPet()">
+        <span class="pa-ico">${ic('heart')}</span><b>Поиграть</b><small>${canPlay?'':'позже'}</small>
+      </button>
+      <button class="pet-act ${walkReady?'':'off'}" onclick="App.petWalk()">
+        <span class="pa-ico">${ic('paw')}</span><b>Прогулка</b><small>${walkReady?'готово':fmtTime(Math.ceil(walkLeft/1000))}</small>
+      </button>
+      <button class="pet-act ${petReady?'':'off'}" onclick="App.petPet()">
+        <span class="pa-ico">${ic('heart')}</span><b>Ласка</b><small>${petReady?'готово':'—'}</small>
+      </button>
+    </div>
+
+    <div class="pet-note">
+      ${ic('info')} Питомец дарит бонус к урожаю, пока сыт. Прогулки и ласка растят привязанность.
+    </div>
+    <button class="btn btn-ghost btn-block" onclick="App.petRename()">${ic('edit')} Переименовать</button>
+  `);
+}
 
 /* ---------- ПИТОМЕЦ В HUD (на главной) ---------- */
 function LIV_renderPetBadge(){
@@ -11437,7 +10949,8 @@ function LIV_renderPetBadge(){
 }
 
 /* ---------- ДИАЛОГ ПИТОМЦА ---------- */
-function openPet(){
+function openPet(){ return PET_openDialog(); }
+function _legacy_openPet(){
   const p = S.liv.pet;
   const stage = LIV_petStage();
   const mood = LIV_petMood();
@@ -11770,7 +11283,14 @@ function LIV_installHooks(){
   /* [8] Новые методы App */
   if (window.App){
     Object.assign(App, {
-      openPet(){ sfx.click(); openPet(); },
+      openPet(){ sfx.click(); PET_openDialog(); },
+    petAdopt(){ sfx.click(); PET_adopt(); },
+    petAdoptSave(){ PET_adoptSave(); },
+    petPickBreed(id){ PET_pickBreed(id); },
+    petRename(){ sfx.click(); PET_rename(); },
+    petSaveName(){ PET_saveName(); },
+    petWalk(){ PET_walk(); },
+    petPet(){ PET_pet(); },
       feedPet(){ LIV_feedPet(); },
       playPet(){ LIV_playPet(); },
       openStorm(){ sfx.click(); openStorm(); },
@@ -11803,6 +11323,14 @@ function LIV_afterRender(){
   // Питомец — постоянный компаньон на экране, вне прокручиваемой области.
   // Раньше бейдж создавался только один раз, поэтому смена стадии, настроения
   // и состояния «спит» на иконке не появлялась до перезагрузки.
+  // голодный питомец сам напоминает о себе
+  try {
+    if (S && S.liv && S.liv.pet && typeof PET_react === 'function'){
+      const m = (typeof PET_mood === 'function') ? PET_mood() : null;
+      if (m && (m.key === 'sad' || m.key === 'bad')) PET_react('hungry');
+    }
+  } catch(e){}
+
   const app = document.getElementById('app');
   if (app){
     const want = (ui.tab === 'farm');
