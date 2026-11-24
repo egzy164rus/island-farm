@@ -3423,6 +3423,125 @@ ${PET_CSS}
 }
 .weather-meta .ic,.weather-meta svg{width:13px;height:13px;color:#f0c95e;}
 .weather-meta:active{transform:scale(.97);}
+
+/* ===== ЭКРАН ЗАГРУЗКИ · v82 ===== */
+.boot{
+  position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% 0%,#2a4030 0%,#16221b 55%,#0f1a14 100%);
+  transition:opacity .45s ease, transform .45s ease;
+}
+.boot.boot-out{opacity:0;transform:scale(1.035);pointer-events:none;}
+
+/* небо и солнце */
+.boot-sky{position:absolute;inset:0;background:
+  radial-gradient(60% 40% at 72% 18%,rgba(243,217,164,.20),transparent 70%),
+  radial-gradient(50% 34% at 22% 12%,rgba(143,208,138,.13),transparent 70%);}
+.boot-sun{
+  position:absolute;top:12%;right:16%;width:74px;height:74px;border-radius:50%;
+  background:radial-gradient(circle at 38% 34%,#fff3d0,#e8c46a 62%,#c9a05a);
+  box-shadow:0 0 60px rgba(232,196,106,.42),0 0 120px rgba(232,196,106,.20);
+  animation:bootSun 5.5s ease-in-out infinite;
+}
+@keyframes bootSun{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.035);}}
+.boot-hills{
+  position:absolute;left:-6%;right:-6%;bottom:0;height:30%;
+  background:linear-gradient(180deg,#25402e 0%,#1b2e22 55%,#132018 100%);
+  border-radius:52% 48% 0 0 / 22% 26% 0 0;
+  box-shadow:0 -3px 0 rgba(143,208,138,.10) inset, 0 -22px 46px rgba(0,0,0,.28);
+}
+.boot-hills::before{
+  content:'';position:absolute;left:-10%;right:-10%;bottom:0;height:72%;
+  background:radial-gradient(80% 100% at 30% 100%,#28422f 0%,transparent 70%),
+             radial-gradient(70% 100% at 76% 100%,#22392a 0%,transparent 72%);
+  border-radius:50% 50% 0 0 / 26% 26% 0 0;
+}
+
+.boot-inner{position:relative;z-index:2;width:min(420px,86vw);text-align:center;}
+.boot-logo{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:26px;}
+.boot-mark{width:62px;height:62px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.45));
+  animation:bootMark 2.8s ease-in-out infinite;}
+@keyframes bootMark{0%,100%{transform:translateY(0) rotate(-1.5deg);}50%{transform:translateY(-6px) rotate(1.5deg);}}
+.boot-logo h1{font-size:22px;font-weight:900;letter-spacing:.4px;color:#f2f7ec;margin:6px 0 0;
+  text-shadow:0 3px 14px rgba(0,0,0,.5);}
+.boot-logo p{font-size:11px;color:#9fb69a;margin:0;font-weight:700;letter-spacing:.06em;}
+
+.boot-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.4);}
+.boot-bar i{display:block;height:100%;width:0;border-radius:6px;
+  background:linear-gradient(90deg,#5fa86a,#a9d8ae,#f3d9a4);
+  transition:width .28s cubic-bezier(.3,.8,.3,1);
+  box-shadow:0 0 14px rgba(169,216,174,.5);}
+
+.boot-steps{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;}
+.boot-steps li{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:700;
+  color:#6f8370;transition:color .3s;}
+.boot-steps li.on{color:#cfe0c6;}
+.boot-steps li.done{color:#8fb98b;}
+.bs-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);flex:none;transition:all .3s;}
+.boot-steps li.on .bs-dot{background:#f3d9a4;box-shadow:0 0 9px rgba(243,217,164,.7);transform:scale(1.5);}
+.boot-steps li.done .bs-dot{background:#7fb86a;transform:scale(1);box-shadow:none;}
+
+.boot-foot{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 18px);z-index:2;
+  font-size:9.5px;color:#5f7361;letter-spacing:.08em;font-weight:700;}
+
+@media (prefers-reduced-motion:reduce){
+  .boot-sun,.boot-mark{animation:none;}
+  .boot.boot-out{transition:none;}
+}
+
+/* ===== АУКЦИОН · v82 ===== */
+.auct-lot{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin:10px 0 12px;
+  background:linear-gradient(160deg,rgba(243,217,164,.13),rgba(201,160,90,.03));
+  border:1px solid rgba(243,217,164,.26);}
+.auct-ico{width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;
+  background:rgba(0,0,0,.24);overflow:hidden;}
+.auct-ico svg{width:30px;height:30px;}
+.auct-copy{flex:1;min-width:0;}
+.auct-rar{display:block;font-size:8.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;}
+.auct-copy b{display:block;font-size:14px;color:#f4f8f0;margin-top:2px;}
+.auct-copy small{display:block;font-size:9.5px;color:#9fb69a;margin-top:2px;}
+.auct-price{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);}
+.auct-price small{display:block;font-size:8.5px;color:#8d9c88;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.auct-price b{display:block;font-size:19px;color:#f3d9a4;font-weight:900;letter-spacing:.2px;}
+.auct-heat{font-size:9.5px;font-weight:800;color:#8d9c88;text-align:right;}
+.auct-heat em{display:block;font-style:normal;font-size:14px;color:#b9cbb2;margin-top:1px;}
+.auct-heat.hot{color:#e8a58e;}
+.auct-heat.hot em{color:#f0bcac;}
+.auct-meter{height:5px;border-radius:4px;background:rgba(0,0,0,.32);overflow:hidden;margin:8px 0 12px;}
+.auct-meter i{display:block;height:100%;border-radius:4px;transition:width .4s;
+  background:linear-gradient(90deg,#7fb86a,#e5c25a,#e08363);}
+.auct-hint{display:flex;gap:6px;align-items:flex-start;font-size:9px;line-height:1.4;color:#8d9c88;margin-top:8px;}
+.auct-hint .ic,.auct-hint svg{width:12px;height:12px;flex:none;margin-top:1px;}
+.auct-done{display:flex;gap:8px;align-items:center;padding:12px 13px;border-radius:13px;
+  background:rgba(122,200,140,.12);border:1px solid rgba(122,200,140,.28);color:#a9d8ae;font-size:11.5px;font-weight:800;}
+.auct-done .ic,.auct-done svg{width:17px;height:17px;color:#f3d9a4;}
+.auct-lost{display:flex;gap:8px;align-items:center;padding:12px 13px;border-radius:13px;
+  background:rgba(226,140,110,.10);border:1px solid rgba(226,140,110,.22);color:#e8b09c;font-size:11.5px;font-weight:800;}
+.auct-lost .ic,.auct-lost svg{width:17px;height:17px;}
+
+/* ===== ЖИВОТНЫЕ С ХАРАКТЕРОМ · v82 ===== */
+.anim-card{padding:10px 11px;border-radius:13px;margin:8px 0;
+  background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.07);}
+.anim-head{display:flex;align-items:center;gap:9px;}
+.anim-ico{width:28px;height:28px;flex:none;border-radius:9px;display:grid;place-items:center;
+  background:rgba(232,140,140,.15);color:#e8a58e;}
+.anim-ico .ic,.anim-ico svg{width:15px;height:15px;}
+.anim-copy{flex:1;min-width:0;}
+.anim-copy b{display:block;font-size:11.5px;color:#f0f5ea;font-weight:800;}
+.anim-copy small{display:block;font-size:9px;color:#8d9c88;margin-top:1px;}
+.anim-edit{width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:#b9cbb2;cursor:pointer;}
+.anim-edit .ic,.anim-edit svg{width:13px;height:13px;}
+.anim-edit:active{transform:scale(.92);}
+.anim-care{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:9px;font-weight:800;color:#8d9c88;}
+.anim-care b{color:#c9d9c1;font-size:9.5px;}
+.anim-care i{flex:1;height:4px;border-radius:3px;background:rgba(0,0,0,.32);overflow:hidden;}
+.anim-care em{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#c95a6e,#f0a0a8);transition:width .4s;}
+.anim-bonus{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:9px;font-weight:800;color:#9fd48a;}
+.anim-bonus .ic,.anim-bonus svg{width:12px;height:12px;}
 </style>
 </head>
 <body>
@@ -4840,7 +4959,9 @@ function tickBuildings(){
     if (ok){
       if (!b.cycleEndsAt) b.cycleEndsAt = now + durMs(BUILDINGS[id].time);
       if (now >= b.cycleEndsAt){
-        b.stored = Math.min(b.stored + BUILDINGS[id].units, BUILDINGS[id].units*3);
+        const mul = (typeof ANIM_yieldMul === 'function') ? ANIM_yieldMul(id) : 1;
+        const units = Math.round(BUILDINGS[id].units * mul);
+        b.stored = Math.min(b.stored + units, BUILDINGS[id].units*3);
         b.cycleEndsAt = now + durMs(BUILDINGS[id].time);
         /* животные дают навоз — сырьё для компоста */
         if (typeof COMP_addManure === 'function') COMP_addManure(id);
@@ -4857,7 +4978,98 @@ function tickBuildings(){
     }
   }
 }
+/* ============================================================
+   ЖИВОТНЫЕ С ХАРАКТЕРОМ · v82
+   У каждого здания живёт животное с именем и нравом.
+   Нрав влияет на продуктивность и на то, что ему нравится.
+   ============================================================ */
+const ANIMAL_NAMES = {
+  coop:['Ряба','Пеструшка','Клуша','Марта','Белка','Цыпа'],
+  sheep:['Долли','Кудряш','Бяша','Мери','Ласка','Снежок'],
+  cow:['Зорька','Милка','Бурёнка','Ночка','Ромашка','Ласточка'],
+  pig:['Хрюша','Пятачок','Боров','Соня','Плюх','Розочка'],
+  apiary:['Пчёлка','Матка','Трутень','Дуся','Медок','Жужа'],
+  greenhouse:['Огурец','Флора','Сеньор','Базилик','Вьюн','Стебель'],
+};
+/* Нрав: предпочитает один вид ухода — за него даёт больше */
+const ANIMAL_TRAITS = [
+  { id:'greedy',   name:'Обжора',    like:'feed',  bonus:1.22, desc:'Очень любит поесть' },
+  { id:'clean',    name:'Чистюля',   like:'clean', bonus:1.22, desc:'Обожает чистоту' },
+  { id:'thirsty',  name:'Водохлёб',  like:'water', bonus:1.22, desc:'Много пьёт' },
+  { id:'calm',     name:'Спокойный', like:null,    bonus:1.10, desc:'Ровный характер, стабильно даёт' },
+];
+function ANIM_state(){
+  if (!S.animals) S.animals = {};
+  return S.animals;
+}
+function ANIM_of(id){
+  const A = ANIM_state();
+  if (!A[id]){
+    const names = ANIMAL_NAMES[id] || ['Питомец'];
+    const seed = (id + (S.createdAt||0)).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    A[id] = {
+      name: names[seed % names.length],
+      trait: ANIMAL_TRAITS[seed % ANIMAL_TRAITS.length].id,
+      care: 0,          // накопленная забота 0..100
+      born: Date.now(),
+    };
+  }
+  return A[id];
+}
+function ANIM_trait(id){
+  const a = ANIM_of(id);
+  return ANIMAL_TRAITS.find(t=>t.id===a.trait) || ANIMAL_TRAITS[3];
+}
+/* Множитель продуктивности: уход + характер */
+function ANIM_yieldMul(id){
+  const a = ANIM_of(id);
+  const t = ANIM_trait(id);
+  const careBoost = 1 + Math.min(0.30, (a.care||0)/100*0.30);
+  return careBoost * (t.bonus || 1);
+}
+function ANIM_rename(id){
+  const a = ANIM_of(id);
+  const def = BUILDINGS[id];
+  openSheet(`<h2>${ic('heart')} Имя питомца</h2>
+    <p class="muted">Как назовём этого жильца ${def.name.toLowerCase()}?</p>
+    <input id="animalNameInput" class="pb-input" type="text" maxlength="12" value="${esc(a.name)}" placeholder="Имя">
+    <button class="btn btn-primary btn-block" onclick="App.animalSaveName('${id}')">${ic('check')} Сохранить</button>`);
+}
+function ANIM_saveName(id){
+  const el = document.getElementById('animalNameInput');
+  const a = ANIM_of(id);
+  const n = (el?.value||'').trim().slice(0,12);
+  if (!n){ toast('Введи имя','', 'info'); return; }
+  a.name = n; save(); closeModal(); renderAll();
+  toast(`Теперь это ${n}`, 'good', 'heart'); sfx.good();
+}
+function ANIM_cardHTML(id){
+  const a = ANIM_of(id), t = ANIM_trait(id);
+  const mul = ANIM_yieldMul(id);
+  return `<div class="anim-card">
+    <div class="anim-head">
+      <span class="anim-ico">${ic('heart')}</span>
+      <div class="anim-copy">
+        <b>${esc(a.name)}</b>
+        <small>${t.name} · ${t.desc}</small>
+      </div>
+      <button class="anim-edit" onclick="App.animalRename('${id}')" aria-label="Переименовать">${ic('edit')}</button>
+    </div>
+    <div class="anim-care">
+      <span>Забота</span><b>${Math.round(a.care||0)}%</b>
+      <i><em style="width:${Math.round(a.care||0)}%"></em></i>
+    </div>
+    <div class="anim-bonus">${ic('wheat')} Продуктивность ×${mul.toFixed(2)}</div>
+  </div>`;
+}
+
 function careBuilding(id, kind){
+  // уход растит заботу: любимый вид ухода — вдвое эффективнее
+  try {
+    const a = ANIM_of(id), t = ANIM_trait(id);
+    const gain = (t.like === kind) ? 9 : 4.5;
+    a.care = clamp((a.care||0) + gain, 0, 100);
+  } catch(e){}
   const b = S.buildings[id];
   b[kind] = clamp(b[kind]+30, 0, 100);
   sfx.pop(); save(); renderAll();
@@ -7719,6 +7931,111 @@ function STOCK_render(){
     </div>`;
 }
 
+/* ============================================================
+   АУКЦИОН · v82
+   Раз в день на острове торгуют одним лотом. Ставки идут
+   вверх, пока ты торгуешься — можно выиграть или упустить.
+   Лот: редкий товар, самоцветы или предмет.
+   ============================================================ */
+const AUCT_LOTS = [
+  { id:'honey',  type:'good', good:'honey',  qty:[60,140], base:38,  name:'Бочка мёда',      rarity:'rare' },
+  { id:'cheese', type:'good', good:'cheese', qty:[25,60],  base:52,  name:'Круг сыра',       rarity:'rare' },
+  { id:'clothes',type:'good', good:'clothes',qty:[10,26],  base:120, name:'Тюк одежды',      rarity:'epic' },
+  { id:'grape',  type:'good', good:'grape',  qty:[80,180], base:30,  name:'Ящик винограда',  rarity:'rare' },
+  { id:'gems',   type:'gems', qty:[3,9],                    base:900, name:'Кристаллы',       rarity:'epic' },
+  { id:'seed',   type:'bonus',                              base:600, name:'Редкие семена',   rarity:'epic' },
+];
+function AUCT_state(){
+  if (!S.auct) S.auct = { day:'', lot:null, bids:0, price:0, won:false, lost:false };
+  return S.auct;
+}
+function AUCT_roll(){
+  const a = AUCT_state();
+  const day = todayStr();
+  if (a.day === day && a.lot) return a;
+  // детерминированно по дню: у всех игроков один и тот же лот
+  const seed = (()=>{ let h=0; for (const ch of day) h=(h*31+ch.charCodeAt(0))|0; return Math.abs(h); })();
+  const lot = AUCT_LOTS[seed % AUCT_LOTS.length];
+  const qty = lot.qty ? Math.round(lot.qty[0] + (seed % 97)/97 * (lot.qty[1]-lot.qty[0])) : 0;
+  const price = Math.round(lot.base * (0.82 + ((seed*7)%100)/100*0.5));
+  S.auct = { day, lot: lot.id, qty, price, start:price, bids:0, won:false, lost:false };
+  return S.auct;
+}
+function AUCT_lot(){ const a = AUCT_roll(); return AUCT_LOTS.find(l=>l.id===a.lot) || AUCT_LOTS[0]; }
+/* Ставка: каждый шаг +6%, но соперник иногда перебивает */
+function AUCT_bid(){
+  const a = AUCT_roll(); const lot = AUCT_lot();
+  if (a.won){ toast('Лот уже твой', '', 'check'); return; }
+  if (a.lost){ toast('Торги закрыты — лот ушёл', 'bad', 'info'); return; }
+  if (S.coins < a.price){ toast(`Нужно ${fmt(a.price)} монет`, 'bad', 'coin'); sfx.bad(); return; }
+  a.bids++;
+  // Первые две ставки соперники держат — торг раскачивается.
+  // Дальше соперник перебивает с растущей вероятностью, но не бесконечно:
+  // с 5-й ставки шанс падает, чтобы лот не «уходил» навсегда.
+  let counterChance = 0;
+  if (a.bids === 1) counterChance = 0.55;
+  else if (a.bids === 2) counterChance = 0.38;
+  else if (a.bids === 3) counterChance = 0.26;
+  else if (a.bids === 4) counterChance = 0.16;
+  else counterChance = 0.08;
+  if (Math.random() < counterChance){
+    a.price = Math.round(a.price * 1.09);
+    toast('Соперник перебил ставку!', '', 'info');
+    sfx.bad(); save(); renderAll(); AUCT_open(); return;
+  }
+  // победа
+  addCoins(-a.price);
+  a.won = true;
+  if (lot.type === 'good'){
+    S.goods[lot.good] = (S.goods[lot.good]||0) + a.qty;
+    if (!S.grade) S.grade = {};
+    S.grade[lot.good] = Math.max(gradeOf(lot.good), 86);   // с аукциона — отборное
+    toast(`Лот твой: ${GOODS[lot.good].name} ×${fmt(a.qty)}`, 'good', 'trophy');
+  } else if (lot.type === 'gems'){
+    S.gems += a.qty;
+    toast(`Лот твой: +${a.qty} самоцветов`, 'good', 'gem');
+  } else {
+    addXP(120);
+    toast('Лот твой: редкие семена → +120 опыта', 'good', 'seed');
+  }
+  sfx.coin(); FX.confetti(); buzz(60);
+  save(); renderAll(); AUCT_open();
+}
+function AUCT_open(){
+  const a = AUCT_roll(); const lot = AUCT_lot();
+  const rarityName = { rare:'Редкий', epic:'Эпический' }[lot.rarity] || 'Редкий';
+  const rarityColor = { rare:'#7fb8e0', epic:'#e0b870' }[lot.rarity];
+  const over = a.price / a.start;
+  const heat = over >= 1.35 ? 'Торг разгорелся' : over >= 1.12 ? 'Ставки растут' : 'Стартовая цена';
+  const what = lot.type==='good' ? `${GOODS[lot.good].name} ×${fmt(a.qty)} · Отборное качество`
+             : lot.type==='gems' ? `+${a.qty} самоцветов`
+             : 'Редкие семена · +120 опыта';
+  const icon = lot.type==='good' ? goodsIcon(lot.good) : lot.type==='gems' ? ic('gem') : ic('seed');
+  const stateHTML = a.won
+    ? `<div class="auct-done">${ic('trophy')} Лот твой! Забран за ${fmt(a.price)} монет</div>`
+    : a.lost
+    ? `<div class="auct-lost">${ic('info')} Торги закрыты</div>`
+    : `<button class="btn btn-gold btn-block" onclick="App.auctBid()">${ic('coin')} Поставить ${fmt(a.price)}</button>
+       <div class="auct-hint">${ic('info')} Соперники могут перебить — цена вырастет на 9%</div>`;
+  openSheet(`<h2>${ic('trophy')} Аукцион</h2>
+    <p class="muted">Один лот в день. Торгуйся осторожно — соперники рядом.</p>
+    <div class="auct-lot">
+      <span class="auct-ico">${icon}</span>
+      <div class="auct-copy">
+        <span class="auct-rar" style="color:${rarityColor}">${rarityName}</span>
+        <b>${lot.name}</b>
+        <small>${what}</small>
+      </div>
+    </div>
+    <div class="auct-price">
+      <div><small>Текущая ставка</small><b>${fmt(a.price)}</b></div>
+      <div class="auct-heat ${over>=1.12?'hot':''}">${heat}<em>${Math.round(over*100)}%</em></div>
+    </div>
+    <div class="auct-meter"><i style="width:${Math.min(100, Math.round((over-1)/0.6*100))}%"></i></div>
+    ${stateHTML}
+    <button class="btn btn-ghost btn-block" style="margin-top:8px" onclick="App.closeModal()">Закрыть</button>`);
+}
+
 /* ---------- ТОВАРНЫЕ ЗАКАЗЫ: рендер ---------- */
 function GORDER_stars(tier){
   return `<span class="go-stars">${'★'.repeat(tier.star)}${'☆'.repeat(3-tier.star)}</span>`;
@@ -7992,6 +8309,7 @@ function openMoreMenu(){
     { id:'pet',      icon:'paw',      label:'Питомец',  desc:'Друг, прогулки и ласка', sheet:'openPet' },
     { id:'cellar',   icon:'home',     label:'Погреб',   desc:'Защита урожая от порчи', sheet:'cellarOpen' },
     { id:'season',   icon:'flower',   label:'Сезоны',   desc:'Что растёт и когда', sheet:'seasonOpen' },
+    { id:'auct',     icon:'trophy',   label:'Аукцион',  desc:'Лот дня и торги', sheet:'auctOpen' },
     ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
   ];
   const grid = items.map(it=>`<button class="more-item ${view===it.id?'on':''}" onclick="${it.sheet?`App.${it.sheet}()`:`App.farmView('${it.id}');closeModal()`}">
@@ -9566,9 +9884,90 @@ function installRipple(){
   }, { passive:true });
 }
 
+/* ============================================================
+   ЭКРАН ЗАГРУЗКИ · v82
+   Пока игра просыпается — красивая заставка с реальными шагами.
+   Шаги отражают настоящую работу, а не фальшивый прогресс.
+   ============================================================ */
+const BOOT_STEPS = [
+  { t:'Будим остров',        ms:260 },
+  { t:'Читаем сохранение',   ms:240 },
+  { t:'Проверяем погоду',    ms:200 },
+  { t:'Считаем урожай',      ms:230 },
+  { t:'Готовим рынок',       ms:210 },
+  { t:'Зовём питомца',       ms:190 },
+];
+function BOOT_html(){
+  const rows = BOOT_STEPS.map((b,i)=>`<li data-step="${i}"><i class="bs-dot"></i><span>${b.t}</span></li>`).join('');
+  return `<div class="boot" id="bootScreen">
+    <div class="boot-sky"></div>
+    <div class="boot-sun"></div>
+    <div class="boot-hills"></div>
+    <div class="boot-inner">
+      <div class="boot-logo">
+        <svg viewBox="0 0 64 64" class="boot-mark" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="#1b2a22" stroke="#c9a05a" stroke-width="2"/>
+          <path d="M32 50V26" stroke="#8fd08a" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M32 34c-7 0-11-4-11-10 6 0 11 3 11 10z" fill="#7fb86a"/>
+          <path d="M32 30c6-1 9-5 9-10-6 0-9 3-9 10z" fill="#a9d8ae"/>
+          <circle cx="32" cy="16" r="2.6" fill="#f3d9a4"/>
+        </svg>
+        <h1>Островная ферма</h1>
+        <p>Твой остров просыпается</p>
+      </div>
+      <div class="boot-bar"><i id="bootBarFill"></i></div>
+      <ol class="boot-steps" id="bootSteps">${rows}</ol>
+    </div>
+    <div class="boot-foot">v82 · работает без интернета</div>
+  </div>`;
+}
+let BOOT_done = false;
+function BOOT_run(then){
+  const root = document.getElementById('bootScreen');
+  if (!root){ then && then(); return; }
+  const fill = document.getElementById('bootBarFill');
+  const stepsEl = document.getElementById('bootSteps');
+  let i = 0;
+  const total = BOOT_STEPS.length;
+  const next = ()=>{
+    if (i >= total){
+      // финальный рывок и уход заставки
+      if (fill) fill.style.width = '100%';
+      setTimeout(()=>{
+        BOOT_done = true;
+        root.classList.add('boot-out');
+        setTimeout(()=>{
+          root.remove();
+          then && then();
+          try { if (typeof ANIM_enterScreen === 'function') ANIM_enterScreen(); } catch(e){}
+        }, 480);
+      }, 220);
+      return;
+    }
+    const step = BOOT_STEPS[i];
+    const li = stepsEl ? stepsEl.querySelector(`[data-step="${i}"]`) : null;
+    if (li) li.classList.add('on');
+    i++;
+    if (fill) fill.style.width = Math.round(i/total*100) + '%';
+    setTimeout(()=>{
+      if (li) li.classList.add('done');
+      next();
+    }, step.ms);
+  };
+  // лёгкая пауза, чтобы заставка не мигала на быстрых устройствах
+  setTimeout(next, 180);
+}
+function BOOT_show(){
+  if (document.getElementById('bootScreen')) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = BOOT_html();
+  document.body.appendChild(wrap.firstElementChild);
+}
+
 /* ---------------- INIT ---------------- */
 function init(){
   if (typeof XMAS_applyBodyClass === 'function') XMAS_applyBodyClass();
+  try { BOOT_show(); } catch(e){}
   window.addEventListener('beforeinstallprompt', event=>{
     event.preventDefault();
     deferredInstallPrompt=event;
@@ -9592,8 +9991,10 @@ function init(){
     applyOffline();
     if (S.tut2 && !S.tut2.done) TUT2_show();
     else if (!S.tutorial.done) tutShow();
+    try { BOOT_run(); } catch(e){}
   } else {
     renderStart();
+    try { BOOT_run(); } catch(e){}
   }
   setInterval(tick, 1000);
   window.addEventListener('beforeunload', save);
@@ -10316,9 +10717,10 @@ function RET_renderPens(){
       <figure class="pen-art">${BUILDING_ART[id]||''}</figure>
       <div class="pen-head">
         <span class="pen-ic">${ic(BLD_ICON[id]||'barn')}</span>
-        <div><b>${d.name}</b><small>${ready?`${b.stored} ед. ${goodsAcc(d.good)} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
+        <div><b>${d.name}${typeof ANIM_of==='function'?` · ${esc(ANIM_of(id).name)}`:''}</b><small>${ready?`${b.stored} ед. ${goodsAcc(d.good)} готово`:`Работает · ${fmtTime(Math.max(0,(b.cycleEndsAt-Date.now())/1000))}`}</small></div>
         <span class="pen-status ${mood.level}">${mood.label}</span>
       </div>
+      ${typeof ANIM_cardHTML==='function' ? ANIM_cardHTML(id) : ''}
       <div class="pen-care">
         <button class="${b.feed<40?'low':''}" onclick="App.feedPen('${id}')">${ic('sack')}<span>Корм <b>${Math.round(b.feed)}%</b></span></button>
         <button class="${b.water<40?'low':''}" onclick="App.waterPen('${id}')">${ic('droplet')}<span>Вода <b>${Math.round(b.water)}%</b></span></button>
@@ -10812,6 +11214,14 @@ function RET_penCare(id, kind){
   if (cost && S.coins < cost){ toast('Не хватает монет', 'bad', 'coin'); sfx.bad(); return; }
   if (cost) addCoins(-cost);
   b[kind] = clamp((b[kind]||0) + 30, 0, 100);
+  // характер животного: любимый уход растит заботу вдвое быстрее (v82)
+  try {
+    if (typeof ANIM_of === 'function'){
+      const a = ANIM_of(id), t = ANIM_trait(id);
+      const gain = (t.like === kind) ? 9 : 4.5;
+      a.care = clamp((a.care||0) + gain, 0, 100);
+    }
+  } catch(e){}
   sfx.pop(); RET_track('care', 1); save(); renderAll();
 }
 
@@ -12197,6 +12607,10 @@ function LIV_installHooks(){
     cellarOpen(){ sfx.click(); CELLAR_open(); },
     cellarBuy(){ CELLAR_buy(); },
     seasonOpen(){ sfx.click(); SEASON_open(); },
+    auctOpen(){ sfx.click(); AUCT_open(); },
+    auctBid(){ AUCT_bid(); },
+    animalRename(id){ sfx.click(); ANIM_rename(id); },
+    animalSaveName(id){ ANIM_saveName(id); },
     stockOpen(){ sfx.click(); ui.farmView='stock'; ui.tab='farm'; renderScreen(); },
     petPet(){ PET_pet(); },
       feedPet(){ LIV_feedPet(); },
