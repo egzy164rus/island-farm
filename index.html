@@ -3271,7 +3271,7 @@ function fieldYield(f){
   if (weatherInfo().id==='rain') mult *= 0.85;
   if (f.weeds && !f.weeded) mult *= 0.85;
   mult *= soilMul(f);                         /* плодородие почвы */
-  return Math.round(c.yield * mult);
+  return Math.max(1, Math.round(c.yield * mult));
 }
 
 /* ---------------- MARKET ---------------- */
@@ -6213,8 +6213,9 @@ function openField(id){
     const cost = w.cost + (st.rent||0) + (extra.seedCost||0);
     const dis = !st.ok || S.coins < cost;
     const sub = st.broken ? 'сломана — в гараж' : (st.rent ? `аренда +${st.rent}` : (w.machine ? MACHINES[w.machine].name : 'без техники'));
-    return `<button class="btn ${action==='harvest'?'btn-gold':'btn-primary'} btn-block" ${dis?'disabled':''} onclick="App.fieldAction('${action}')">
-      ${w.machine ? machIcon(w.machine) : ic('droplet')} ${label||w.name} · ${cost} монет <small style="font-weight:600;opacity:.85">(${sub}, ${fmtTime(w.time/(st.speed||1)/ts())})</small></button>`;
+    return `<button class="btn ${action==='harvest'?'btn-gold':'btn-primary'} btn-block act-btn" ${dis?'disabled':''} onclick="App.fieldAction('${action}')">
+      <span class="act-main">${w.machine ? machIcon(w.machine) : ic('droplet')} ${label||w.name}</span>
+      <span class="act-meta">${cost} монет · ${sub} · ${fmtTime(w.time/(st.speed||1)/ts())}</span></button>`;
   };
   if (f.busy){
     html += `<div class="card" style="margin-top:10px"><b>${WORK[f.busy.action].name}…</b>
@@ -6250,7 +6251,7 @@ function openField(id){
       <span class="grade-copy"><b>${gt.name}</b><small>Прогноз качества ${q}/100 · к цене ×${gt.mul.toFixed(2)}</small></span>
       <span class="grade-stars">${'★'.repeat(gt.stars)}${'☆'.repeat(3-gt.stars)}</span>
     </div>
-    <p class="muted">${c.name} растёт. Ожидаемый урожай: <b>${y}</b> ед. ${f.weeds&&!f.weeded?'<br>Сорняки снижают урожай!':''}</p>
+    <p class="muted">${c.name} растёт. Ожидаемый урожай: <b>${Math.round(y)}</b> ед. ${f.weeds&&!f.weeded?'<br>Сорняки снижают урожай!':''}</p>
     <div class="action-list">`;
     if (f.weeds && !f.weeded) html += actBtn('weed','Прополоть (+15%)');
     if (!f.watered) html += actBtn('water','Полить (+5%)');
@@ -6261,7 +6262,14 @@ function openField(id){
     html += `<button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button></div>`;
   } else if (f.state==='ready'){
     const y = fieldYield(f);
-    html += `<p class="muted">Урожай: <b>${y}</b> ед. (продажа ≈ ${fmt(y)} монет)</p><div class="action-list">`;
+    const q = fieldQuality(f), gt = gradeTier(q);
+    const priceMult = GOODS[f.crop] ? GOODS[f.crop].price : 1;
+    html += `<div class="grade-card ready">
+      <span class="grade-ico">${ic('star')}</span>
+      <span class="grade-copy"><b>${gt.name} · ${q}/100</b><small>к цене ×${gt.mul.toFixed(2)} · почва после уборки ${Math.round(clamp(soilOf(f)-SOIL_DRAIN,0,100))}%</small></span>
+      <span class="grade-stars">${'★'.repeat(gt.stars)}${'☆'.repeat(3-gt.stars)}</span>
+    </div>
+    <p class="muted">Урожай: <b>${Math.round(y)}</b> ед. · продажа ≈ ${fmt(Math.round(y * priceMult * gt.mul))} монет</p><div class="action-list">`;
     html += `<button class="btn btn-gold btn-block btn-shine" data-tut="harvest" onclick="App.fieldAction('harvest')">${ic('wheat')||''} Убрать урожай</button>`;
     html += `<button class="btn btn-blue btn-block" onclick="App.manualHarvest()">${ic('play')} Сесть за руль (+10% урожая)</button>`;
     html += `</div>`;
@@ -10605,6 +10613,14 @@ body.decor-aurora #app::before{
   background:rgba(255,255,255,.035);border:1px solid rgba(243,217,164,.16);}
 .market-avg span{font-size:11px;color:#a5b1a1;font-weight:600;}
 .market-avg b{font-size:11.5px;font-weight:800;}
+
+/* кнопки действий в шите поля: один заголовок + мелкая строка */
+.act-btn{flex-direction:column;gap:1px;padding:10px 12px;line-height:1.25;}
+.act-main{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;}
+.act-main .ic,.act-main svg{width:16px;height:16px;flex:0 0 auto;}
+.act-meta{font-size:9.5px;font-weight:600;opacity:.72;letter-spacing:.15px;}
+.grade-card.ready{background:linear-gradient(180deg,rgba(243,217,164,.16),rgba(201,160,90,.05));
+  border-color:rgba(243,217,164,.34);}
 </style>
     <g transform="translate(64 100) scale(${sc}) translate(-64 -100)"${
       (mood==='sad'||mood==='bad') ? ` style="--ear-droop:${droop}deg;--eye-lid:${lid};--eye-hi:${hi}"` : (mood==='ok'? ` style="--eye-lid:${lid}"` : '')}>${B}</g>
