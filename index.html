@@ -3210,6 +3210,57 @@ ${PET_CSS}
   border:1px solid rgba(226,140,110,.20);color:#e8b09c;}
 .go-warn .ic,.go-warn svg{width:13px;height:13px;flex:none;margin-top:1px;}
 .muted-card{opacity:.72;}
+
+/* ===== ПОГОДА · v80 ===== */
+.wx-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#cdd9c6;
+  font:700 10.5px system-ui;cursor:pointer;}
+.wx-chip .ic,.wx-chip svg{width:14px;height:14px;color:#f0c95e;}
+.wx-chip:active{transform:scale(.96);}
+.wx-hero{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;margin:10px 0 12px;
+  background:linear-gradient(160deg,rgba(120,170,220,.13),rgba(255,255,255,.02));
+  border:1px solid rgba(120,170,220,.22);}
+.wx-hero-ico{width:44px;height:44px;flex:none;border-radius:14px;display:grid;place-items:center;
+  background:rgba(120,170,220,.16);color:#a8d0f0;}
+.wx-hero-ico .ic,.wx-hero-ico svg{width:26px;height:26px;}
+.wx-hero b{display:block;font-size:14px;color:#eaf2f8;}
+.wx-hero small{display:block;font-size:10px;color:#93a4b0;margin-top:2px;}
+.wx-list{display:flex;flex-direction:column;gap:6px;margin-bottom:11px;}
+.wx-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);}
+.wx-row.now{background:rgba(120,170,220,.10);border-color:rgba(120,170,220,.26);}
+.wx-ico{width:30px;height:30px;flex:none;border-radius:9px;display:grid;place-items:center;
+  background:rgba(255,255,255,.05);color:#b6c8d4;}
+.wx-ico .ic,.wx-ico svg{width:17px;height:17px;}
+.wx-copy{flex:1;min-width:0;}
+.wx-copy b{display:block;font-size:11px;color:#e2ecf2;}
+.wx-copy small{display:block;font-size:9px;color:#8b9aa6;margin-top:1px;line-height:1.3;}
+.wx-growth{font-size:9.5px;font-weight:800;white-space:nowrap;}
+.wx-growth.up{color:#9fd48a;} .wx-growth.down{color:#e8a58e;} .wx-growth.flat{color:#8b9aa6;}
+.wx-note{display:flex;gap:7px;align-items:flex-start;font-size:9.5px;line-height:1.45;
+  color:#93a48e;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.025);margin-bottom:11px;}
+.wx-note .ic,.wx-note svg{width:13px;height:13px;flex:none;margin-top:1px;}
+
+/* ===== ПОГРЕБ · v80 ===== */
+.cellar-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.cellar-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:13px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);opacity:.72;}
+.cellar-row.owned{opacity:1;background:rgba(122,200,140,.09);border-color:rgba(122,200,140,.22);}
+.cellar-row.next{opacity:1;background:rgba(243,217,164,.09);border-color:rgba(243,217,164,.28);}
+.cellar-lvl{width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;
+  background:rgba(0,0,0,.25);font-size:11px;font-weight:900;color:#c9d4c3;}
+.cellar-copy{flex:1;min-width:0;}
+.cellar-copy b{display:block;font-size:11.5px;color:#eef4e8;}
+.cellar-copy small{display:block;font-size:9.5px;color:#93a48e;margin-top:1px;}
+.cellar-price{font-size:10.5px;font-weight:800;color:#f3d9a4;white-space:nowrap;}
+.cellar-row.owned .cellar-price{color:#9fd48a;}
+.cellar-alert{display:flex;gap:7px;align-items:flex-start;font-size:10px;line-height:1.4;
+  padding:9px 11px;border-radius:12px;margin:8px 0;background:rgba(226,140,110,.10);
+  border:1px solid rgba(226,140,110,.22);color:#e8b09c;}
+.cellar-alert .ic,.cellar-alert svg{width:13px;height:13px;flex:none;margin-top:1px;}
+.cellar-ok{display:flex;gap:7px;align-items:center;font-size:10px;padding:9px 11px;border-radius:12px;
+  margin:8px 0;background:rgba(122,200,140,.09);border:1px solid rgba(122,200,140,.20);color:#a9d8ae;}
+.cellar-ok .ic,.cellar-ok svg{width:13px;height:13px;}
 </style>
 </head>
 <body>
@@ -3657,14 +3708,90 @@ function seasonInfo(){
   if (m<9)  return {name:'Осень', icon:'leaf', id:'autumn'};
   return {name:'Зима', icon:'snow', id:'winter'};
 }
+/* ============================================================
+   ПОГОДА · v80
+   Было: 3 состояния с нулевым влиянием на рост.
+   Стало: 6 типов погоды + прогноз на 3 дня + реальные эффекты.
+   ============================================================ */
+const WEATHERS = {
+  sunny:   { name:'Ясно',    icon:'sun',     weight:34, growth:1.00, water:0,
+             tip:'Идеально для уборки и техники' },
+  rain:    { name:'Дождь',   icon:'rain',    weight:26, growth:1.18, water:+34,
+             tip:'Поля поливаются сами, +18% к росту' },
+  overcast:{ name:'Облачно', icon:'cloud',   weight:20, growth:1.06, water:+8,
+             tip:'Спокойный день, немного влаги' },
+  drought: { name:'Засуха',  icon:'drought', weight:12, growth:0.72, water:-26,
+             tip:'Почва сохнет: полей поля, иначе урожай ниже' },
+  storm:   { name:'Гроза',   icon:'bolt',    weight:7,  growth:0.85, water:+42, storm:true,
+             tip:'Риск поломки техники, зато много влаги' },
+  fog:     { name:'Туман',   icon:'cloud',   weight:11, growth:0.94, water:+12,
+             tip:'Работа идёт медленнее' },
+};
+function WEATHER_seed(days){
+  return ((days*9301+49297)%233280)/233280;
+}
 function weatherForDay(days){
-  if (S.settings.fixedSummer) return {name:'Ясно', icon:'sun', id:'sunny'};
-  const r = ((days*9301+49297)%233280)/233280;
-  if (r < 0.55) return {name:'Ясно', icon:'sun', id:'sunny'};
-  if (r < 0.8)  return {name:'Дождь', icon:'rain', id:'rain'};
-  return {name:'Засуха', icon:'drought', id:'drought'};
+  if (S.settings.fixedSummer) return {name:'Ясно', icon:'sun', id:'sunny', ...WEATHERS.sunny};
+  const r = WEATHER_seed(days);
+  // взвешенный выбор по накопленным весам
+  const ids = Object.keys(WEATHERS);
+  const total = ids.reduce((a,k)=>a+WEATHERS[k].weight, 0);
+  let acc = 0;
+  for (const k of ids){
+    acc += WEATHERS[k].weight / total;
+    if (r <= acc) return { ...WEATHERS[k], id:k };
+  }
+  return { ...WEATHERS.sunny, id:'sunny' };
+}
+/* Прогноз на 3 дня вперёд — можно планировать уборку */
+function WEATHER_forecast(){
+  const today = Math.floor(Date.now()/86400000);
+  const out = [];
+  const DAY = ['Сегодня','Завтра','Послезавтра'];
+  for (let i=0;i<3;i++){
+    const w = weatherForDay(today+i);
+    out.push({ ...w, label:DAY[i], offset:i });
+  }
+  return out;
+}
+/* Множитель роста от погоды — подмешивается в fieldYield */
+function WEATHER_growthMul(){
+  const w = weatherInfo();
+  return (S.settings.fixedSummer ? 1 : (w.growth || 1));
 }
 function weatherInfo(){ return weatherForDay(Math.floor(Date.now()/86400000)); }
+
+/* Карточка прогноза — для главной и шита погоды */
+function WEATHER_chipHTML(){
+  const w = weatherInfo();
+  return `<button class="wx-chip" onclick="App.wxOpen()">${ic(w.icon)}<span>${w.name}</span></button>`;
+}
+function WEATHER_open(){
+  const fc = WEATHER_forecast();
+  const rows = fc.map((w,i)=>{
+    const growth = Math.round((w.growth-1)*100);
+    const gTxt = growth > 0 ? `+${growth}%` : growth < 0 ? `${growth}%` : '±0%';
+    const gCls = growth > 0 ? 'up' : growth < 0 ? 'down' : 'flat';
+    return `<div class="wx-row ${i===0?'now':''}">
+      <span class="wx-ico">${ic(w.icon)}</span>
+      <div class="wx-copy">
+        <b>${w.label} · ${w.name}</b>
+        <small>${w.tip}</small>
+      </div>
+      <span class="wx-growth ${gCls}">${gTxt} к урожаю</span>
+    </div>`;
+  }).join('');
+  const w = weatherInfo();
+  openSheet(`<h2>${ic('sun')} Погода</h2>
+    <p class="muted">Погода меняется каждый день и влияет на рост культур. Прогноз помогает спланировать уборку.</p>
+    <div class="wx-hero">
+      <span class="wx-hero-ico">${ic(w.icon)}</span>
+      <div><b>${w.name}</b><small>${w.tip}</small></div>
+    </div>
+    <div class="wx-list">${rows}</div>
+    <div class="wx-note">${ic('info')} Засуха сушит почву, дождь поливает поля сам. Гроза может сломать технику.</div>
+    <button class="btn btn-ghost btn-block" onclick="App.closeModal()">Закрыть</button>`);
+}
 
 /* ---------------- СОБЫТИЯ ДНЯ (v76) ----------------
    Раз в день на острове случается событие — на 6 игровых часов.
@@ -3845,12 +3972,65 @@ function fieldYield(f){
   let mult = 1 + 0.25*f.fert + (f.watered ? (weatherInfo().id==='drought'?0.10:0.05) : 0)
            + (f.weeded?0.15:0) + (f.limed?0.10:0) + (f.sprayed?0.05:0) + f.manualBonus;
   mult *= seasonMult(f.crop);
-  if (weatherInfo().id==='rain') mult *= 0.85;
   if (f.weeds && !f.weeded) mult *= 0.85;
   mult *= soilMul(f);                         /* плодородие почвы */
+  mult *= WEATHER_growthMul();                /* погода дня (v80) */
   const ev = EV_mods();
   if (ev.yield) mult *= ev.yield;             /* событие дня */
   return Math.max(1, Math.round(c.yield * mult));
+}
+
+/* ============================================================
+   ПОРЧА И ХОЛОД · v80
+   Товар на складе стареет: качество падает со временем.
+   Холодильник/погреб замедляет порчу. Свежий товар дороже.
+   ============================================================ */
+const SPOIL = {
+  // сколько часов до потери 1 единицы качества
+  wheat:   48, rapeseed:44, corn:40, soy:38, potato:36, cotton:90, grape:24, grass:10,
+  hay:     72, eggs:20, wool:120, milk:14, meat:12, honey:200, veggies:16,
+  flour:   96, bread:20, cheese:72, fabric:180, clothes:400, silage:60, biogas:400,
+};
+function SPOIL_rate(g){
+  const hrs = SPOIL[g] || 48;
+  const cold = (typeof CELLAR_mul === 'function') ? CELLAR_mul() : 1;  // погреб замедляет
+  return 100 / (hrs * cold) / 3600;   // единиц качества в секунду
+}
+function SPOIL_hoursLeft(g, quality){
+  const r = SPOIL_rate(g);
+  if (r <= 0) return Infinity;
+  return Math.floor((quality - 20) / r / 3600);   // ниже 20 качество не падает
+}
+/* Тик: раз в минуту снижаем качество товаров на складе */
+let SPOIL_last = 0;
+function SPOIL_tick(){
+  const now = Date.now();
+  if (!SPOIL_last) { SPOIL_last = now; return; }
+  const dt = Math.min(3600, (now - SPOIL_last) / 1000);
+  SPOIL_last = now;
+  if (!S.goods || !S.grade) return;
+  let spoiled = false;
+  for (const g in S.goods){
+    if (!S.goods[g] || S.goods[g] <= 0) continue;
+    const cur = gradeOf(g);
+    if (cur <= 20) continue;
+    const drop = SPOIL_rate(g) * dt * (1 + Math.min(1, S.goods[g]/800));
+    if (drop > 0.01){
+      S.grade[g] = Math.max(20, cur - drop);
+      spoiled = true;
+    }
+  }
+  if (spoiled && Math.random() < 0.25) save();
+}
+/* Подсказка: что вот-вот испортится */
+function SPOIL_alert(){
+  const rows = [];
+  for (const g in S.goods){
+    if (!S.goods[g] || !GOODS[g]) continue;
+    const h = SPOIL_hoursLeft(g, gradeOf(g));
+    if (h < 12) rows.push({ good:g, hours:h, qty:S.goods[g], q:Math.round(gradeOf(g)) });
+  }
+  return rows.sort((a,b)=>a.hours-b.hours);
 }
 
 /* ============================================================
@@ -4054,6 +4234,52 @@ const COMP_SOIL    = 34;    /* сколько почвы восстанавли�
 function COMP_state(){
   if (!S.comp) S.comp = { manure:0, compost:0, ready:0, startedAt:0 };
   return S.comp;
+}
+/* ---- ПОГРЕБ (v80): замедляет порчу товара ---- */
+const CELLAR_LEVELS = [
+  { lvl:0, name:'Нет погреба',  price:0,     mul:1.0,  desc:'Товар портится с обычной скоростью' },
+  { lvl:1, name:'Погреб',       price:2500,  mul:1.7,  desc:'Порча медленнее на 41%' },
+  { lvl:2, name:'Холодный склад', price:8000, mul:2.6, desc:'Порча медленнее на 62%' },
+  { lvl:3, name:'Ледник',       price:22000, mul:4.0,  desc:'Порча медленнее на 75%' },
+];
+function CELLAR_state(){
+  const c = COMP_state();
+  if (c.cellar === undefined) c.cellar = 0;
+  return c.cellar;
+}
+function CELLAR_def(){ return CELLAR_LEVELS[CELLAR_state()] || CELLAR_LEVELS[0]; }
+function CELLAR_next(){ const l = CELLAR_state(); return CELLAR_LEVELS[l+1] || null; }
+function CELLAR_mul(){ return CELLAR_def().mul; }
+function CELLAR_buy(){
+  const nx = CELLAR_next();
+  if (!nx){ toast('Уже максимальный уровень', '', 'check'); return; }
+  if (S.coins < nx.price){ toast(`Нужно ${fmt(nx.price)} монет`, 'bad', 'coin'); sfx.bad(); return; }
+  addCoins(-nx.price);
+  COMP_state().cellar = nx.lvl;
+  toast(`${nx.name} построен! ${nx.desc}`, 'good', 'home');
+  sfx.good(); FX.confetti(); save(); renderAll(); CELLAR_open();
+}
+function CELLAR_open(){
+  const cur = CELLAR_def(), nx = CELLAR_next();
+  const alerts = SPOIL_alert();
+  const alertHTML = alerts.length
+    ? `<div class="cellar-alert">${ic('info')} Срочно продать: ${alerts.slice(0,3).map(a=>`${GOODS[a.good].name} (~${a.hours}ч)`).join(', ')}</div>`
+    : `<div class="cellar-ok">${ic('check')} На складе всё в порядке</div>`;
+  const rows = CELLAR_LEVELS.map(l=>{
+    const owned = l.lvl <= CELLAR_state();
+    const isNext = nx && l.lvl === nx.lvl;
+    return `<div class="cellar-row ${owned?'owned':''} ${isNext?'next':''}">
+      <span class="cellar-lvl">${l.lvl}</span>
+      <div class="cellar-copy"><b>${l.name}</b><small>${l.desc}</small></div>
+      <span class="cellar-price">${owned ? ic('check')+' есть' : fmt(l.price)}</span>
+    </div>`;
+  }).join('');
+  openSheet(`<h2>${ic('home')} Погреб</h2>
+    <p class="muted">Товар на складе стареет — качество падает, а с ним и цена. Погреб замедляет порчу.</p>
+    ${alertHTML}
+    <div class="cellar-list">${rows}</div>
+    ${nx ? `<button class="btn btn-primary btn-block" onclick="App.cellarBuy()">${ic('home')} Построить ${nx.name} · ${fmt(nx.price)}</button>`
+         : `<div class="cellar-ok">${ic('trophy')} Максимальный уровень — ледник</div>`}`);
 }
 function COMP_addManure(buildingId){
   const c = COMP_state();
@@ -4386,6 +4612,7 @@ function cancelContract(id){
 /* ---------------- BUILDINGS & PRODUCTION ---------------- */
 function tickBuildings(){
   const now = Date.now();
+  if (typeof SPOIL_tick === 'function') SPOIL_tick();
   const decay = ts()/600;
   for (const id in S.buildings){
     const b = S.buildings[id]; if (!b.owned) continue;
@@ -4691,6 +4918,7 @@ function hint(key){
    ============================================================ */
 const I = {
   edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M14.5 6.5 17.5 9.5"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 19h10a3.75 3.75 0 0 0 .4-7.48 5.25 5.25 0 0 0-10.1-1.3A3.9 3.9 0 0 0 6.5 19Z"/></svg>',
   wind:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 13h13a3 3 0 1 1-3 3"/><path d="M3 18h7"/></svg>',
   paw:'<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="7" cy="7.5" rx="2.1" ry="2.7"/><ellipse cx="12" cy="5.6" rx="2.1" ry="2.9"/><ellipse cx="17" cy="7.5" rx="2.1" ry="2.7"/><ellipse cx="20" cy="12.4" rx="1.9" ry="2.3"/><path d="M12 11.4c2.7 0 5.2 1.9 5.2 4.4 0 2.1-1.7 3.3-3.6 3.3-.8 0-1.2-.3-1.6-.3s-.8.3-1.6.3c-1.9 0-3.6-1.2-3.6-3.3 0-2.5 2.5-4.4 5.2-4.4Z"/></svg>',
   chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 20V11M9.3 20V6M14.7 20v-6.4M20 20V9"/></svg>',
@@ -7369,6 +7597,7 @@ function openMoreMenu(){
     { id:'cards',    icon:'grid',     label:'Коллекция', desc:'Собранные карточки' },
     { id:'log',      icon:'wheat',    label:'Журнал культур', desc:'Рубежи по каждой культуре', sheet:'logOpen' },
     { id:'pet',      icon:'paw',      label:'Питомец',  desc:'Друг, прогулки и ласка', sheet:'openPet' },
+    { id:'cellar',   icon:'home',     label:'Погреб',   desc:'Защита урожая от порчи', sheet:'cellarOpen' },
     ...((typeof XMAS_active==='function' && XMAS_active()) ? [{ id:'xmas', icon:'gift', label:'Ёлка', desc:'Праздничный ивент' }] : []),
   ];
   const grid = items.map(it=>`<button class="more-item ${view===it.id?'on':''}" onclick="${it.sheet?`App.${it.sheet}()`:`App.farmView('${it.id}');closeModal()`}">
@@ -11568,6 +11797,9 @@ function LIV_installHooks(){
     petWalk(){ PET_walk(); },
     gorderTake(id){ GORDER_take(id); },
     gorderClaim(id){ GORDER_claim(id); },
+    wxOpen(){ sfx.click(); WEATHER_open(); },
+    cellarOpen(){ sfx.click(); CELLAR_open(); },
+    cellarBuy(){ CELLAR_buy(); },
     petPet(){ PET_pet(); },
       feedPet(){ LIV_feedPet(); },
       playPet(){ LIV_playPet(); },
